@@ -15,6 +15,54 @@
 @end
 
 @implementation MasterViewController
+@synthesize popup, popupShown;
+/*
+- (void) initPopUpView {
+        NSLog(@"here2");
+
+    popup.backgroundColor = [UIColor blueColor];
+    popup.alpha = 0.2;
+    popup.frame = CGRectMake (20, 40, 300, 400);
+    [self.view addSubview:popup];
+}
+*/
+
+- (BOOL)shouldAutorotate
+{
+    return NO;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    NSLog(@"rotate");
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void) animatePopUpShow:(id)sender
+{
+    if (self.popupShown)
+    {
+        [UIView animateWithDuration:0.3 delay:0.0 options:0
+                         animations:^{
+                             popup.frame = CGRectMake(0,[UIScreen mainScreen].bounds.size.height - 10, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+                             self.navigationItem.rightBarButtonItem.title = @"Units";
+                         }
+                         completion:nil];
+        [self.view bringSubviewToFront:self.popup];
+        self.popupShown = FALSE;
+    }
+    else
+    {
+        [UIView animateWithDuration:0.3 delay:0.0 options:0
+                     animations:^{
+                         popup.frame = CGRectMake(0,0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+                        self.navigationItem.rightBarButtonItem.title = @"Close";
+                     }
+                         completion:nil];
+        [self.view bringSubviewToFront:self.popup];
+        self.popupShown = TRUE;
+    }
+}
 
 - (void)awakeFromNib
 {
@@ -28,10 +76,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    //[[NSBundle mainBundle] loadNibNamed:@"PopUp" owner:self options:nil];
+    
 	// Do any additional setup after loading the view, typically from a nib.
-    self.navigationItem.leftBarButtonItem = self.editButtonItem;
-
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
+    //self.navigationItem.leftBarButtonItem = self.editButtonItem;
+    popupShown = FALSE;
+    self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height - 10, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
+    
+    [self.view addSubview:self.popup];
+    //[[[UIApplication sharedApplication] keyWindow] addSubview:self.popup];
+    
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithTitle:@"Units" style:UIBarButtonItemStyleBordered target:self action:@selector(animatePopUpShow:)];
     self.navigationItem.rightBarButtonItem = addButton;
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
 }
@@ -50,7 +105,7 @@
     
     // If appropriate, configure the new managed object.
     // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
-    [newManagedObject setValue:[NSDate date] forKey:@"timeStamp"];
+    [newManagedObject setValue:[NSDate date] forKey:@"item"];
     
     // Save the context.
     NSError *error = nil;
@@ -112,10 +167,21 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+     NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
+    
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
         self.detailViewController.detailItem = object;
+        
+        [self.detailViewController setLevelArray: self.popup.buttonStates];
     }
+    
+    /*
+    NSNumber *a = [object valueForKey:@"sort"];
+    NSInteger b = [a integerValue];
+    self.detailViewController.menuItem = b;
+    self.detailViewController.menuItem = (long)[a integerValue];
+    NSLog(@"item2: %ld, %ld, %ld", (long)[a integerValue], b, self.detailViewController.menuItem);
+     */
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -124,6 +190,8 @@
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
         [[segue destinationViewController] setDetailItem:object];
+        
+        [[segue destinationViewController] setLevelArray: self.popup.buttonStates];
     }
 }
 
@@ -137,14 +205,14 @@
     
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     // Edit the entity name as appropriate.
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Event" inManagedObjectContext:self.managedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Menu" inManagedObjectContext:self.managedObjectContext];
     [fetchRequest setEntity:entity];
     
     // Set the batch size to a suitable number.
     [fetchRequest setFetchBatchSize:20];
     
     // Edit the sort key as appropriate.
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"timeStamp" ascending:NO];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"sort" ascending:YES];
     NSArray *sortDescriptors = @[sortDescriptor];
     
     [fetchRequest setSortDescriptors:sortDescriptors];
@@ -229,7 +297,7 @@
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
 {
     NSManagedObject *object = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    cell.textLabel.text = [[object valueForKey:@"timeStamp"] description];
+    cell.textLabel.text = [[object valueForKey:@"item"] description];
 }
 
 @end

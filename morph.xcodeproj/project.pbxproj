@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F296BCA19566A2E00B4CE78 /* morph.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3F296BC919566A2E00B4CE78 /* morph.sqlite */; };
+		3F296BCC1956A79C00B4CE78 /* newathu405.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3F296BCB1956A79C00B4CE78 /* newathu405.ttf */; };
+		3F296BCF1961C6EC00B4CE78 /* VerbForm.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F296BCE1961C6EC00B4CE78 /* VerbForm.m */; };
+		3F2FD3001AF0625300B4CE7F /* GreekForms.c in Sources */ = {isa = PBXBuildFile; fileRef = 3F2FD2FE1AF0625300B4CE7F /* GreekForms.c */; };
 		3F73EDA6189642DA003638C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDA5189642DA003638C5 /* Foundation.framework */; };
 		3F73EDA8189642DA003638C5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDA7189642DA003638C5 /* CoreGraphics.framework */; };
 		3F73EDAA189642DA003638C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDA9189642DA003638C5 /* UIKit.framework */; };
@@ -26,6 +30,9 @@
 		3F73EDD3189642DA003638C5 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDAB189642DA003638C5 /* CoreData.framework */; };
 		3F73EDDB189642DA003638C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3F73EDD9189642DA003638C5 /* InfoPlist.strings */; };
 		3F73EDDD189642DA003638C5 /* morphTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F73EDDC189642DA003638C5 /* morphTests.m */; };
+		3FAA4FF71A2A73C300D49487 /* Verbs.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FAA4FF61A2A73C300D49487 /* Verbs.m */; };
+		3FAA55461A2797C0003EFEDA /* PopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FAA55451A2797C0003EFEDA /* PopUp.m */; };
+		3FCEE6DA1ADE636500C550AD /* libmorph.c in Sources */ = {isa = PBXBuildFile; fileRef = 3FCEE6D81ADE636500C550AD /* libmorph.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +46,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3F296BC919566A2E00B4CE78 /* morph.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = morph.sqlite; sourceTree = "<group>"; };
+		3F296BCB1956A79C00B4CE78 /* newathu405.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = newathu405.ttf; sourceTree = "<group>"; };
+		3F296BCD1961C6EC00B4CE78 /* VerbForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerbForm.h; sourceTree = "<group>"; };
+		3F296BCE1961C6EC00B4CE78 /* VerbForm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VerbForm.m; sourceTree = "<group>"; };
+		3F2FD2FE1AF0625300B4CE7F /* GreekForms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = GreekForms.c; sourceTree = "<group>"; };
+		3F2FD2FF1AF0625300B4CE7F /* GreekForms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GreekForms.h; sourceTree = "<group>"; };
 		3F73EDA2189642DA003638C5 /* morph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = morph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F73EDA5189642DA003638C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3F73EDA7189642DA003638C5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -63,6 +76,13 @@
 		3F73EDD8189642DA003638C5 /* morphTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "morphTests-Info.plist"; sourceTree = "<group>"; };
 		3F73EDDA189642DA003638C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3F73EDDC189642DA003638C5 /* morphTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = morphTests.m; sourceTree = "<group>"; };
+		3FAA4FF51A2A73C300D49487 /* Verbs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Verbs.h; sourceTree = "<group>"; };
+		3FAA4FF61A2A73C300D49487 /* Verbs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Verbs.m; sourceTree = "<group>"; };
+		3FAA55441A2797C0003EFEDA /* PopUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopUp.h; sourceTree = "<group>"; };
+		3FAA55451A2797C0003EFEDA /* PopUp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PopUp.m; sourceTree = "<group>"; };
+		3FCEE6D81ADE636500C550AD /* libmorph.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libmorph.c; sourceTree = "<group>"; };
+		3FCEE6D91ADE636500C550AD /* libmorph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libmorph.h; sourceTree = "<group>"; };
+		3FCEE6DB1ADF571F00C550AD /* GreekUnicode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GreekUnicode.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +153,17 @@
 				3F73EDC3189642DA003638C5 /* MasterViewController.m */,
 				3F73EDC5189642DA003638C5 /* DetailViewController.h */,
 				3F73EDC6189642DA003638C5 /* DetailViewController.m */,
+				3FAA55441A2797C0003EFEDA /* PopUp.h */,
+				3FAA55451A2797C0003EFEDA /* PopUp.m */,
+				3FAA4FF51A2A73C300D49487 /* Verbs.h */,
+				3FAA4FF61A2A73C300D49487 /* Verbs.m */,
+				3F296BCD1961C6EC00B4CE78 /* VerbForm.h */,
+				3F296BCE1961C6EC00B4CE78 /* VerbForm.m */,
+				3FCEE6D91ADE636500C550AD /* libmorph.h */,
+				3FCEE6D81ADE636500C550AD /* libmorph.c */,
+				3F2FD2FF1AF0625300B4CE7F /* GreekForms.h */,
+				3F2FD2FE1AF0625300B4CE7F /* GreekForms.c */,
+				3FCEE6DB1ADF571F00C550AD /* GreekUnicode.h */,
 				3F73EDC8189642DA003638C5 /* Images.xcassets */,
 				3F73EDBF189642DA003638C5 /* morph.xcdatamodeld */,
 				3F73EDAE189642DA003638C5 /* Supporting Files */,
@@ -143,6 +174,8 @@
 		3F73EDAE189642DA003638C5 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				3F296BCB1956A79C00B4CE78 /* newathu405.ttf */,
+				3F296BC919566A2E00B4CE78 /* morph.sqlite */,
 				3F73EDAF189642DA003638C5 /* morph-Info.plist */,
 				3F73EDB0189642DA003638C5 /* InfoPlist.strings */,
 				3F73EDB3189642DA003638C5 /* main.m */,
@@ -213,9 +246,12 @@
 		3F73ED9A189642DA003638C5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = "Jeremy March";
 				TargetAttributes = {
+					3F73EDA1189642DA003638C5 = {
+						DevelopmentTeam = EFHC4XFZ38;
+					};
 					3F73EDCD189642DA003638C5 = {
 						TestTargetID = 3F73EDA1189642DA003638C5;
 					};
@@ -246,7 +282,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F73EDBE189642DA003638C5 /* Main_iPad.storyboard in Resources */,
+				3F296BCC1956A79C00B4CE78 /* newathu405.ttf in Resources */,
 				3F73EDC9189642DA003638C5 /* Images.xcassets in Resources */,
+				3F296BCA19566A2E00B4CE78 /* morph.sqlite in Resources */,
 				3F73EDBB189642DA003638C5 /* Main_iPhone.storyboard in Resources */,
 				3F73EDB2189642DA003638C5 /* InfoPlist.strings in Resources */,
 			);
@@ -267,11 +305,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F296BCF1961C6EC00B4CE78 /* VerbForm.m in Sources */,
 				3F73EDC7189642DA003638C5 /* DetailViewController.m in Sources */,
 				3F73EDC4189642DA003638C5 /* MasterViewController.m in Sources */,
 				3F73EDB8189642DA003638C5 /* AppDelegate.m in Sources */,
+				3F2FD3001AF0625300B4CE7F /* GreekForms.c in Sources */,
 				3F73EDC1189642DA003638C5 /* morph.xcdatamodeld in Sources */,
+				3FAA4FF71A2A73C300D49487 /* Verbs.m in Sources */,
+				3FCEE6DA1ADE636500C550AD /* libmorph.c in Sources */,
 				3F73EDB4189642DA003638C5 /* main.m in Sources */,
+				3FAA55461A2797C0003EFEDA /* PopUp.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -333,7 +376,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -362,7 +404,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -373,7 +415,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -396,7 +437,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -408,10 +449,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "morph/morph-Prefix.pch";
 				INFOPLIST_FILE = "morph/morph-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -421,10 +466,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "morph/morph-Prefix.pch";
 				INFOPLIST_FILE = "morph/morph-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -432,7 +481,6 @@
 		3F73EDE4189642DA003638C5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/morph.app/morph";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -455,7 +503,6 @@
 		3F73EDE5189642DA003638C5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/morph.app/morph";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -490,6 +537,7 @@
 				3F73EDE2189642DA003638C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		3F73EDE3189642DA003638C5 /* Build configuration list for PBXNativeTarget "morphTests" */ = {
 			isa = XCConfigurationList;
@@ -498,6 +546,7 @@
 				3F73EDE5189642DA003638C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

@@ -1,9 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="Test1.xcdatamodel" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1" systemVersion="11A491" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
-    <entity name="Event">
-        <attribute name="timeStamp" optional="YES" attributeType="Date"/>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6252" systemVersion="14B25" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Endings" syncable="YES">
+        <attribute name="fp" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fs" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="hq" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="id" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="mood" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sp" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="ss" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tense" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tp" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="ts" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="voice" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="Menu">
+        <attribute name="item" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sort" optional="YES" attributeType="Integer 16" defaultValueString="0">
+            <userInfo/>
+        </attribute>
+        <userInfo/>
+    </entity>
+    <entity name="Verbs" representedClassName="Verbs" syncable="YES">
+        <attribute name="aorist" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="aoristpassive" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="def" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="future" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="hq" optional="YES" attributeType="Integer 16" defaultValueString="0" indexed="YES" syncable="YES"/>
+        <attribute name="id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="more" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="perfectactive" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="perfectmid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="present" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="verbclass" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Event" positionX="261" positionY="189" width="128" height="60"/>
+        <element name="Endings" positionX="261" positionY="252" width="128" height="208"/>
+        <element name="Menu" positionX="261" positionY="189" width="128" height="73"/>
+        <element name="Verbs" positionX="261" positionY="207" width="128" height="210"/>
     </elements>
 </model>

@@ -16,6 +16,17 @@
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 
+- (NSUInteger)supportedInterfaceOrientations
+{
+    NSLog(@"rotate");
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return NO;
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
@@ -115,11 +126,41 @@
         return _persistentStoreCoordinator;
     }
     
+    
+    //COPY FROM NSBUNDLE TO DOCUMENTS DIRECTORY
+    
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *writableDBPath = [documentsDirectory stringByAppendingPathComponent:@"morph.sqlite"];
+    
+    //Set up the store.
+    //For the sake of illustration, provide a pre-populated default store.
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    // If the expected store doesn't exist, copy the default store.
+    if (![fileManager fileExistsAtPath:writableDBPath]) {
+        NSLog(@"DB had to be copied.");
+        NSString *defaultStorePath = [[NSBundle mainBundle] pathForResource:@"morph" ofType:@"sqlite"];
+        if (defaultStorePath) {
+            [fileManager copyItemAtPath:defaultStorePath toPath:writableDBPath error:NULL];
+        }
+    }
+    
+    //end
+    
+    
+    
     NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"morph.sqlite"];
     
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+    
+    NSDictionary *options = @{NSMigratePersistentStoresAutomaticallyOption:@YES,
+                               NSInferMappingModelAutomaticallyOption:@YES,
+                               NSReadOnlyPersistentStoreOption:@NO,
+                               NSSQLitePragmasOption: @{@"journal_mode": @"WAL"}
+                               };
+    
+    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:options error:&error]) {
         /*
          Replace this implementation with code to handle the error appropriately.
          
