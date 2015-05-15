@@ -31,13 +31,12 @@
 {
     return NO;
 }
-
+/*
 - (NSUInteger)supportedInterfaceOrientations
 {
-    NSLog(@"rotate");
     return UIInterfaceOrientationMaskPortrait;
 }
-
+*/
 - (void) animatePopUpShow:(id)sender
 {
     if (self.popupShown)

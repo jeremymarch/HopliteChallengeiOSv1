@@ -17,15 +17,15 @@
 
 typedef int UCS2;
 
-#define NUM_VERBS 25 //113
+#define NUM_VERBS 34//25 //113
 
 //verb classes
 enum {
     REGULAR = 0,
-    CONSONANT_STEM_PERFECT_1, //γέγραμμαι
-    CONSONANT_STEM_PERFECT_2, //πέπεμμαι
-    CONSONANT_STEM_PERFECT_3, //πεφύλαγμαι
-    CONSONANT_STEM_PERFECT_4, //κεκέλευσμαι
+    CONSONANT_STEM_PERFECT_1, // γέγραμμαι
+    CONSONANT_STEM_PERFECT_2, // πέπεμμαι
+    CONSONANT_STEM_PERFECT_3, // πεφύλαγμαι
+    CONSONANT_STEM_PERFECT_4, // κεκέλευσμαι
     CONTRACTED_FUTURE,
     MI_VERB
 };
@@ -171,10 +171,13 @@ int getForm(VerbFormC *vf, char *buffer);
 Verb *getRandomVerb();
 void changeFormByDegrees(VerbFormC *verbform, int degrees);
 void generateForm(VerbFormC *verbform);
-char *getPrincipalPartForTense(Verb *verb, int tense, int voice);
 
 void getFullDescription (VerbFormC *vf, char *buffer, int len);
 void getAbbrevDescription (VerbFormC *vf, char *buffer, int len);
+
+void getPrincipalPars(Verb *v, char *buffer, int len);
+
+char *getPrincipalPartForTense(Verb *verb, int tense, int voice);
 
 bool isVowel(UCS2 l);
 bool isLong(UCS2 l);
