@@ -19,8 +19,134 @@ Verb verbs[];
 @end
 
 @implementation DetailViewController
-
+@synthesize vocabBack, vocabFront;
 #pragma mark - Managing the detail item
+
+
+UIView *flipContainer;
+UIView *frontSideTest;
+UIView *backSideTest;
+//...
+-(void)turnUp
+{
+    flipContainer = self.view;
+    [backSideTest removeFromSuperview];
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.5];
+    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:flipContainer cache:YES];
+    [UIView setAnimationDuration:0.5];
+    CGAffineTransform transform = CGAffineTransformMakeScale(1, 1);
+    flipContainer.transform = transform;
+    [UIView commitAnimations];
+    [flipContainer addSubview:frontSideTest];
+}
+-(void)turnDown
+{
+    flipContainer = self.view;
+    [frontSideTest removeFromSuperview];
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.5];
+    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:flipContainer cache:YES];
+    [UIView setAnimationDuration:0.5];
+    CGAffineTransform transform = CGAffineTransformMakeScale(1, 1);
+    flipContainer.transform = transform;
+    [UIView commitAnimations];
+    [flipContainer addSubview:backSideTest];
+}
+
+-(void)loadAccents
+{
+    self.stemLabel.text = @"Accents";
+    self.stemLabel.hidden = false;
+    self.startTime = CACurrentMediaTime();
+}
+
+-(void)loadVocabulary
+{
+    CGRect screenBound = [[UIScreen mainScreen] bounds];
+    CGSize screenSize = screenBound.size;
+    NSString *font2 = @"HelveticaNeue";
+    NSString *font = @"NewAthenaUnicode";
+    
+    if (!frontSideTest)
+    {
+        NSLog(@"front");
+        frontSideTest = [[UIView alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, screenSize.height)];
+        
+        self.vocabFront = [[UILabel alloc] initWithFrame:CGRectMake(0, (screenSize.height/2)-30, screenSize.width, 60)];
+        vocabFront.textAlignment = NSTextAlignmentCenter;
+        vocabFront.font = [UIFont fontWithName:font size:28.0];
+        [frontSideTest addSubview:vocabFront];
+        [frontSideTest setBackgroundColor:[UIColor whiteColor]];
+    }
+    
+    if (!backSideTest)
+    {
+        backSideTest = [[UIView alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, screenSize.height)];
+        
+        self.vocabBack = [[UILabel alloc] initWithFrame:CGRectMake(0, (screenSize.height/2)-30, screenSize.width, 60)];
+        vocabBack.textAlignment = NSTextAlignmentCenter;
+        vocabBack.font = [UIFont fontWithName:font2 size:28.0];
+        [backSideTest addSubview:vocabBack];
+        [backSideTest setBackgroundColor:[UIColor whiteColor]];
+        [self.view addSubview:backSideTest];
+    }
+    
+    [vocabFront setText: @""];
+    [vocabBack setText: @""];
+    
+    NSError *error = nil;
+    NSManagedObjectContext *moc = [(AppDelegate*)[[UIApplication sharedApplication] delegate] managedObjectContext];
+    
+    NSEntityDescription *entityDescription = [NSEntityDescription
+                                              entityForName:@"Vocab" inManagedObjectContext:moc];
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:entityDescription];
+    
+    if ([self.levels count] > 0)
+    {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"hq IN %@", self.levels];
+        //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"hq > 0"];
+        [request setPredicate:predicate];
+    }
+    else
+    {
+        [request setPredicate:NULL];
+    }
+    
+    NSInteger count = [moc countForFetchRequest:request error:&error];
+    
+    NSLog(@"count: %ld", (long)count);
+    
+    if (count > 0)
+    {
+        // Set example predicate and sort orderings...
+        NSUInteger offsetStart = 0;
+        int randomNumber = arc4random() % count;
+        NSUInteger offset = offsetStart + randomNumber;
+        [request setFetchOffset:offset];
+        
+        [request setFetchLimit:1];
+        
+        NSArray *array = [moc executeFetchRequest:request error:&error];
+        
+        if (array == nil)
+        {
+            // Deal with error...
+            NSLog(@"Error: Def not found by id: %d.", 1);
+            return;
+        }
+        NSLog(@"here + %lu", (unsigned long)offset);
+        [vocabFront setText: [[array lastObject] valueForKey:@"word"]];
+        [vocabBack setText: [[array lastObject] valueForKey:@"def"]];
+    }
+    
+    [self turnUp];
+    
+    //self.stemLabel.text = @"Accents";
+    self.stemLabel.hidden = false;
+    self.startTime = CACurrentMediaTime();
+}
 
 -(void)setLevelArray: (NSMutableArray*)array
 {
@@ -54,6 +180,10 @@ Verb verbs[];
         {
             self.backLabel.hidden = false;
         }
+        else if (self.cardType == 5) //Vocab Training
+        {
+            [self turnDown];
+        }
         self.front = false;
         
         CFTimeInterval elapsedTime = CACurrentMediaTime() - self.startTime;
@@ -70,14 +200,16 @@ Verb verbs[];
 
 -(void) loadNext
 {
-    if (self.cardType == 2)
-        [self loadPrincipalPart];
-    else if (self.cardType == 1)
+    if (self.cardType == 1)
         [self loadEnding];
-    else if (self.cardType == 4)
-        [self loadMorphTraining];
+    else if (self.cardType == 2)
+        [self loadPrincipalPart];
     else if (self.cardType == 3)
         [self loadAccents];
+    else if (self.cardType == 4)
+        [self loadMorphTraining];
+    else if (self.cardType == 5)
+        [self loadVocabulary];
     
     self.front = true;
 }
@@ -326,12 +458,6 @@ Verb verbs[];
     NSLog(@"hq: %@", [[array lastObject] valueForKey:@"hq"]);
 }
 
--(void)loadAccents
-{
-    self.stemLabel.text = @"Accents";
-    self.stemLabel.hidden = false;
-    self.startTime = CACurrentMediaTime();
-}
 
 -(void) loadPrincipalPart
 {

@@ -22,6 +22,8 @@
 @property NSInteger cardType;
 @property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
 
+@property (strong, nonatomic) IBOutlet UILabel *vocabFront;
+@property (strong, nonatomic) IBOutlet UILabel *vocabBack;
 @property (weak, nonatomic) IBOutlet UILabel *stemLabel;
 @property (weak, nonatomic) IBOutlet UILabel *backLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;

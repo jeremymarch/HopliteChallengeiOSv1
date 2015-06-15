@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6252" systemVersion="14B25" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="1" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="14D136" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Endings" syncable="YES">
         <attribute name="fp" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="fs" optional="YES" attributeType="String" syncable="YES"/>
@@ -33,9 +33,17 @@
         <attribute name="present" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="verbclass" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
     </entity>
+    <entity name="Vocab" syncable="YES">
+        <attribute name="def" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="hq" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="note" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="word" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <elements>
         <element name="Endings" positionX="261" positionY="252" width="128" height="208"/>
         <element name="Menu" positionX="261" positionY="189" width="128" height="73"/>
         <element name="Verbs" positionX="261" positionY="207" width="128" height="210"/>
+        <element name="Vocab" positionX="261" positionY="306" width="128" height="120"/>
     </elements>
 </model>
