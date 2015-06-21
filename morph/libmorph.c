@@ -707,8 +707,13 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer)
             //if (!(vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == SUBJUNCTIVE))
             if (!wordIsAccented(&ucs2StemPlusEndingBuffer[stemStart], ucs2StemPlusEndingBufferLen))
             {
+                int isOpt = 0;
+                if (vf->mood == OPTATIVE)
+                    isOpt = 1;
+                else
+                    isOpt = 0;
                 //this is not the correct len to use here.  FIX!
-                accentRecessive(&ucs2StemPlusEndingBuffer[stemStart], &ucs2StemPlusEndingBufferLen, 0);
+                accentRecessive(&ucs2StemPlusEndingBuffer[stemStart], &ucs2StemPlusEndingBufferLen, isOpt);
             }
             
             ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = 0x002C;
@@ -724,13 +729,14 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer)
     return 1;
 }
 
-bool accentRecessive(UCS2 *tempUcs2String, int *len, int optative)
+bool accentRecessive(UCS2 *tempUcs2String, int *len, int isOptative)
 {
     //find syllable
     int i = 0;
     int vowelsAndDiphthongs = 0;
     int longUltima = false;
     int longPenult = false;
+    int consonants = 0;
     for ( i = *len - 1; i >= 0 ; i--) //start at end of word and work left
     {
         if (isVowel(tempUcs2String[i]))
@@ -749,9 +755,18 @@ bool accentRecessive(UCS2 *tempUcs2String, int *len, int optative)
                 if (vowelsAndDiphthongs == 1)
                 {
                     //treat αι as short except for optative ending
-                    if (tempUcs2String[i] == GREEK_SMALL_LETTER_IOTA && tempUcs2String[i - 1] == GREEK_SMALL_LETTER_ALPHA && !optative)                        longUltima = false;
+                    if (consonants == 0 && tempUcs2String[i] == GREEK_SMALL_LETTER_IOTA && tempUcs2String[i - 1] == GREEK_SMALL_LETTER_ALPHA && !isOptative)
+                    {
+                        longUltima = false;
+                    }
+                    else if (consonants == 0 && tempUcs2String[i] == GREEK_SMALL_LETTER_IOTA && tempUcs2String[i - 1] == GREEK_SMALL_LETTER_OMICRON && !isOptative)
+                    {
+                        longUltima = false;
+                    }
                     else
+                    {
                         longUltima = true;
+                    }
                 }
                 else if (vowelsAndDiphthongs == 2)
                 {
@@ -766,6 +781,10 @@ bool accentRecessive(UCS2 *tempUcs2String, int *len, int optative)
                 else if (vowelsAndDiphthongs == 2)
                     longPenult = true;
             }
+        }
+        else
+        {
+            consonants++;
         }
     }
     
