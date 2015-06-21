@@ -661,17 +661,20 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer)
 
     for (stem = 0; stem < numStems; stem++)
     {
-        //eliminate blaphthhsomai here
-        //if (vf->tense == FUTURE && vf->voice == PASSIVE && ) == blaphth
-        //    continue;
+        stemStart = stemStarts[stem];
+        stemLen = stemStarts[stem + 1] - stemStarts[stem] - 2;
+        //eliminate FUTURE PASSIVE blaphthhsomai here
+        //NB: accent is already stripped by now
+        int blaph[8] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_BETA, GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_PHI, GREEK_SMALL_LETTER_THETA, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
+        if (vf->tense == FUTURE && vf->voice == PASSIVE && stemLen == 8 && hasPrefix(&ucs2Stems[stemStart], 8, blaph, 8))
+        {
+            continue;
+        }
         
         for (ending = 0; ending < numEndings; ending++)
         {
             endingStart = endingStarts[ending];
             endingLen = endingStarts[ending + 1] - endingStarts[ending] - 2;
-            
-            stemStart = stemStarts[stem];
-            stemLen = stemStarts[stem + 1] - stemStarts[stem] - 2;
             
             //add stem to temp buffer
             for (i = stemStart; i < (stemStart + stemLen); i++)
@@ -680,13 +683,14 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer)
                 ucs2StemPlusEndingBufferLen++;
             }
             
-            stemStart = ucs2StemPlusEndingBufferLen - stemLen; //set to the index in ucs2StemPlusEndingBuffer
+            int stemStartInBuffer = ucs2StemPlusEndingBufferLen - stemLen; //set to the index in ucs2StemPlusEndingBuffer
+            int tempStemLen = stemLen;
             
-            stripEndingFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStart], &ucs2StemPlusEndingBufferLen, (int)vf->tense, (int)vf->voice);
+            stripEndingFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, (int)vf->tense, (int)vf->voice);
             
             if (vf->tense == IMPERFECT || vf->tense == PLUPERFECT)
             {
-                augmentStem(&ucs2StemPlusEndingBuffer[stemStart], &ucs2StemPlusEndingBufferLen);
+                augmentStem(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen);
             }
             
             //De-augment
@@ -698,27 +702,28 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer)
                 stripAccent(ucs2Present, &ucs2PresentLen);
                 int presentInitialLetter = ucs2Present[0];
                 
-                stripAugmentFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStart], &ucs2StemPlusEndingBufferLen, (int)vf->tense, (int)vf->voice, (int)vf->mood, presentInitialLetter);
+                stripAugmentFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, (int)vf->tense, (int)vf->voice, (int)vf->mood, presentInitialLetter);
             }
             
-            addEnding(vf, ucs2StemPlusEndingBuffer, &ucs2StemPlusEndingBufferLen, ucs2Endings, endingStart, (endingStart + endingLen));
+            addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, ucs2Endings, endingStart, (endingStart + endingLen));
             
-            //if ending does not already have an accent
-            //if (!(vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == SUBJUNCTIVE))
-            if (!wordIsAccented(&ucs2StemPlusEndingBuffer[stemStart], ucs2StemPlusEndingBufferLen))
+            //add accent, if word does not already have one
+            if (!wordIsAccented(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen))
             {
                 int isOpt = 0;
                 if (vf->mood == OPTATIVE)
                     isOpt = 1;
                 else
                     isOpt = 0;
-                //this is not the correct len to use here.  FIX!
-                accentRecessive(&ucs2StemPlusEndingBuffer[stemStart], &ucs2StemPlusEndingBufferLen, isOpt);
+                
+                accentRecessive(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, isOpt);
             }
             
-            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = 0x002C;
+            ucs2StemPlusEndingBufferLen += (tempStemLen - stemLen);
+            
+            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = 0x002C; //comma
             ucs2StemPlusEndingBufferLen++;
-            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = 0x0020;
+            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = 0x0020; //space
             ucs2StemPlusEndingBufferLen++;
         }
     }
