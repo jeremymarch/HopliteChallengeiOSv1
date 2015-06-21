@@ -20,7 +20,7 @@ char *getEnding(VerbFormC *vf, UCS2 *ending, int endingLen);
 void stripEndingFromPrincipalPart(UCS2 *stem, int *len, int tense, int voice);
 void augmentStem(UCS2 *ucs2, int *len);
 void stripAugmentFromPrincipalPart(UCS2 *ucs2, int *len, int tense, int voice, int mood, int presentStemInitial);
-void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int estart, int elen);
+void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen);
 bool accentRecessive(UCS2 *tempUcs2String, int *len, int optative);
 bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent);
 bool isContractedVerb(VerbFormC *vf, UCS2 *ucs2, int *len);
@@ -705,7 +705,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer)
                 stripAugmentFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, (int)vf->tense, (int)vf->voice, (int)vf->mood, presentInitialLetter);
             }
             
-            addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, ucs2Endings, endingStart, (endingStart + endingLen));
+            addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen);
             
             //add accent, if word does not already have one
             if (!wordIsAccented(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen))
@@ -903,7 +903,7 @@ bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent)
     return true;
 }
 
-void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int estart, int elen)
+void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
 {
     if ((vf->tense == PRESENT || vf->tense == IMPERFECT) && ucs2[*len - 1] == GREEK_SMALL_LETTER_ALPHA)
     {
@@ -1329,13 +1329,12 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int estart, in
     }
     
     int i = 0;
-    int j = estart;
+    int j = 0;
     for (i = *len; j < elen; i++, j++)
     {
         ucs2[i] = ending[j];
         ++(*len);
     }
-     
 }
 
 bool isContractedVerb(VerbFormC *vf, UCS2 *ucs2, int *len)
