@@ -661,6 +661,10 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer)
 
     for (stem = 0; stem < numStems; stem++)
     {
+        //eliminate blaphthhsomai here
+        //if (vf->tense == FUTURE && vf->voice == PASSIVE && ) == blaphth
+        //    continue;
+        
         for (ending = 0; ending < numEndings; ending++)
         {
             endingStart = endingStarts[ending];
@@ -703,6 +707,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer)
             //if (!(vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == SUBJUNCTIVE))
             if (!wordIsAccented(&ucs2StemPlusEndingBuffer[stemStart], ucs2StemPlusEndingBufferLen))
             {
+                //this is not the correct len to use here.  FIX!
                 accentRecessive(&ucs2StemPlusEndingBuffer[stemStart], &ucs2StemPlusEndingBufferLen, 0);
             }
             
@@ -876,19 +881,6 @@ bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent)
 
 void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int estart, int elen)
 {
-    /*
-    ucs2[(*len)] = GREEK_SMALL_LETTER_ALPHA;
-    ++(*len);
-    return;
-    int i;
-    int j = estart;
-    for (i = *len; j < elen; i++, j++)
-    {
-        ucs2[i] = ending[j];
-        ++(*len);
-    }
-    return;
-    */
     if ((vf->tense == PRESENT || vf->tense == IMPERFECT) && ucs2[*len - 1] == GREEK_SMALL_LETTER_ALPHA)
     {
         --(*len);
@@ -1266,9 +1258,8 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int estart, in
             }
             else if (vf->person == SECOND && vf->number == SINGULAR)
             {
-                ucs2[(*len)] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 2;
+                ucs2[(*len)] = GREEK_SMALL_LETTER_OMICRON;
+                (*len) += 1;
                 return;
             }
             else if (vf->person == THIRD && vf->number == SINGULAR)
