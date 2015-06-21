@@ -309,20 +309,40 @@ UIView *backSideTest;
     CGSize screenSize = screenBound.size;
     [self.stemLabel setFrame:CGRectMake(0, 0, screenSize.width, screenSize.height)];
 
+    //this should be done elsewhere
     int bufferLen = 1024;
     char buffer[bufferLen];
-
-    VerbFormC vf;
+    int units[20] = { 1,2,3,4,5,6,7,8,9,10,11 };
+    int numUnits = 11;
+    if ([self.levels count] > 0)
+    {
+        int i;
+        numUnits = 0;
+        for (i = 0; i < [self.levels count]; i++)
+        {
+            units[i] = [[self.levels objectAtIndex:i] integerValue];
+            numUnits++;
+        }
+    }
     
-    Verb *v = getRandomVerb();//&verbs[13];//
+    VerbFormC vf;
+    Verb *v = getRandomVerb(units, numUnits);//&verbs[13];//
     vf.verb = v;
     
-    generateForm(&vf);
-    getForm(&vf, buffer);
-    
+    //don't use dash for first verb form.
+    do
+    {
+        generateForm(&vf);
+        getForm(&vf, buffer);
+    } while (!strncmp(buffer, "—", 1));
+
     //NSLog(@"Verb: %s %i %i %i %i %i", v->present, vf.person, vf.number, vf.tense, vf. voice, vf.mood);
     
     NSString *origForm = [NSString stringWithUTF8String: (const char*)buffer];
+    NSArray *myWords = [origForm componentsSeparatedByString:@", "];
+    NSUInteger randomIndex = arc4random() % [myWords count];
+    
+    origForm = [myWords objectAtIndex:randomIndex];
 /*
     NSInteger i = [origForm rangeOfString:@","].location;
     if (i != NSNotFound)
@@ -339,10 +359,9 @@ UIView *backSideTest;
     //NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
     changeFormByDegrees(&vf, 2);
-    
     getForm(&vf, buffer);
     NSString *newForm = [NSString stringWithUTF8String: (const char*)buffer];
-    
+
     getAbbrevDescription(&vf, buffer, bufferLen);
     NSString *newDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
@@ -623,11 +642,11 @@ UIView *backSideTest;
     self.stemLabel.autoresizingMask = UIViewAutoresizingNone;
     self.backLabel.autoresizingMask = UIViewAutoresizingNone;
     //NSString *font = @"ArialMT";
-    NSString *font = @"HelveticaNeue";
+    //NSString *font = @"HelveticaNeue";
     //NSString *font = @"GillSans";
     //NSString *font = @"Kailasa";
     //NSString *font = @"ArialMT";
-    //NSString *font = @"NewAthenaUnicode";
+    NSString *font = @"NewAthenaUnicode";
     //self.stemLabel.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
     //self.backLabel.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
     

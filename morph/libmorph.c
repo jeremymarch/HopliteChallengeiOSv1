@@ -20,7 +20,7 @@ char *getEnding(VerbFormC *vf, UCS2 *ending, int endingLen);
 void stripEndingFromPrincipalPart(UCS2 *stem, int *len, int tense, int voice);
 void augmentStem(UCS2 *ucs2, int *len);
 void stripAugmentFromPrincipalPart(UCS2 *ucs2, int *len, int tense, int voice, int mood, int presentStemInitial);
-void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int *elen);
+void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int estart, int elen);
 bool accentRecessive(UCS2 *tempUcs2String, int *len, int optative);
 bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent);
 bool isContractedVerb(VerbFormC *vf, UCS2 *ucs2, int *len);
@@ -97,9 +97,25 @@ Ending endings[NUM_ENDINGS] = {
     { 0, 10, 0, 0, 0, "οίμην", "οῖο", "οῖτο", "οίμεθα", "οῖσθε", "οίντο" },   //pres mid/ass opt o
 };
 
-Verb *getRandomVerb()
+Verb *getRandomVerb(int *units, int numUnits)
 {
-    return &verbs[randWithMax(NUM_VERBS)];
+    int u, v;
+    int verbsToChooseFrom[NUM_VERBS];
+    int numVerbsToChooseFrom = 0;
+    for (v = 0; v < NUM_VERBS; v++)
+    {
+        for (u = 0; u < numUnits; u++)
+        {
+            if (verbs[v].hq == units[u])
+            {
+                verbsToChooseFrom[numVerbsToChooseFrom] = v;
+                numVerbsToChooseFrom++;
+                break;
+            }
+        }
+    }
+    int verb = randWithMax(numVerbsToChooseFrom);
+    return &verbs[ verbsToChooseFrom[verb] ];
 }
 
 void getPrincipalParts(Verb *v, char *buffer, int len)
@@ -583,51 +599,122 @@ long randWithMax(unsigned int max)
     */
 }
 
-int getForm(VerbFormC *vf, char *buffer)
+int getForm(VerbFormC *vf, char *utf8OutputBuffer)
 {
-    char *utf8Stem = getPrincipalPartForTense(vf->verb, vf->tense, vf->voice);
-    if (!utf8Stem || utf8Stem[0] == '\0')
+    char *utf8Stems = getPrincipalPartForTense(vf->verb, vf->tense, vf->voice);
+    if (!utf8Stems || utf8Stems[0] == '\0')
     {
-        buffer[0] = '\0'; //clear buffer
+        utf8OutputBuffer[0] = '\0'; //clear buffer
         return 0;
     }
-    UCS2 ucs2[(strlen(utf8Stem) * 3) + 1];
-    int len = 0;
-    utf8_to_ucs2_string((const unsigned char*)utf8Stem, ucs2, &len);
+    UCS2 ucs2Stems[(strlen(utf8Stems) * 3) + 1];
+    int ucs2StemsLen = 0;
+    utf8_to_ucs2_string((const unsigned char*)utf8Stems, ucs2Stems, &ucs2StemsLen);
     
-    stripAccent(ucs2, &len);
-    char *utf8Ending = getEnding(vf, ucs2, len); //get ending here before stripping from pp, so know if 2nd aorist
-    stripEndingFromPrincipalPart(ucs2, &len, (int)vf->tense, (int)vf->voice);
+    stripAccent(ucs2Stems, &ucs2StemsLen);
+    char *utf8Ending = getEnding(vf, ucs2Stems, ucs2StemsLen); //get ending here before stripping from pp, so know if 2nd aorist
     
-    if (vf->tense == IMPERFECT || vf->tense == PLUPERFECT)
+    UCS2 ucs2Endings[(strlen(utf8Ending) * 3) + 1];
+    int ucs2EndingsLen = 0;
+    utf8_to_ucs2_string((const unsigned char*)utf8Ending, ucs2Endings, &ucs2EndingsLen);
+    
+    //find out how many stems, then how many endings.  loop through stems adding each ending in an inner loop.
+    //accent each inside the loop
+    
+    int stemStarts[5] = { 0,0,0,0,0 };  //we leave space for up to five alternate stems
+    int numStems = 1;
+    int i;
+    for (i = 0; i < ucs2StemsLen; i++)
     {
-        augmentStem(ucs2, &len);
+        if (ucs2Stems[i] == 0x0020)//space, 002C == comma
+        {
+            stemStarts[numStems] = i + 1;
+            numStems++;
+        }
     }
+    stemStarts[numStems] = i + 2; //to get length of last stem. plus 2 to simulate a comma and space
     
-    //De-augment
-    if ( (vf->tense == AORIST && (vf->mood == SUBJUNCTIVE || vf->mood == OPTATIVE)) || (vf->tense == FUTURE && vf->voice == PASSIVE))
+    int endingStarts[5] = { 0,0,0,0,0 };  //we leave space for up to five alternate endings
+    int numEndings = 1;
+    for (i = 0; i < ucs2EndingsLen; i++)
     {
-        UCS2 ucs22[(strlen(vf->verb->present) * 2) + 1];
-        int len2 = 0;
-        utf8_to_ucs2_string((const unsigned char*)vf->verb->present, ucs22, &len2);
-        stripAccent(ucs22, &len2);
-        int presentInitialLetter = ucs22[0];
-        
-        stripAugmentFromPrincipalPart(ucs2, &len, (int)vf->tense, (int)vf->voice, (int)vf->mood, presentInitialLetter);
+        if (ucs2Endings[i] == 0x0020)//space, 002C == comma
+        {
+            endingStarts[numEndings] = i + 1;
+            numEndings++;
+        }
     }
+    endingStarts[numEndings] = i + 2; //to get length of last stem. plus 2 to simulate a comma and space
+    
+    int stem;
+    int ending;
+    int stemStart = 0;
+    int stemLen = 0;
+    int endingStart = 0;
+    int endingLen = 0;
+    int ucs2StemPlusEndingBuffer[1024];
+    //buffer needs to be cleared
+    for (i = 0; i < 1024; i++)
+        ucs2StemPlusEndingBuffer[i] = 0;
+    
+    int ucs2StemPlusEndingBufferLen = 0;
 
-    UCS2 ending[(strlen(utf8Ending) * 3) + 1];
-    int elen = 0;
-    utf8_to_ucs2_string((const unsigned char*)utf8Ending, ending, &elen);
+    for (stem = 0; stem < numStems; stem++)
+    {
+        for (ending = 0; ending < numEndings; ending++)
+        {
+            endingStart = endingStarts[ending];
+            endingLen = endingStarts[ending + 1] - endingStarts[ending] - 2;
+            
+            stemStart = stemStarts[stem];
+            stemLen = stemStarts[stem + 1] - stemStarts[stem] - 2;
+            
+            //add stem to temp buffer
+            for (i = stemStart; i < (stemStart + stemLen); i++)
+            {
+                ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = ucs2Stems[i];
+                ucs2StemPlusEndingBufferLen++;
+            }
+            
+            stemStart = ucs2StemPlusEndingBufferLen - stemLen; //set to the index in ucs2StemPlusEndingBuffer
+            
+            stripEndingFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStart], &ucs2StemPlusEndingBufferLen, (int)vf->tense, (int)vf->voice);
+            
+            if (vf->tense == IMPERFECT || vf->tense == PLUPERFECT)
+            {
+                augmentStem(&ucs2StemPlusEndingBuffer[stemStart], &ucs2StemPlusEndingBufferLen);
+            }
+            
+            //De-augment
+            if ( (vf->tense == AORIST && (vf->mood == SUBJUNCTIVE || vf->mood == OPTATIVE)) || (vf->tense == FUTURE && vf->voice == PASSIVE))
+            {
+                UCS2 ucs2Present[(strlen(vf->verb->present) * 2) + 1];
+                int ucs2PresentLen = 0;
+                utf8_to_ucs2_string((const unsigned char*)vf->verb->present, ucs2Present, &ucs2PresentLen);
+                stripAccent(ucs2Present, &ucs2PresentLen);
+                int presentInitialLetter = ucs2Present[0];
+                
+                stripAugmentFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStart], &ucs2StemPlusEndingBufferLen, (int)vf->tense, (int)vf->voice, (int)vf->mood, presentInitialLetter);
+            }
+            
+            addEnding(vf, ucs2StemPlusEndingBuffer, &ucs2StemPlusEndingBufferLen, ucs2Endings, endingStart, (endingStart + endingLen));
+            
+            //if ending does not already have an accent
+            //if (!(vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == SUBJUNCTIVE))
+            if (!wordIsAccented(&ucs2StemPlusEndingBuffer[stemStart], ucs2StemPlusEndingBufferLen))
+            {
+                accentRecessive(&ucs2StemPlusEndingBuffer[stemStart], &ucs2StemPlusEndingBufferLen, 0);
+            }
+            
+            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = 0x002C;
+            ucs2StemPlusEndingBufferLen++;
+            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = 0x0020;
+            ucs2StemPlusEndingBufferLen++;
+        }
+    }
+    ucs2StemPlusEndingBufferLen -= 2; //remove trailing comma and space.
     
-    addEnding(vf, ucs2, &len, ending, &elen);
-    
-    //if ending does not already have an accent
-    //if (!(vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == SUBJUNCTIVE))
-    if (!wordIsAccented(ucs2, len))
-        accentRecessive(ucs2, &len, 0);
-    
-    ucs2_to_utf8_string(ucs2, len, (unsigned char *)buffer);
+    ucs2_to_utf8_string(ucs2StemPlusEndingBuffer, ucs2StemPlusEndingBufferLen, (unsigned char *)utf8OutputBuffer);
     
     return 1;
 }
@@ -787,8 +874,21 @@ bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent)
     return true;
 }
 
-void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int *elen)
+void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int estart, int elen)
 {
+    /*
+    ucs2[(*len)] = GREEK_SMALL_LETTER_ALPHA;
+    ++(*len);
+    return;
+    int i;
+    int j = estart;
+    for (i = *len; j < elen; i++, j++)
+    {
+        ucs2[i] = ending[j];
+        ++(*len);
+    }
+    return;
+    */
     if ((vf->tense == PRESENT || vf->tense == IMPERFECT) && ucs2[*len - 1] == GREEK_SMALL_LETTER_ALPHA)
     {
         --(*len);
@@ -1214,12 +1314,13 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int *elen)
     }
     
     int i = 0;
-    int j = 0;
-    for (i = *len; j < *elen; i++, j++)
+    int j = estart;
+    for (i = *len; j < elen; i++, j++)
     {
         ucs2[i] = ending[j];
         ++(*len);
     }
+     
 }
 
 bool isContractedVerb(VerbFormC *vf, UCS2 *ucs2, int *len)

@@ -196,7 +196,7 @@ enum {
 
 int getForm(VerbFormC *vf, char *buffer);
 
-Verb *getRandomVerb();
+Verb *getRandomVerb(int *units, int numUnits);
 void changeFormByDegrees(VerbFormC *verbform, int degrees);
 void generateForm(VerbFormC *verbform);
 

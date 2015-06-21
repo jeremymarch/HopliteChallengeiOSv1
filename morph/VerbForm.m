@@ -345,10 +345,11 @@
 
 -(NSString*) getForm
 {
-    Verb *v = getRandomVerb();
+    NSLog(@"NOOOOOOOOOOOOOOOOOOOOOOOOOO");
+    //Verb *v = getRandomVerb();
     //NSString *temp = [NSString stringWithUTF8String: (const char*)v->present];
     VerbFormC vf;
-    vf.verb = v;
+    //vf.verb = v;
     generateForm(&vf);
     char utf8[1024];
     //NSLog(@"Verb: %s %i %i %i %i %i", v->present, vf.person, vf.number, vf.tense, vf. voice, vf.mood);
