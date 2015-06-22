@@ -75,6 +75,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.wantsFullScreenLayout = YES;
+    self.navigationController.navigationBar.translucent = YES;
     //[[NSBundle mainBundle] loadNibNamed:@"PopUp" owner:self options:nil];
     
 	// Do any additional setup after loading the view, typically from a nib.

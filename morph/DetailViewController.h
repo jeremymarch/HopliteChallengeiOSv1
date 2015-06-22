@@ -28,6 +28,12 @@
 @property (weak, nonatomic) IBOutlet UILabel *backLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 
+@property (weak, nonatomic) IBOutlet UIButton *correctButton;
+@property (weak, nonatomic) IBOutlet UIButton *incorrectButton;
+
+@property (weak, nonatomic) IBOutlet UILabel *origForm;
+@property (weak, nonatomic) IBOutlet UILabel *changedForm;
+
 @property (weak, nonatomic) IBOutlet UILabel *singLabel;
 @property (weak, nonatomic) IBOutlet UILabel *pluralLabel;
 

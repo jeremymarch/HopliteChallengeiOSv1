@@ -26,6 +26,7 @@ enum {
     CONSONANT_STEM_PERFECT_2, // πέπεμμαι
     CONSONANT_STEM_PERFECT_3, // πεφύλαγμαι
     CONSONANT_STEM_PERFECT_4, // κεκέλευσμαι
+    CONSONANT_STEM_PERFECT_5, // σῴζω one part is consonant stem, the other not, so check.
     CONTRACTED_FUTURE,
     MI_VERB
 };

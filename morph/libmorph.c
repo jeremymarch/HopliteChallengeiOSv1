@@ -1072,7 +1072,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
                 return;
             }
         }
-        else if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_4) //κεκέλευσμαι
+        else if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_4 || (vf->verb->verbclass == CONSONANT_STEM_PERFECT_5 &&  ucs2[(*len)-1] == GREEK_SMALL_LETTER_SIGMA)) //κεκέλευσμαι or σῴζω which is both consonant stem and not.
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
@@ -1270,7 +1270,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
                 return;
             }
         }
-        else if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_4) //κεκέλευσμαι
+        else if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_4 || (vf->verb->verbclass == CONSONANT_STEM_PERFECT_5 &&  ucs2[(*len)-1] == GREEK_SMALL_LETTER_SIGMA)) //κεκέλευσμαι or σῴζω which is both consonant stem and not.
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {

@@ -164,7 +164,7 @@ UIView *backSideTest;
             self.singLabel.hidden = true;
             self.pluralLabel.hidden = true;
         }
-        else if (self.cardType == 1) //Endings
+        else if (self.cardType == 3) //Endings
         {
             self.stemLabel.hidden = true;
             self.backLabel.hidden = true;
@@ -172,15 +172,18 @@ UIView *backSideTest;
             self.pluralLabel.hidden = false;
             
         }
-        else if (self.cardType == 3) //Accents
+        else if (self.cardType == 5) //Accents
         {
             
         }
-        else if (self.cardType == 4) //Morph Training
+        else if (self.cardType == 1) //Verbs
         {
-            self.backLabel.hidden = false;
+            //self.backLabel.hidden = false;
+            self.changedForm.hidden = false;
+            self.correctButton.hidden = false;
+            self.incorrectButton.hidden = false;
         }
-        else if (self.cardType == 5) //Vocab Training
+        else if (self.cardType == 6) //Vocab Training
         {
             [self turnDown];
         }
@@ -200,15 +203,15 @@ UIView *backSideTest;
 
 -(void) loadNext
 {
-    if (self.cardType == 1)
+    if (self.cardType == 3)
         [self loadEnding];
     else if (self.cardType == 2)
         [self loadPrincipalPart];
-    else if (self.cardType == 3)
-        [self loadAccents];
-    else if (self.cardType == 4)
-        [self loadMorphTraining];
     else if (self.cardType == 5)
+        [self loadAccents];
+    else if (self.cardType == 1)
+        [self loadMorphTraining];
+    else if (self.cardType == 4)
         [self loadVocabulary];
     
     self.front = true;
@@ -264,6 +267,10 @@ UIView *backSideTest;
     //[self printPPToNSLog];
     self.stemLabel.hidden = false;
     self.backLabel.hidden = true;
+    self.changedForm.hidden = true;
+    self.correctButton.hidden = true;
+    self.incorrectButton.hidden = true;
+    
     /*
     NSError *error = nil;
     NSManagedObjectContext *moc = [(AppDelegate*)[[UIApplication sharedApplication] delegate] managedObjectContext];
@@ -335,26 +342,13 @@ UIView *backSideTest;
         generateForm(&vf);
         getForm(&vf, buffer);
     } while (!strncmp(buffer, "—", 1));
-
-    //NSLog(@"Verb: %s %i %i %i %i %i", v->present, vf.person, vf.number, vf.tense, vf. voice, vf.mood);
     
     NSString *origForm = [NSString stringWithUTF8String: (const char*)buffer];
     NSArray *myWords = [origForm componentsSeparatedByString:@", "];
     NSUInteger randomIndex = arc4random() % [myWords count];
     
     origForm = [myWords objectAtIndex:randomIndex];
-/*
-    NSInteger i = [origForm rangeOfString:@","].location;
-    if (i != NSNotFound)
-    {
-        origForm = [origForm substringToIndex:[origForm rangeOfString:@","].location];
-    }
-    i = [origForm rangeOfString:@" "].location;
-    if (i != NSNotFound)
-    {
-        origForm = [origForm substringToIndex:[origForm rangeOfString:@" "].location];
-    }
-*/
+
     getAbbrevDescription(&vf, buffer, bufferLen);
     //NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
@@ -366,7 +360,10 @@ UIView *backSideTest;
     NSString *newDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
     //self.stemLabel.text = [NSString stringWithFormat:@"Change\n\n(%@)\n\n %@\n\nto\n\n%@\n\n%@", origDescription, origForm, newDescription, newForm];
-    self.stemLabel.text = [NSString stringWithFormat:@"%@\n\nto\n\n%@\n\n", origForm, newDescription];
+    self.origForm.text = origForm;
+    self.origForm.hidden = false;
+    self.changedForm.text = newForm;
+    self.stemLabel.text = [NSString stringWithFormat:@"to\n\n%@\n\n", newDescription];
     
     [self.backLabel setFrame:CGRectMake(20, (screenSize.height - 20)/2, screenSize.width - 40, 240.0)];
     self.backLabel.text = newForm;
@@ -521,6 +518,29 @@ UIView *backSideTest;
         return;
     }
     //NSLog(@"num results: %lu, count: %lu", (unsigned long)[array count], (unsigned long)count);
+    
+    /*
+     int bufferLen = 1024;
+     char buffer[bufferLen];
+     int units[20] = { 1,2,3,4,5,6,7,8,9,10,11 };
+     int numUnits = 11;
+     if ([self.levels count] > 0)
+     {
+     int i;
+     numUnits = 0;
+     for (i = 0; i < [self.levels count]; i++)
+     {
+     units[i] = [[self.levels objectAtIndex:i] integerValue];
+     numUnits++;
+     }
+     }
+     
+     Verb *v = getRandomVerb(units, numUnits);//&verbs[13];//
+     getPrincipalParts(v, buffer, bufferLen);
+     NSString *principalParts = [NSString stringWithUTF8String: (const char*)buffer];
+     
+     */
+    
     NSString *from = @", ";
     NSString *to = @" | "; // /, |, or
     //change , to /
@@ -642,13 +662,16 @@ UIView *backSideTest;
     self.stemLabel.autoresizingMask = UIViewAutoresizingNone;
     self.backLabel.autoresizingMask = UIViewAutoresizingNone;
     //NSString *font = @"ArialMT";
-    //NSString *font = @"HelveticaNeue";
+    NSString *font = @"HelveticaNeue";
     //NSString *font = @"GillSans";
     //NSString *font = @"Kailasa";
     //NSString *font = @"ArialMT";
-    NSString *font = @"NewAthenaUnicode";
+    //NSString *font = @"NewAthenaUnicode";
     //self.stemLabel.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
     //self.backLabel.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
+    
+    self.origForm.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
+    self.changedForm.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
     
     self.stemLabel.font = [UIFont fontWithName:font size:26.0];
     self.backLabel.font = [UIFont fontWithName:font size:26.0];
@@ -685,6 +708,10 @@ UIView *backSideTest;
     
     [self configureView];
     self.levels = [NSMutableArray arrayWithObjects: nil];
+    
+    self.wantsFullScreenLayout = YES;
+    self.view.frame = [[UIScreen mainScreen] bounds];
+    self.view.backgroundColor = [UIColor whiteColor];
     
     if (self.levels)
         [self.levels removeAllObjects];
