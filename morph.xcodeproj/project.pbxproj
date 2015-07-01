@@ -30,6 +30,10 @@
 		3F73EDD3189642DA003638C5 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDAB189642DA003638C5 /* CoreData.framework */; };
 		3F73EDDB189642DA003638C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3F73EDD9189642DA003638C5 /* InfoPlist.strings */; };
 		3F73EDDD189642DA003638C5 /* morphTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F73EDDC189642DA003638C5 /* morphTests.m */; };
+		3F8621C01B433E28002B5059 /* Ding.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621BF1B433E28002B5059 /* Ding.mp3 */; };
+		3F8621C21B433FAA002B5059 /* Buzz01.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C11B433FAA002B5059 /* Buzz01.wav */; };
+		3F8621C41B433FD7002B5059 /* Buzz02.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C31B433FD7002B5059 /* Buzz02.wav */; };
+		3F8621C61B433FE6002B5059 /* Ding.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C51B433FE6002B5059 /* Ding.wav */; };
 		3FAA4FF71A2A73C300D49487 /* Verbs.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FAA4FF61A2A73C300D49487 /* Verbs.m */; };
 		3FAA55461A2797C0003EFEDA /* PopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FAA55451A2797C0003EFEDA /* PopUp.m */; };
 		3FCEE6DA1ADE636500C550AD /* libmorph.c in Sources */ = {isa = PBXBuildFile; fileRef = 3FCEE6D81ADE636500C550AD /* libmorph.c */; };
@@ -76,6 +80,10 @@
 		3F73EDD8189642DA003638C5 /* morphTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "morphTests-Info.plist"; sourceTree = "<group>"; };
 		3F73EDDA189642DA003638C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3F73EDDC189642DA003638C5 /* morphTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = morphTests.m; sourceTree = "<group>"; };
+		3F8621BF1B433E28002B5059 /* Ding.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Ding.mp3; sourceTree = "<group>"; };
+		3F8621C11B433FAA002B5059 /* Buzz01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Buzz01.wav; sourceTree = "<group>"; };
+		3F8621C31B433FD7002B5059 /* Buzz02.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Buzz02.wav; sourceTree = "<group>"; };
+		3F8621C51B433FE6002B5059 /* Ding.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Ding.wav; sourceTree = "<group>"; };
 		3FAA4FF51A2A73C300D49487 /* Verbs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Verbs.h; sourceTree = "<group>"; };
 		3FAA4FF61A2A73C300D49487 /* Verbs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Verbs.m; sourceTree = "<group>"; };
 		3FAA55441A2797C0003EFEDA /* PopUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopUp.h; sourceTree = "<group>"; };
@@ -174,6 +182,10 @@
 		3F73EDAE189642DA003638C5 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				3F8621BF1B433E28002B5059 /* Ding.mp3 */,
+				3F8621C51B433FE6002B5059 /* Ding.wav */,
+				3F8621C11B433FAA002B5059 /* Buzz01.wav */,
+				3F8621C31B433FD7002B5059 /* Buzz02.wav */,
 				3F296BCB1956A79C00B4CE78 /* newathu405.ttf */,
 				3F296BC919566A2E00B4CE78 /* morph.sqlite */,
 				3F73EDAF189642DA003638C5 /* morph-Info.plist */,
@@ -283,10 +295,14 @@
 			files = (
 				3F73EDBE189642DA003638C5 /* Main_iPad.storyboard in Resources */,
 				3F296BCC1956A79C00B4CE78 /* newathu405.ttf in Resources */,
+				3F8621C21B433FAA002B5059 /* Buzz01.wav in Resources */,
 				3F73EDC9189642DA003638C5 /* Images.xcassets in Resources */,
 				3F296BCA19566A2E00B4CE78 /* morph.sqlite in Resources */,
+				3F8621C41B433FD7002B5059 /* Buzz02.wav in Resources */,
+				3F8621C61B433FE6002B5059 /* Ding.wav in Resources */,
 				3F73EDBB189642DA003638C5 /* Main_iPhone.storyboard in Resources */,
 				3F73EDB2189642DA003638C5 /* InfoPlist.strings in Resources */,
+				3F8621C01B433E28002B5059 /* Ding.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

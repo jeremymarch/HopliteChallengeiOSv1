@@ -250,6 +250,11 @@ bool letterIsAccented(UCS2 letter)
     return false;
 }
 
+void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors, char *buffer)
+{
+    
+}
+
 char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen)
 {
     int secondAorist[2] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_NU };
@@ -663,6 +668,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer)
     {
         stemStart = stemStarts[stem];
         stemLen = stemStarts[stem + 1] - stemStarts[stem] - 2;
+        
         //eliminate FUTURE PASSIVE blaphthhsomai here
         //NB: accent is already stripped by now
         int blaph[8] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_BETA, GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_PHI, GREEK_SMALL_LETTER_THETA, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };

@@ -168,12 +168,14 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"did select");
      NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         self.detailViewController.detailItem = object;
         
         [self.detailViewController setLevelArray: self.popup.buttonStates];
+        [self.detailViewController configureView];
     }
     
     /*

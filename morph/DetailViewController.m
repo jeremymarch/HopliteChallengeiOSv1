@@ -10,11 +10,15 @@
 #import "DetailViewController.h"
 #import "VerbForm.h"
 #import "libmorph.h"
+#import <AudioToolbox/AudioToolbox.h>
 
 Verb verbs[];
+SystemSoundID DingSound;
+SystemSoundID BuzzSound;
 
 @interface DetailViewController ()
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
+
 - (void)configureView;
 @end
 
@@ -179,11 +183,21 @@ UIView *backSideTest;
         else if (self.cardType == 1) //Verbs
         {
             //self.backLabel.hidden = false;
-            self.changedForm.hidden = false;
-            self.correctButton.hidden = false;
-            self.incorrectButton.hidden = false;
+            if (self.verbQuestionType != MULTIPLE_CHOICE)
+            {
+                self.changedForm.hidden = NO;
+            }
+            if (self.verbQuestionType == PRACTICE)
+            {
+                self.correctButton.hidden = NO;
+                self.incorrectButton.hidden = NO;
+            }
+            if (self.verbQuestionType == MULTIPLE_CHOICE)
+            {
+                return;
+            }
         }
-        else if (self.cardType == 6) //Vocab Training
+        else if (self.cardType == 4) //Vocab Training
         {
             [self turnDown];
         }
@@ -195,6 +209,10 @@ UIView *backSideTest;
     }
     else //load new card
     {
+        if (self.cardType == 1 && self.verbQuestionType == PRACTICE)
+        {
+            return;
+        }
         [self loadNext];
         self.front = true;
         self.timeLabel.hidden = true;
@@ -264,62 +282,80 @@ UIView *backSideTest;
 
 -(void) loadMorphTraining
 {
-    //[self printPPToNSLog];
-    self.stemLabel.hidden = false;
-    self.backLabel.hidden = true;
-    self.changedForm.hidden = true;
-    self.correctButton.hidden = true;
-    self.incorrectButton.hidden = true;
-    
-    /*
-    NSError *error = nil;
-    NSManagedObjectContext *moc = [(AppDelegate*)[[UIApplication sharedApplication] delegate] managedObjectContext];
-    
-    NSEntityDescription *entityDescription = [NSEntityDescription
-                                              entityForName:@"Verbs" inManagedObjectContext:moc];
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:entityDescription];
-    
-    if ([self.levels count] > 0)
-    {
-        //NSLog(@"%@", self.levels);
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"hq IN %@", self.levels];
-        //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"hq > 0"];
-        [request setPredicate:predicate];
-    }
-    else
-    {
-        [request setPredicate:NULL];
-    }
-    
-    NSInteger count = [moc countForFetchRequest:request error:&error];
-    
-    //NSLog(@"count: %ld", (long)count);
-    
-    // Set example predicate and sort orderings...
-    NSUInteger offsetStart = 0;
-    int randomNumber = arc4random() % count;
-    NSUInteger offset = offsetStart + randomNumber;
-    [request setFetchOffset:offset];
-    [request setFetchLimit:1];
-    
-    NSArray *array = [moc executeFetchRequest:request error:&error];
-    
-    if (array == nil)
-    {
-        // Deal with error...
-        NSLog(@"Error: Def not found by id: %d.", 1);
-        return;
-    }
-    */
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
-    [self.stemLabel setFrame:CGRectMake(0, 0, screenSize.width, screenSize.height)];
+    
+    //[self printPPToNSLog];
+    self.stemLabel.hidden = NO;
+    self.backLabel.hidden = YES;
+    self.changedForm.hidden = YES;
+    
+    self.correctButton.hidden = YES;
+    self.incorrectButton.hidden = YES;
+
+    if (self.verbQuestionType == PRACTICE)
+    {
+        [self.correctButton.layer setMasksToBounds:YES];
+        self.correctButton.layer.borderWidth = 2.0f;
+        self.correctButton.layer.borderColor = [UIColor blackColor].CGColor;
+        
+        [self.incorrectButton.layer setMasksToBounds:YES];
+        self.incorrectButton.layer.borderWidth = 2.0f;
+        self.incorrectButton.layer.borderColor = [UIColor blackColor].CGColor;
+        
+        self.MCButtonA.hidden = YES;
+        self.MCButtonB.hidden = YES;
+        self.MCButtonC.hidden = YES;
+        self.MCButtonD.hidden = YES;
+        [self.stemLabel setFrame:CGRectMake(0, (screenSize.height - 240)/2, self.view.frame.size.width, 240.0)];
+    }
+    else if (self.verbQuestionType == MULTIPLE_CHOICE)
+    {
+        NSInteger sidePadding = 9;
+        NSInteger verticalPadding = 9;
+        NSInteger mcHeight = 58;
+        
+        NSLog(@"Width: %f, %f", screenSize.width, self.view.frame.size.width);
+        NSInteger mcWidth = self.view.frame.size.width - (sidePadding * 2); //was screenSize.width
+        NSInteger topStart = 270;
+        double cornerRadius = mcHeight / 2.2;
+        float borderWidth = 4.0f;
+        UIColor *borderColor = [UIColor blackColor];
+        UIColor *textColor = [UIColor blackColor];
+        UIColor *backgroundColor = [UIColor whiteColor];
+        
+        for (NSInteger i = self.mcButtonsOrder.count - 1; i > 0; i--)
+        {
+            [self.mcButtonsOrder exchangeObjectAtIndex:i withObjectAtIndex:arc4random_uniform(i+1)];
+        }
+        
+        NSInteger i = 0;
+        
+        for (UIButton *mcButton in self.mcButtons)
+        {
+            NSInteger n = [[self.mcButtonsOrder objectAtIndex:i] integerValue];
+            
+            [mcButton.layer setMasksToBounds:YES];
+            mcButton.layer.borderWidth = borderWidth;
+            mcButton.layer.borderColor = borderColor.CGColor;
+            mcButton.layer.cornerRadius = cornerRadius;
+            [mcButton setTitleColor:textColor forState:UIControlStateNormal];
+            mcButton.backgroundColor = backgroundColor;
+
+            [mcButton setFrame:CGRectMake(sidePadding, topStart + ((mcHeight + verticalPadding) * n), mcWidth, mcHeight)];
+
+            i++;
+        }
+
+        self.stemLabel.layer.borderWidth = 0.0;
+        [self.stemLabel setFrame:CGRectMake(0, 140, self.view.frame.size.width, 100.0)];
+        [self.origForm setFrame:CGRectMake(0, 80, self.view.frame.size.width, 50.0)];
+    }
 
     //this should be done elsewhere
     int bufferLen = 1024;
     char buffer[bufferLen];
-    int units[20] = { 1,2,3,4,5,6,7,8,9,10,11 };
+    NSInteger units[20] = { 1,2,3,4,5,6,7,8,9,10,11 };
     int numUnits = 11;
     if ([self.levels count] > 0)
     {
@@ -355,23 +391,62 @@ UIView *backSideTest;
     changeFormByDegrees(&vf, 2);
     getForm(&vf, buffer);
     NSString *newForm = [NSString stringWithUTF8String: (const char*)buffer];
-
     getAbbrevDescription(&vf, buffer, bufferLen);
     NSString *newDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
+    if (self.verbQuestionType == MULTIPLE_CHOICE)
+    {
+        //stops pause when updating button text
+        //http://stackoverflow.com/questions/18946490/how-to-stop-unwanted-uibutton-animation-on-title-change
+        [UIView setAnimationsEnabled:NO];
+
+        [self.MCButtonA setTitle:newForm forState:UIControlStateNormal];
+        [self.MCButtonA setTitle:newForm forState:UIControlStateSelected];
+        
+        changeFormByDegrees(&vf, 1);
+        getForm(&vf, buffer);
+        NSString *mc1 = [NSString stringWithUTF8String: (const char*)buffer];
+ 
+        [self.MCButtonB setTitle:mc1 forState:UIControlStateNormal];
+        [self.MCButtonB setTitle:mc1 forState:UIControlStateSelected];
+        
+        changeFormByDegrees(&vf, 1);
+        getForm(&vf, buffer);
+        NSString *mc2 = [NSString stringWithUTF8String: (const char*)buffer];
+        
+        [self.MCButtonC setTitle:mc2 forState:UIControlStateNormal];
+        [self.MCButtonC setTitle:mc2 forState:UIControlStateSelected];
+        
+        changeFormByDegrees(&vf, 1);
+        getForm(&vf, buffer);
+        NSString *mc3 = [NSString stringWithUTF8String: (const char*)buffer];
+        
+        [self.MCButtonD setTitle:mc3 forState:UIControlStateNormal];
+        [self.MCButtonD setTitle:mc3 forState:UIControlStateSelected];
+        
+        [UIView setAnimationsEnabled:NO]; //re-enables view animation
+        
+        self.MCButtonA.hidden = NO;
+        self.MCButtonB.hidden = NO;
+        self.MCButtonC.hidden = NO;
+        self.MCButtonD.hidden = NO;
+    }
+    
     //self.stemLabel.text = [NSString stringWithFormat:@"Change\n\n(%@)\n\n %@\n\nto\n\n%@\n\n%@", origDescription, origForm, newDescription, newForm];
     self.origForm.text = origForm;
-    self.origForm.hidden = false;
-    self.changedForm.text = newForm;
-    self.stemLabel.text = [NSString stringWithFormat:@"to\n\n%@\n\n", newDescription];
+    self.origForm.hidden = NO;
+    self.stemLabel.text = [NSString stringWithFormat:@"to\n\n%@", newDescription];
     
-    [self.backLabel setFrame:CGRectMake(20, (screenSize.height - 20)/2, screenSize.width - 40, 240.0)];
-    self.backLabel.text = newForm;
-    
-    [self.stemLabel sizeToFit];
-    [self.stemLabel setCenter:self.view.center];
-    
-    self.stemLabel.hidden = false;
+    if (self.verbQuestionType == PRACTICE)
+    {
+        //[self.stemLabel setCenter:self.view.center];
+        [self.stemLabel setFrame:CGRectMake(0, 70, self.view.frame.size.width, 240.0)];
+        self.stemLabel.textAlignment = NSTextAlignmentCenter;
+        //[self.stemLabel sizeToFit];
+        [self.changedForm setFrame:CGRectMake(0, 200, self.view.frame.size.width, 240.0)];
+        self.changedForm.text = newForm;
+    }
+    self.stemLabel.hidden = NO;
     self.startTime = CACurrentMediaTime();
 }
 
@@ -648,6 +723,8 @@ UIView *backSideTest;
         self.detailDescriptionLabel.text = [[self.detailItem valueForKey:@"item"] description];
     }
     */
+
+    self.cardType = 1;
     self.cardType = [[self.detailItem  valueForKey:@"sort"] integerValue];
     
     self.backLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -658,13 +735,10 @@ UIView *backSideTest;
     self.singLabel.numberOfLines = 0;
     self.pluralLabel.numberOfLines = 0;
     
-    
-    self.stemLabel.autoresizingMask = UIViewAutoresizingNone;
-    self.backLabel.autoresizingMask = UIViewAutoresizingNone;
     //NSString *font = @"ArialMT";
     NSString *font = @"HelveticaNeue";
     //NSString *font = @"GillSans";
-    //NSString *font = @"Kailasa";
+    ///Users/jeremy/Dropbox/Code/cocoa/morphv5/morph/DetailViewController.mNSString *font = @"Kailasa";
     //NSString *font = @"ArialMT";
     //NSString *font = @"NewAthenaUnicode";
     //self.stemLabel.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
@@ -672,6 +746,11 @@ UIView *backSideTest;
     
     self.origForm.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
     self.changedForm.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
+    
+    self.MCButtonA.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
+    self.MCButtonB.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
+    self.MCButtonC.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
+    self.MCButtonD.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
     
     self.stemLabel.font = [UIFont fontWithName:font size:26.0];
     self.backLabel.font = [UIFont fontWithName:font size:26.0];
@@ -681,6 +760,7 @@ UIView *backSideTest;
     
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
+    
     if ( [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait )
     {
         [self.stemLabel setFrame:CGRectMake(20, (screenSize.height - 240)/2, screenSize.width - 40, 240.0)];
@@ -698,20 +778,198 @@ UIView *backSideTest;
         [self.pluralLabel setFrame:CGRectMake((screenSize.height * 2/3) - 50,50
                                               ,  screenSize.height - 40, 240.0)];
     }
+    [self loadNext];
+}
+
+- (BOOL)prefersStatusBarHidden {
+    //http://stackoverflow.com/questions/18979837/how-to-hide-ios-7-status-bar
+    return YES;
+}
+
+-(void) onSelectIncorrectMC:(UIButton *)sender
+{
+    if (self.front)
+    {
+        if (self.verbQuestionType == MULTIPLE_CHOICE)
+        {
+            AudioServicesPlaySystemSound(BuzzSound);
+            
+            if (self.backgroundOrBorder)
+            {
+                sender.backgroundColor = [UIColor redColor];
+                [sender setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                self.MCButtonA.backgroundColor = [UIColor greenColor];
+                [self.MCButtonA setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            }
+            else
+            {
+                sender.layer.borderColor = [UIColor redColor].CGColor;
+                self.MCButtonA.layer.borderColor = [UIColor greenColor].CGColor;
+            }
+        }
+        self.front = false;
+        
+        CFTimeInterval elapsedTime = CACurrentMediaTime() - self.startTime;
+        self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
+        self.timeLabel.hidden = false;
+    }
+    else
+    {
+        if (self.verbQuestionType == PRACTICE)
+        {
+            AudioServicesPlaySystemSound(BuzzSound);
+        }
+
+        [self loadNext];
+        self.front = true;
+        self.timeLabel.hidden = true;
+    }
+}
+
+-(void) onSelectCorrectMC:(UIButton *)sender
+{
+    if (self.front)
+    {
+        if (self.verbQuestionType == MULTIPLE_CHOICE)
+        {
+            AudioServicesPlaySystemSound(DingSound);
+            
+            if (self.backgroundOrBorder)
+            {
+                sender.backgroundColor = [UIColor greenColor];
+                [sender setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            }
+            else
+            {
+                sender.layer.borderColor = [UIColor greenColor].CGColor;
+            }
+        }
+        self.front = false;
+        
+        CFTimeInterval elapsedTime = CACurrentMediaTime() - self.startTime;
+        self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
+        self.timeLabel.hidden = false;
+    }
+    else
+    {
+        if (self.verbQuestionType == PRACTICE)
+        {
+            AudioServicesPlaySystemSound(DingSound);
+        }
+        
+        [self loadNext];
+        self.front = true;
+        self.timeLabel.hidden = true;
+    }
+}
+
+- (void)returnToRoot:(UIButton *)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self.navigationController setNavigationBarHidden:NO];
+}
+
+- (void)toggleVerbMode :(UIButton *)sender
+{
+    if (self.verbQuestionType == PRACTICE)
+        self.verbQuestionType = MULTIPLE_CHOICE;
+    else if (self.verbQuestionType == MULTIPLE_CHOICE)
+        self.verbQuestionType = PRACTICE;
+    
+    [self loadNext];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-	// Do any additional setup after loading the view, typically from a nib.
+    CGRect screenBound = [[UIScreen mainScreen] bounds];
+    CGSize screenSize = screenBound.size;
     
-    [self configureView];
-    self.levels = [NSMutableArray arrayWithObjects: nil];
-    
+    [[UIApplication sharedApplication] setStatusBarHidden:YES
+                                            withAnimation:NO];
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
     self.wantsFullScreenLayout = YES;
     self.view.frame = [[UIScreen mainScreen] bounds];
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    self.backgroundOrBorder = YES;
+
+    NSString *dingPath = [[NSBundle mainBundle]
+                            pathForResource:@"Ding" ofType:@"wav"];
+    NSURL *dingURL = [NSURL fileURLWithPath:dingPath];
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef)dingURL, &DingSound);
+    
+    NSString *buzzPath = [[NSBundle mainBundle]
+                          pathForResource:@"Buzz02" ofType:@"wav"];
+    NSURL *buzzURL = [NSURL fileURLWithPath:buzzPath];
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef)buzzURL, &BuzzSound);
+    
+	// Do any additional setup after loading the view, typically from a nib.
+    
+    self.verbQuestionType = MULTIPLE_CHOICE;//PRACTICE;  //
+
+    self.levels = [NSMutableArray arrayWithObjects: nil];
+    
+    self.mcButtons = [NSArray arrayWithObjects: self.MCButtonA, self.MCButtonB, self.MCButtonC, self.MCButtonD, nil];
+    self.mcButtonsOrder = [NSMutableArray arrayWithObjects: [NSNumber numberWithInt:0], [NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
+    
+    for (UIButton *mcButton in self.mcButtons)
+    {
+        if (mcButton == self.MCButtonA)
+        {
+            [mcButton addTarget:self
+                         action:@selector(onSelectCorrectMC:)
+               forControlEvents:UIControlEventTouchDown];
+        }
+        else
+        {
+            [mcButton addTarget:self
+                   action:@selector(onSelectIncorrectMC:)
+         forControlEvents:UIControlEventTouchDown];
+        }
+        mcButton.hidden = YES;
+    }
+
+    [self.incorrectButton addTarget:self
+                 action:@selector(onSelectIncorrectMC:)
+       forControlEvents:UIControlEventTouchDown];
+    
+    [self.correctButton addTarget:self
+                 action:@selector(onSelectCorrectMC:)
+       forControlEvents:UIControlEventTouchDown];
+    
+    [self.menuButton setFrame:CGRectMake(6, 6, 60, 36.0)];
+    [self.menuButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+    self.menuButton.layer.borderColor = [UIColor grayColor].CGColor;
+    self.menuButton.layer.borderWidth = 2.0f;
+    self.menuButton.layer.cornerRadius = 8;
+    [self.menuButton addTarget:self
+                 action:@selector(returnToRoot:)
+       forControlEvents:UIControlEventTouchDown];
+    
+    NSLog(@"ipad width: %f", self.view.bounds.size.width);
+    [self.verbModeButton setFrame:CGRectMake(self.view.frame.size.width - 500, 6, 60, 36.0)];
+    [self.verbModeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+    self.verbModeButton.layer.borderColor = [UIColor grayColor].CGColor;
+    self.verbModeButton.layer.borderWidth = 2.0f;
+    self.verbModeButton.layer.cornerRadius = 8;
+    [self.verbModeButton addTarget:self
+                        action:@selector(toggleVerbMode:)
+              forControlEvents:UIControlEventTouchDown];
     
     if (self.levels)
         [self.levels removeAllObjects];
@@ -724,10 +982,9 @@ UIView *backSideTest;
         }
     }
     
-    //[self.levels addObjectsFromArray:[[NSArray alloc] initWithObjects: [NSNumber numberWithInt:4], [NSNumber numberWithInt:5],  nil]];
-    //NSLog(@"levels: %ld", [self.levels count]);
+    [self configureView];
     
-    [self loadNext];
+    NSLog(@"View Did load");
 }
 
 - (void)didReceiveMemoryWarning

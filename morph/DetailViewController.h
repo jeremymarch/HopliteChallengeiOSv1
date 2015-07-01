@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+enum {
+    PRACTICE = 0,
+    MULTIPLE_CHOICE,
+    TOURNAMENT
+};
+
 @interface DetailViewController : UIViewController <UISplitViewControllerDelegate>
 
 @property (strong, nonatomic) id detailItem;
@@ -19,7 +25,14 @@
 @property NSString *backCard;
 @property CFTimeInterval startTime;
 @property NSInteger menuItem;
+
+@property NSInteger DingId;
+
 @property NSInteger cardType;
+@property NSInteger verbQuestionType;
+@property NSArray *mcButtons;
+@property BOOL backgroundOrBorder;
+@property NSMutableArray *mcButtonsOrder;
 @property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
 
 @property (strong, nonatomic) IBOutlet UILabel *vocabFront;
@@ -28,8 +41,16 @@
 @property (weak, nonatomic) IBOutlet UILabel *backLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 
+@property (weak, nonatomic) IBOutlet UIButton *menuButton;
+@property (weak, nonatomic) IBOutlet UIButton *verbModeButton;
+
 @property (weak, nonatomic) IBOutlet UIButton *correctButton;
 @property (weak, nonatomic) IBOutlet UIButton *incorrectButton;
+
+@property (weak, nonatomic) IBOutlet UIButton *MCButtonA;
+@property (weak, nonatomic) IBOutlet UIButton *MCButtonB;
+@property (weak, nonatomic) IBOutlet UIButton *MCButtonC;
+@property (weak, nonatomic) IBOutlet UIButton *MCButtonD;
 
 @property (weak, nonatomic) IBOutlet UILabel *origForm;
 @property (weak, nonatomic) IBOutlet UILabel *changedForm;
@@ -38,4 +59,5 @@
 @property (weak, nonatomic) IBOutlet UILabel *pluralLabel;
 
 -(void)setLevelArray: (NSMutableArray*)array;
+- (void)configureView;
 @end
