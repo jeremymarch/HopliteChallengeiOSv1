@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "keyboard.h"
 
 enum {
     PRACTICE = 0,
@@ -25,9 +26,11 @@ enum {
 @property NSString *backCard;
 @property CFTimeInterval startTime;
 @property NSInteger menuItem;
+@property (nonatomic, retain) Keyboard *keyboard;
+@property (strong, nonatomic) IBOutlet UITextField *textfield;
 
-@property NSInteger DingId;
-
+@property NSString *greekFont;
+@property NSString *systemFont;
 @property NSInteger cardType;
 @property NSInteger verbQuestionType;
 @property NSArray *mcButtons;

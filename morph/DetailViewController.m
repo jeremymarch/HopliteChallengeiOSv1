@@ -10,9 +10,10 @@
 #import "DetailViewController.h"
 #import "VerbForm.h"
 #import "libmorph.h"
+#import "GreekForms.h"
 #import <AudioToolbox/AudioToolbox.h>
 
-Verb verbs[];
+
 SystemSoundID DingSound;
 SystemSoundID BuzzSound;
 
@@ -69,17 +70,14 @@ UIView *backSideTest;
 {
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
-    NSString *font2 = @"HelveticaNeue";
-    NSString *font = @"NewAthenaUnicode";
     
     if (!frontSideTest)
     {
-        NSLog(@"front");
         frontSideTest = [[UIView alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, screenSize.height)];
         
         self.vocabFront = [[UILabel alloc] initWithFrame:CGRectMake(0, (screenSize.height/2)-30, screenSize.width, 60)];
         vocabFront.textAlignment = NSTextAlignmentCenter;
-        vocabFront.font = [UIFont fontWithName:font size:28.0];
+        vocabFront.font = [UIFont fontWithName:self.greekFont size:28.0];
         [frontSideTest addSubview:vocabFront];
         [frontSideTest setBackgroundColor:[UIColor whiteColor]];
     }
@@ -90,7 +88,7 @@ UIView *backSideTest;
         
         self.vocabBack = [[UILabel alloc] initWithFrame:CGRectMake(0, (screenSize.height/2)-30, screenSize.width, 60)];
         vocabBack.textAlignment = NSTextAlignmentCenter;
-        vocabBack.font = [UIFont fontWithName:font2 size:28.0];
+        vocabBack.font = [UIFont fontWithName:self.systemFont size:28.0];
         [backSideTest addSubview:vocabBack];
         [backSideTest setBackgroundColor:[UIColor whiteColor]];
         [self.view addSubview:backSideTest];
@@ -245,6 +243,7 @@ UIView *backSideTest;
     return form;
 }
 
+/*
 -(void)printPPToNSLog
 {
     NSError *error = nil;
@@ -279,11 +278,23 @@ UIView *backSideTest;
     }
     NSLog(@"%@", s);
 }
+*/
+
+//works even if only one.
+-(NSString*)selectRandomFromCSV:(NSString *)str
+{
+    NSArray *myArr = [str componentsSeparatedByString:@", "];
+    NSUInteger randomIndex = arc4random() % [myArr count];
+    
+    return [myArr objectAtIndex:randomIndex];
+}
 
 -(void) loadMorphTraining
 {
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
+    
+    [self.verbModeButton setFrame:CGRectMake(self.view.frame.size.width - 60 - 6, 6, 60, 36.0)];
     
     //[self printPPToNSLog];
     self.stemLabel.hidden = NO;
@@ -315,9 +326,8 @@ UIView *backSideTest;
         NSInteger verticalPadding = 9;
         NSInteger mcHeight = 58;
         
-        NSLog(@"Width: %f, %f", screenSize.width, self.view.frame.size.width);
         NSInteger mcWidth = self.view.frame.size.width - (sidePadding * 2); //was screenSize.width
-        NSInteger topStart = 270;
+        NSInteger topStart = self.view.frame.size.height - (4*mcHeight) - (4*verticalPadding);//270;
         double cornerRadius = mcHeight / 2.2;
         float borderWidth = 4.0f;
         UIColor *borderColor = [UIColor blackColor];
@@ -380,10 +390,7 @@ UIView *backSideTest;
     } while (!strncmp(buffer, "—", 1));
     
     NSString *origForm = [NSString stringWithUTF8String: (const char*)buffer];
-    NSArray *myWords = [origForm componentsSeparatedByString:@", "];
-    NSUInteger randomIndex = arc4random() % [myWords count];
-    
-    origForm = [myWords objectAtIndex:randomIndex];
+    origForm = [self selectRandomFromCSV:origForm];
 
     getAbbrevDescription(&vf, buffer, bufferLen);
     //NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
@@ -398,31 +405,36 @@ UIView *backSideTest;
     {
         //stops pause when updating button text
         //http://stackoverflow.com/questions/18946490/how-to-stop-unwanted-uibutton-animation-on-title-change
+        
+        getDistractorsForChange(&vf, &vf, 3, buffer);
+        NSString *distractors = [NSString stringWithUTF8String: (const char*)buffer];
+        NSArray *distractorArr = [distractors componentsSeparatedByString:@"; "];
+        
         [UIView setAnimationsEnabled:NO];
-
+        newForm = [self selectRandomFromCSV:newForm];
         [self.MCButtonA setTitle:newForm forState:UIControlStateNormal];
         [self.MCButtonA setTitle:newForm forState:UIControlStateSelected];
         
-        changeFormByDegrees(&vf, 1);
-        getForm(&vf, buffer);
-        NSString *mc1 = [NSString stringWithUTF8String: (const char*)buffer];
- 
-        [self.MCButtonB setTitle:mc1 forState:UIControlStateNormal];
-        [self.MCButtonB setTitle:mc1 forState:UIControlStateSelected];
+        //changeFormByDegrees(&vf, 1);
+        //getForm(&vf, buffer);
+        //NSString *mc1 = [NSString stringWithUTF8String: (const char*)buffer];
+        //mc1 = [self selectRandomFromCSV:mc1];
+        [self.MCButtonB setTitle:[distractorArr objectAtIndex:1] forState:UIControlStateNormal];
+        [self.MCButtonB setTitle:[distractorArr objectAtIndex:1] forState:UIControlStateSelected];
         
-        changeFormByDegrees(&vf, 1);
-        getForm(&vf, buffer);
-        NSString *mc2 = [NSString stringWithUTF8String: (const char*)buffer];
+        //changeFormByDegrees(&vf, 1);
+        //getForm(&vf, buffer);
+        //NSString *mc2 = [NSString stringWithUTF8String: (const char*)buffer];
+        //mc2 = [self selectRandomFromCSV:mc2];
+        [self.MCButtonC setTitle:[distractorArr objectAtIndex:2] forState:UIControlStateNormal];
+        [self.MCButtonC setTitle:[distractorArr objectAtIndex:2] forState:UIControlStateSelected];
         
-        [self.MCButtonC setTitle:mc2 forState:UIControlStateNormal];
-        [self.MCButtonC setTitle:mc2 forState:UIControlStateSelected];
-        
-        changeFormByDegrees(&vf, 1);
-        getForm(&vf, buffer);
-        NSString *mc3 = [NSString stringWithUTF8String: (const char*)buffer];
-        
-        [self.MCButtonD setTitle:mc3 forState:UIControlStateNormal];
-        [self.MCButtonD setTitle:mc3 forState:UIControlStateSelected];
+        //changeFormByDegrees(&vf, 1);
+        //getForm(&vf, buffer);
+        //NSString *mc3 = [NSString stringWithUTF8String: (const char*)buffer];
+        //mc3 = [self selectRandomFromCSV:mc3];
+        [self.MCButtonD setTitle:[distractorArr objectAtIndex:3] forState:UIControlStateNormal];
+        [self.MCButtonD setTitle:[distractorArr objectAtIndex:3] forState:UIControlStateSelected];
         
         [UIView setAnimationsEnabled:NO]; //re-enables view animation
         
@@ -452,6 +464,7 @@ UIView *backSideTest;
 
 -(void) loadEnding
 {
+    /*
     NSError *error = nil;
     NSManagedObjectContext *moc = [(AppDelegate*)[[UIApplication sharedApplication] delegate] managedObjectContext];
     
@@ -473,7 +486,7 @@ UIView *backSideTest;
     
     NSInteger count = [moc countForFetchRequest:request error:&error];
     
-    NSLog(@"count: %ld", (long)count);
+    //NSLog(@"count: %ld", (long)count);
     
     // Set example predicate and sort orderings...
     NSUInteger offsetStart = 0;
@@ -491,23 +504,54 @@ UIView *backSideTest;
         NSLog(@"Error: Def not found by id: %d.", 1);
         return;
     }
+     
+     self.stemLabel.text = [NSString stringWithFormat:@"%@ %@ %@", [[array lastObject] valueForKey:@"tense"], [[array lastObject] valueForKey:@"voice"], [[array lastObject] valueForKey:@"mood"]];
+     
+     self.singLabel.text = [NSString stringWithFormat:@"%@\n%@\n%@",[[array lastObject] valueForKey:@"fs"], [[array lastObject] valueForKey:@"ss"], [[array lastObject] valueForKey:@"ts"]];
+     
+     self.pluralLabel.text = [NSString stringWithFormat:@"%@\n%@\n%@",[[array lastObject] valueForKey:@"fp"], [[array lastObject] valueForKey:@"sp"], [[array lastObject] valueForKey:@"tp"]];
+    */
     
-    self.stemLabel.text = [NSString stringWithFormat:@"%@ %@ %@", [[array lastObject] valueForKey:@"tense"], [[array lastObject] valueForKey:@"voice"], [[array lastObject] valueForKey:@"mood"]];
+     int bufferLen = 1024;
+     char buffer[bufferLen];
+     int units[20] = { 1,2,3,4,5,6,7 };
+     int numUnits = 7;
+    /*
+     if ([self.levels count] > 0)
+     {
+         int i;
+         numUnits = 0;
+         for (i = 0; i < [self.levels count]; i++)
+         {
+             units[i] = (int)[[self.levels objectAtIndex:i] integerValue];
+             numUnits++;
+         }
+     }
+     */
+     getRandomEndingAsString(units, numUnits, buffer, bufferLen);
     
-    self.singLabel.text = [NSString stringWithFormat:@"%@\n%@\n%@",[[array lastObject] valueForKey:@"fs"], [[array lastObject] valueForKey:@"ss"], [[array lastObject] valueForKey:@"ts"]];
+     NSString *endings = [NSString stringWithUTF8String: (const char*)buffer];
+     
+     NSArray *Es = [endings componentsSeparatedByString:@"; "];
+     
     
-    self.pluralLabel.text = [NSString stringWithFormat:@"%@\n%@\n%@",[[array lastObject] valueForKey:@"fp"], [[array lastObject] valueForKey:@"sp"], [[array lastObject] valueForKey:@"tp"]];
+    self.stemLabel.text = [NSString stringWithFormat:@"%@", [Es objectAtIndex:0]];
+    
+    self.singLabel.text = [NSString stringWithFormat:@"%@\n%@\n%@",[Es objectAtIndex:1], [Es objectAtIndex:2], [Es objectAtIndex:3]];
+    
+    self.pluralLabel.text = [NSString stringWithFormat:@"%@\n%@\n%@",[Es objectAtIndex:4], [Es objectAtIndex:5], [Es objectAtIndex:6]];
     
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
     
-    CGSize sFS = [[[array lastObject] valueForKey:@"fs"] sizeWithAttributes:@{ NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue" size:26.0] }];
-    CGSize sSS = [[[array lastObject] valueForKey:@"ss"] sizeWithAttributes:@{ NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue" size:26.0] }];
-    CGSize sTS = [[[array lastObject] valueForKey:@"ts"] sizeWithAttributes:@{ NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue" size:26.0] }];
-    CGSize sFP = [[[array lastObject] valueForKey:@"fp"] sizeWithAttributes:@{ NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue" size:26.0] }];
-    CGSize sSP = [[[array lastObject] valueForKey:@"sp"] sizeWithAttributes:@{ NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue" size:26.0] }];
+    /*
+    CGSize sFS = [[[array lastObject] valueForKey:@"fs"] sizeWithAttributes:@{ NSFontAttributeName : [UIFont fontWithName:self.greekFont size:26.0] }];
+    CGSize sSS = [[[array lastObject] valueForKey:@"ss"] sizeWithAttributes:@{ NSFontAttributeName : [UIFont fontWithName:self.greekFont size:26.0] }];
+    CGSize sTS = [[[array lastObject] valueForKey:@"ts"] sizeWithAttributes:@{ NSFontAttributeName : [UIFont fontWithName:self.greekFont size:26.0] }];
+    CGSize sFP = [[[array lastObject] valueForKey:@"fp"] sizeWithAttributes:@{ NSFontAttributeName : [UIFont fontWithName:self.greekFont size:26.0] }];
+    CGSize sSP = [[[array lastObject] valueForKey:@"sp"] sizeWithAttributes:@{ NSFontAttributeName : [UIFont fontWithName:self.greekFont size:26.0] }];
     CGSize sTP = [[[array lastObject] valueForKey:@"tp"] sizeWithAttributes:@{ NSFontAttributeName : [UIFont fontWithName:@"HelveticaNeue" size:26.0] }];
-
+     */
     
     if ( [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait )
     {
@@ -543,15 +587,13 @@ UIView *backSideTest;
     [self.stemLabel setCenter:self.view.center];
     [self.backLabel setCenter:self.view.center];
 
-    
     self.startTime = CACurrentMediaTime();
-    
-    NSLog(@"hq: %@", [[array lastObject] valueForKey:@"hq"]);
 }
 
 
 -(void) loadPrincipalPart
 {
+    /*
     //NSLog(@"typeabc: %ld", [[self.detailItem  valueForKey:@"sort"] integerValue]);
     
     NSError *error = nil;
@@ -592,39 +634,49 @@ UIView *backSideTest;
         NSLog(@"Error: Def not found by id: %d.", 1);
         return;
     }
-    //NSLog(@"num results: %lu, count: %lu", (unsigned long)[array count], (unsigned long)count);
     
-    /*
-     int bufferLen = 1024;
-     char buffer[bufferLen];
-     int units[20] = { 1,2,3,4,5,6,7,8,9,10,11 };
-     int numUnits = 11;
-     if ([self.levels count] > 0)
-     {
-     int i;
-     numUnits = 0;
-     for (i = 0; i < [self.levels count]; i++)
-     {
-     units[i] = [[self.levels objectAtIndex:i] integerValue];
-     numUnits++;
-     }
-     }
+    //NSLog(@"num results: %lu, count: %lu", (unsigned long)[array count], (unsigned long)count);
+    */
+    
+    int bufferLen = 1024;
+    char buffer[bufferLen];
+    long units[20] = { 1,2,3,4,5,6,7,8,9,10,11 };
+    int numUnits = 11;
+    if ([self.levels count] > 0)
+    {
+        int i;
+        numUnits = 0;
+        for (i = 0; i < [self.levels count]; i++)
+        {
+            units[i] = [[self.levels objectAtIndex:i] integerValue];
+            numUnits++;
+        }
+    }
+    
+    Verb *v = getRandomVerb(units, numUnits);//&verbs[13];//
+    VerbFormC vf;
+    vf.verb = v;
+    
+    generateForm(&vf);
+    getForm(&vf, buffer);
+    NSString *frontForm = [NSString stringWithUTF8String: (const char*)buffer];
+    frontForm = [self selectRandomFromCSV:frontForm];
+    
+    getPrincipalParts(v, buffer, bufferLen);
+    NSString *principalParts = [NSString stringWithUTF8String: (const char*)buffer];
      
-     Verb *v = getRandomVerb(units, numUnits);//&verbs[13];//
-     getPrincipalParts(v, buffer, bufferLen);
-     NSString *principalParts = [NSString stringWithUTF8String: (const char*)buffer];
-     
-     */
+    NSArray *PPs = [principalParts componentsSeparatedByString:@"; "];
     
     NSString *from = @", ";
     NSString *to = @" | "; // /, |, or
     //change , to /
-    NSString *pres = [[[array lastObject] valueForKey:@"present"] stringByReplacingOccurrencesOfString: from withString:to];
-    NSString *fut = [[[array lastObject] valueForKey:@"future"] stringByReplacingOccurrencesOfString: from withString:to];
-    NSString *aor = [[[array lastObject] valueForKey:@"aorist"] stringByReplacingOccurrencesOfString: from withString:to];
-    NSString *perf = [[[array lastObject] valueForKey:@"perfectactive"] stringByReplacingOccurrencesOfString: from withString:to];
-    NSString *perfmid = [[[array lastObject] valueForKey:@"perfectmid"] stringByReplacingOccurrencesOfString: from withString:to];
-    NSString *aorpass = [[[array lastObject] valueForKey:@"aoristpassive"] stringByReplacingOccurrencesOfString: from withString:to];
+    
+    NSString *pres = [[PPs objectAtIndex:0] stringByReplacingOccurrencesOfString: from withString:to];
+    NSString *fut = [[PPs objectAtIndex:1] stringByReplacingOccurrencesOfString: from withString:to];
+    NSString *aor = [[PPs objectAtIndex:2] stringByReplacingOccurrencesOfString: from withString:to];
+    NSString *perf = [[PPs objectAtIndex:3] stringByReplacingOccurrencesOfString: from withString:to];
+    NSString *perfmid = [[PPs objectAtIndex:4] stringByReplacingOccurrencesOfString: from withString:to];
+    NSString *aorpass = [[PPs objectAtIndex:5] stringByReplacingOccurrencesOfString: from withString:to];
     
     NSString *spacer = @"—";//"@"--";
 
@@ -644,7 +696,7 @@ UIView *backSideTest;
     {
         self.backCard = [NSString stringWithFormat:@"%@, %@, %@, %@, %@, %@", pres.length > 0 ? pres : spacer, fut.length > 0 ? fut : spacer, aor.length > 0 ? aor : spacer, perf.length > 0 ? perf : spacer, perfmid.length > 0 ? perfmid : spacer, aorpass.length > 0 ? aorpass : spacer];
     }
-    self.stemLabel.text = pres;
+    self.stemLabel.text = frontForm;
     //self.backLabel.text = self.backCard;
     self.backLabel.attributedText = attrString;
     
@@ -723,9 +775,24 @@ UIView *backSideTest;
         self.detailDescriptionLabel.text = [[self.detailItem valueForKey:@"item"] description];
     }
     */
-
+    if (frontSideTest && frontSideTest.superview == self.view)
+        [frontSideTest removeFromSuperview];
+    
+    if (backSideTest && backSideTest.superview == self.view)
+        [backSideTest removeFromSuperview];
+    
+    
     self.cardType = 1;
     self.cardType = [[self.detailItem  valueForKey:@"sort"] integerValue];
+    
+    if (self.cardType != 1)
+    {
+        self.verbModeButton.hidden = YES;
+    }
+    else
+    {
+        self.verbModeButton.hidden = NO;
+    }
     
     self.backLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.backLabel.textAlignment = NSTextAlignmentCenter;
@@ -735,27 +802,24 @@ UIView *backSideTest;
     self.singLabel.numberOfLines = 0;
     self.pluralLabel.numberOfLines = 0;
     
-    //NSString *font = @"ArialMT";
-    NSString *font = @"HelveticaNeue";
     //NSString *font = @"GillSans";
     ///Users/jeremy/Dropbox/Code/cocoa/morphv5/morph/DetailViewController.mNSString *font = @"Kailasa";
     //NSString *font = @"ArialMT";
-    //NSString *font = @"NewAthenaUnicode";
-    //self.stemLabel.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
-    //self.backLabel.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
     
-    self.origForm.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
-    self.changedForm.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
+    UIFont *greekFont = [UIFont fontWithName:self.greekFont size:30.0];
     
-    self.MCButtonA.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
-    self.MCButtonB.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
-    self.MCButtonC.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
-    self.MCButtonD.font = [UIFont fontWithName:@"NewAthenaUnicode" size:30.0];
+    self.origForm.font = greekFont;
+    self.changedForm.font = greekFont;
     
-    self.stemLabel.font = [UIFont fontWithName:font size:26.0];
-    self.backLabel.font = [UIFont fontWithName:font size:26.0];
-    self.singLabel.font = [UIFont fontWithName:font size:26.0];
-    self.pluralLabel.font = [UIFont fontWithName:font size:26.0];
+    [self.MCButtonA.titleLabel setFont: greekFont];
+    [self.MCButtonB.titleLabel setFont: greekFont];
+    [self.MCButtonC.titleLabel setFont: greekFont];
+    [self.MCButtonD.titleLabel setFont: greekFont];
+    
+    self.stemLabel.font = [UIFont fontWithName:self.systemFont size:26.0];
+    self.backLabel.font = [UIFont fontWithName:self.systemFont size:26.0];
+    self.singLabel.font = [UIFont fontWithName:self.greekFont size:26.0];
+    self.pluralLabel.font = [UIFont fontWithName:self.greekFont size:26.0];
     
     
     CGRect screenBound = [[UIScreen mainScreen] bounds];
@@ -778,6 +842,10 @@ UIView *backSideTest;
         [self.pluralLabel setFrame:CGRectMake((screenSize.height * 2/3) - 50,50
                                               ,  screenSize.height - 40, 240.0)];
     }
+    
+    [self.timeLabel setFrame:CGRectMake(self.view.frame.size.width - 90 - 60 - 6 - 6, 6
+                                          ,  90, 30)];
+    
     [self loadNext];
 }
 
@@ -873,9 +941,15 @@ UIView *backSideTest;
 - (void)toggleVerbMode :(UIButton *)sender
 {
     if (self.verbQuestionType == PRACTICE)
+    {
         self.verbQuestionType = MULTIPLE_CHOICE;
+        [sender setTitle:@"MC" forState:UIControlStateNormal];
+    }
     else if (self.verbQuestionType == MULTIPLE_CHOICE)
+    {
         self.verbQuestionType = PRACTICE;
+        [sender setTitle:@"Self" forState:UIControlStateNormal];
+    }
     
     [self loadNext];
 }
@@ -895,6 +969,25 @@ UIView *backSideTest;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    self.systemFont = @"HelveticaNeue";
+    self.greekFont = @"NewAthenaUnicode";
+    
+    /*
+    //if (!self.keyboard)
+    //{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+    {
+        self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 172.0) lang:1];
+    }
+    else
+    {
+        self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 266.0) lang:1];
+    }
+    //}
+    */
+    //[self.textfield setInputView: self.keyboard];
+    self.textfield.hidden = YES;
     
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
@@ -921,6 +1014,7 @@ UIView *backSideTest;
 	// Do any additional setup after loading the view, typically from a nib.
     
     self.verbQuestionType = MULTIPLE_CHOICE;//PRACTICE;  //
+    [self.verbModeButton setTitle:@"MC" forState:UIControlStateNormal];
 
     self.levels = [NSMutableArray arrayWithObjects: nil];
     
@@ -952,17 +1046,23 @@ UIView *backSideTest;
                  action:@selector(onSelectCorrectMC:)
        forControlEvents:UIControlEventTouchDown];
     
-    [self.menuButton setFrame:CGRectMake(6, 6, 60, 36.0)];
-    [self.menuButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-    self.menuButton.layer.borderColor = [UIColor grayColor].CGColor;
-    self.menuButton.layer.borderWidth = 2.0f;
-    self.menuButton.layer.cornerRadius = 8;
-    [self.menuButton addTarget:self
-                 action:@selector(returnToRoot:)
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+    {
+        self.menuButton.hidden = YES;
+    }
+    else
+    {
+        [self.menuButton setFrame:CGRectMake(6, 6, 60, 36.0)];
+        [self.menuButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        self.menuButton.layer.borderColor = [UIColor grayColor].CGColor;
+        self.menuButton.layer.borderWidth = 2.0f;
+        self.menuButton.layer.cornerRadius = 8;
+        [self.menuButton addTarget:self
+                            action:@selector(returnToRoot:)
        forControlEvents:UIControlEventTouchDown];
+    }
     
-    NSLog(@"ipad width: %f", self.view.bounds.size.width);
-    [self.verbModeButton setFrame:CGRectMake(self.view.frame.size.width - 500, 6, 60, 36.0)];
+    [self.verbModeButton setFrame:CGRectMake(self.view.frame.size.width - 60 - 6, 6, 60, 36.0)];
     [self.verbModeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
     self.verbModeButton.layer.borderColor = [UIColor grayColor].CGColor;
     self.verbModeButton.layer.borderWidth = 2.0f;
@@ -983,8 +1083,6 @@ UIView *backSideTest;
     }
     
     [self configureView];
-    
-    NSLog(@"View Did load");
 }
 
 - (void)didReceiveMemoryWarning

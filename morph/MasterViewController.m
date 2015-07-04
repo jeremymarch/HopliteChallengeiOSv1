@@ -168,7 +168,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"did select");
      NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -181,6 +180,7 @@
     /*
     NSNumber *a = [object valueForKey:@"sort"];
     NSInteger b = [a integerValue];
+     
     self.detailViewController.menuItem = b;
     self.detailViewController.menuItem = (long)[a integerValue];
     NSLog(@"item2: %ld, %ld, %ld", (long)[a integerValue], b, self.detailViewController.menuItem);

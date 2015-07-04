@@ -130,6 +130,7 @@ typedef struct e {
     char *fp;
     char *sp;
     char *tp;
+    char *description;
 } Ending;
 
 enum {
@@ -198,13 +199,17 @@ enum {
 int getForm(VerbFormC *vf, char *buffer);
 
 Verb *getRandomVerb(int *units, int numUnits);
+Ending *getRandomEnding(int *units, int numUnits);
+void getRandomEndingAsString(int *units, int numUnits, char *buffer, int bufferLen);
+
 void changeFormByDegrees(VerbFormC *verbform, int degrees);
 void generateForm(VerbFormC *verbform);
+void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors, char *buffer);
 
 void getFullDescription (VerbFormC *vf, char *buffer, int len);
 void getAbbrevDescription (VerbFormC *vf, char *buffer, int len);
 
-void getPrincipalPars(Verb *v, char *buffer, int len);
+void getPrincipalParts(Verb *v, char *buffer, int len);
 
 char *getPrincipalPartForTense(Verb *verb, int tense, int voice);
 

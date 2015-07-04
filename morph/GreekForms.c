@@ -7,7 +7,6 @@
 //
 
 #include "GreekForms.h"
-#include "libmorph.h"
 
 Verb verbs[NUM_VERBS] = {
     { 0, CONSONANT_STEM_PERFECT_2, 1, "πέμπω", "πέμψω", "ἔπεμψα", "πέπομφα", "πέπεμμαι", "ἐπέμφθην" },

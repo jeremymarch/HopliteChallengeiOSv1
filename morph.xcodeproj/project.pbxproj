@@ -11,6 +11,9 @@
 		3F296BCC1956A79C00B4CE78 /* newathu405.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3F296BCB1956A79C00B4CE78 /* newathu405.ttf */; };
 		3F296BCF1961C6EC00B4CE78 /* VerbForm.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F296BCE1961C6EC00B4CE78 /* VerbForm.m */; };
 		3F2FD3001AF0625300B4CE7F /* GreekForms.c in Sources */ = {isa = PBXBuildFile; fileRef = 3F2FD2FE1AF0625300B4CE7F /* GreekForms.c */; };
+		3F39F47B1B456DF900A58885 /* Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F39F4761B456DF900A58885 /* Common.m */; };
+		3F39F47C1B456DF900A58885 /* CustomButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F39F4781B456DF900A58885 /* CustomButton.m */; };
+		3F39F47D1B456DF900A58885 /* keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F39F47A1B456DF900A58885 /* keyboard.m */; };
 		3F73EDA6189642DA003638C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDA5189642DA003638C5 /* Foundation.framework */; };
 		3F73EDA8189642DA003638C5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDA7189642DA003638C5 /* CoreGraphics.framework */; };
 		3F73EDAA189642DA003638C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDA9189642DA003638C5 /* UIKit.framework */; };
@@ -56,6 +59,12 @@
 		3F296BCE1961C6EC00B4CE78 /* VerbForm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VerbForm.m; sourceTree = "<group>"; };
 		3F2FD2FE1AF0625300B4CE7F /* GreekForms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = GreekForms.c; sourceTree = "<group>"; };
 		3F2FD2FF1AF0625300B4CE7F /* GreekForms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GreekForms.h; sourceTree = "<group>"; };
+		3F39F4751B456DF900A58885 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Common.h; path = GreekKeyboard/Common.h; sourceTree = "<group>"; };
+		3F39F4761B456DF900A58885 /* Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Common.m; path = GreekKeyboard/Common.m; sourceTree = "<group>"; };
+		3F39F4771B456DF900A58885 /* CustomButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomButton.h; path = GreekKeyboard/CustomButton.h; sourceTree = "<group>"; };
+		3F39F4781B456DF900A58885 /* CustomButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomButton.m; path = GreekKeyboard/CustomButton.m; sourceTree = "<group>"; };
+		3F39F4791B456DF900A58885 /* keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = keyboard.h; path = GreekKeyboard/keyboard.h; sourceTree = "<group>"; };
+		3F39F47A1B456DF900A58885 /* keyboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = keyboard.m; path = GreekKeyboard/keyboard.m; sourceTree = "<group>"; };
 		3F73EDA2189642DA003638C5 /* morph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = morph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F73EDA5189642DA003638C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3F73EDA7189642DA003638C5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -119,6 +128,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3F39F4691B456D2400A58885 /* Keyboard */ = {
+			isa = PBXGroup;
+			children = (
+				3F39F4751B456DF900A58885 /* Common.h */,
+				3F39F4761B456DF900A58885 /* Common.m */,
+				3F39F4771B456DF900A58885 /* CustomButton.h */,
+				3F39F4781B456DF900A58885 /* CustomButton.m */,
+				3F39F4791B456DF900A58885 /* keyboard.h */,
+				3F39F47A1B456DF900A58885 /* keyboard.m */,
+			);
+			name = Keyboard;
+			sourceTree = "<group>";
+		};
 		3F73ED99189642DA003638C5 = {
 			isa = PBXGroup;
 			children = (
@@ -153,6 +175,7 @@
 		3F73EDAD189642DA003638C5 /* morph */ = {
 			isa = PBXGroup;
 			children = (
+				3F39F4691B456D2400A58885 /* Keyboard */,
 				3F73EDB6189642DA003638C5 /* AppDelegate.h */,
 				3F73EDB7189642DA003638C5 /* AppDelegate.m */,
 				3F73EDB9189642DA003638C5 /* Main_iPhone.storyboard */,
@@ -321,11 +344,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F39F47C1B456DF900A58885 /* CustomButton.m in Sources */,
+				3F39F47B1B456DF900A58885 /* Common.m in Sources */,
 				3F296BCF1961C6EC00B4CE78 /* VerbForm.m in Sources */,
 				3F73EDC7189642DA003638C5 /* DetailViewController.m in Sources */,
 				3F73EDC4189642DA003638C5 /* MasterViewController.m in Sources */,
 				3F73EDB8189642DA003638C5 /* AppDelegate.m in Sources */,
 				3F2FD3001AF0625300B4CE7F /* GreekForms.c in Sources */,
+				3F39F47D1B456DF900A58885 /* keyboard.m in Sources */,
 				3F73EDC1189642DA003638C5 /* morph.xcdatamodeld in Sources */,
 				3FAA4FF71A2A73C300D49487 /* Verbs.m in Sources */,
 				3FCEE6DA1ADE636500C550AD /* libmorph.c in Sources */,

@@ -10,9 +10,8 @@
 #include <string.h>  //for strlen
 #include <stdbool.h> //for bool type
 #include "libmorph.h"
+#include "GreekForms.h"
 #include "GreekUnicode.h"
-
-Verb verbs[];
 
 bool letterIsAccented(UCS2 letter);
 void stripAccent(UCS2 *word, int *len);
@@ -39,62 +38,71 @@ char *voicesabbrev[NUM_VOICES] = { "act.", "mid.", "pass." };
 char *moods[NUM_MOODS] = { "indicative", "subjunctive", "optative" };
 char *moodsabbrev[NUM_MOODS] = { "ind.", "subj.", "opt." };
 
-Ending endings[NUM_ENDINGS] = {
-    { 0, 2, 0, 0, 0, "ω", "εις", "ει", "ομεν", "ετε", "ουσι(ν)" },
-    { 0, 2, 0, 0, 0, "ον", "ες", "ε(ν)", "ομεν", "ετε", "ον" },
-    { 0, 2, 0, 0, 0, "α", "ας", "ε(ν)", "αμεν", "ατε", "αν" },
-    { 0, 3, 0, 0, 0, "α", "ας", "ε(ν)", "αμεν", "ατε", "ᾱσι(ν)" },
-    { 0, 3, 0, 0, 0, "η", "ης", "ει(ν)", "εμεν", "ετε", "εσαν" },
-    { 0, 2, 0, 0, 0, "ω", "εις", "ει", "ομεν", "ετε", "ουσι(ν)" },
-    { 0, 3, 0, 0, 0, "ω", "ῃς", "ῃ", "ωμεν", "ητε", "ωσι(ν)" },
-    { 0, 3, 0, 0, 0, "ω", "ῃς", "ῃ", "ωμεν", "ητε", "ωσι(ν)" },
-    { 0, 3, 0, 0, 0, "οιμι", "οις", "οι", "οιμεν", "οιτε", "οιεν" },
-    { 0, 3, 0, 0, 0, "αιμι", "αις, ειας", "αι, ειε(ν)", "αιμεν", "αιτε", "αιεν, ειαν" },
-    { 0, 5, 0, 0, 0, "ομαι", "ει, ῃ", "εται", "ομεθα", "εσθε", "ονται" },
-    { 0, 5, 0, 0, 0, "ομην", "ου", "ετο", "ομεθα", "εσθε", "οντο" },
-    { 0, 5, 0, 0, 0, "ην", "ης", "η", "ημεν", "ητε", "ησαν" },
-    { 0, 7, 0, 0, 0, "αμην", "ω", "ατο", "αμεθα", "ασθε", "αντο" },
-    { 0, 5, 0, 0, 0, "ῶ", "ῇς", "ῇ", "ῶμεν", "ῆτε", "ῶσι(ν)" },
-    { 0, 5, 0, 0, 0, "ειην", "ειης", "ειη", "εῖμεν, ειημεν", "εῖτε, ειητε", "εῖεν, ειησαν" },
-    { 0, 7, 0, 0, 0, "ωμαι", "ῃ", "ηται", "ωμεθα", "ησθε", "ωνται" },
-    { 0, 7, 0, 0, 0, "αιμην", "αιο", "αιτο", "αιμεθα", "αισθε", "αιντο" },
-    { 0, 5, 0, 0, 0, "μαι", "σαι", "ται", "μεθα", "σθε", "νται" },
-    { 0, 5, 0, 0, 0, "μην", "σο", "το", "μεθα", "σθε", "ντο" },
-    { 0, 5, 0, 0, 0, "ωμαι", "ῃ", "ηται", "ωμεθα", "ησθε", "ωνται" },
-    { 0, 5, 0, 0, 0, "οιμην", "οιο", "οιτο", "οιμεθα", "οισθε", "οιντο" },
-    { 0, 11, 0, 0, 0, "", "ε", "ετω",   "", "ετε", "οντων" },
-    { 0, 11, 0, 0, 0, "", "ου", "εσθω", "", "εσθε", "εσθων" },
-    { 0, 11, 0, 0, 0, "", "ον", "ατω",  "", "ατε", "αντων" },
-    { 0, 11, 0, 0, 0, "", "αι", "ασθω", "", "ασθε", "ασθων" },
-    { 0, 11, 0, 0, 0, "", "ητι, ηθι", "ητω", "", "ητε", "εντων" },
-    { 0, 5, 0, 0, 0, "ομαι", "ει, ῃ", "εται", "ομεθα", "εσθε", "ονται" },
+void endingGetDescription(int e, char *buffer, int bufferLen)
+{
+    char present[] = "Present";
+    char aorist[] = "Aorist";
+    char perfect[] = "Perfect";
     
-    { 0, 9, 0, 0, 0, "ῶ", "ᾷς", "ᾷ", "ῶμεν", "ᾶτε", "ῶσι(ν)" },         //pres active indic a
-    { 0, 9, 0, 0, 0, "ῶμαι", "ᾷ", "ᾷται", "ώμεθα", "ᾶσθε", "ῶνται" },   //pres mid/ass indic a
-    { 0, 9, 0, 0, 0, "ων", "ᾶς", "ᾶ", "ῶμεν", "ᾶτε", "ων" },            //impf active indic a
-    { 0, 9, 0, 0, 0, "ώμην", "ῶ", "ᾶτο", "ώμεθα", "ᾶσθε", "ῶντο" },     //impf mid/pass indic a
-    { 0, 9, 0, 0, 0, "ῶ", "ᾷς", "ᾷ", "ῶμεν", "ᾶτε", "ῶσι(ν)" },         //pres active subj a
-    { 0, 9, 0, 0, 0, "ῶμαι", "ᾷ", "ᾷται", "ώμεθα", "ᾶσθε", "ῶνται" },   //pres mid/ass subj a
-    { 0, 9, 0, 0, 0, "ῷμι, ῴην", "ῷς, ῴης", "ῷ, ῴη", "ῷμεν, ῴημεν", "ῷτε, ῴητε", "ῷεν, ῴησαν" }, //pres active opt a
-    { 0, 9, 0, 0, 0, "ῴμην", "ῷο", "ῷτο", "ῴμεθα", "ῷσθε", "ῷντο" },   //pres mid/ass opt a
-    
-    { 0, 9, 0, 0, 0, "ῶ", "εῖς", "εῖ", "οῦμεν", "εῖτε", "οῦσι(ν)" },         //pres active indic e
-    { 0, 9, 0, 0, 0, "οῦμαι", "εῖ, ῇ", "εῖται", "οῦμεθα", "εῖσθε", "οῦνται" },   //pres mid/pass indic e
-    { 0, 9, 0, 0, 0, "ουν", "εις", "ει", "οῦμεν", "εῖτε", "ουν" },            //impf active indic e
-    { 0, 9, 0, 0, 0, "ούμην", "οῦ", "εῖτο", "ούμεθα", "εῖσθε", "οῦντο" },     //impf mid/pass indic e
-    { 0, 9, 0, 0, 0, "ῶ", "ῇς", "ῇ", "ῶμεν", "ῆτε", "ῶσι(ν)" },         //pres active subj e
-    { 0, 9, 0, 0, 0, "ῶμαι", "ῇ", "ῆται", "ώμεθα", "ῆσθε", "ῶνται" },   //pres mid/pass subj e
-    { 0, 9, 0, 0, 0, "οῖμι, οίην", "οῖς, οίης", "οῖ, οίη", "οῖμεν, οῖημεν", "οῖτε, οίητε", "οῖεν, οίησαν" },//pres act opt e
-    { 0, 9, 0, 0, 0, "οίμην", "οῖο", "οῖτο", "οίμεθα", "οῖσθε", "οίντο" },   //pres mid/ass opt e
+    snprintf(buffer, bufferLen, "%s %s %s", "Present", "Active", "Subjunctive");
+}
 
-    { 0, 10, 0, 0, 0, "ῶ", "οῖς", "οῖ", "οῦμεν", "οῖτε", "οῦσι(ν)" },         //pres active indic o
-    { 0, 10, 0, 0, 0, "οῦμαι", "οῖ", "οῖται", "οῦμεθα", "οῦσθε", "οῦνται" },   //pres mid/pass indic o
-    { 0, 10, 0, 0, 0, "ουν", "ους", "ου", "οῦμεν", "οῦτε", "ουν" },            //impf active indic o
-    { 0, 10, 0, 0, 0, "ούμην", "οῦ", "οῦτο", "ούμεθα", "οῦσθε", "οῦντο" },     //impf mid/pass indic o
-    { 0, 10, 0, 0, 0, "ῶ", "οῖς", "οῖ", "ῶμεν", "ῶτε", "ῶσι(ν)" },         //pres active subj o
-    { 0, 10, 0, 0, 0, "ῶμαι", "οῖ", "ῶται", "ώμεθα", "ῶσθε", "ῶνται" },   //pres mid/pass subj o
-    { 0, 10, 0, 0, 0, "οῖμι, οίην", "οῖς, οίης", "οῖ, οίη", "οῖμεν, οῖημεν", "οῖτε, οίητε", "οῖεν, οίησαν" },//pres act opt o
-    { 0, 10, 0, 0, 0, "οίμην", "οῖο", "οῖτο", "οίμεθα", "οῖσθε", "οίντο" },   //pres mid/ass opt o
+Ending endings[NUM_ENDINGS] = {
+    { 0, 2, 0, 0, 0, "ω", "εις", "ει", "ομεν", "ετε", "ουσι(ν)", "Present Active Indicative" },
+    { 0, 2, 0, 0, 0, "ον", "ες", "ε(ν)", "ομεν", "ετε", "ον", "Imperfect Active Indicative" },
+    { 0, 2, 0, 0, 0, "α", "ας", "ε(ν)", "αμεν", "ατε", "αν", "Aorist Active Indicative" },
+    { 0, 3, 0, 0, 0, "α", "ας", "ε(ν)", "αμεν", "ατε", "ᾱσι(ν)", "Perfect Active Indicative" },
+    { 0, 3, 0, 0, 0, "η", "ης", "ει(ν)", "εμεν", "ετε", "εσαν", "Pluperfect Active Indicative" },
+    { 0, 2, 0, 0, 0, "ω", "εις", "ει", "ομεν", "ετε", "ουσι(ν)", "Future Active Indicative" },
+    { 0, 3, 0, 0, 0, "ω", "ῃς", "ῃ", "ωμεν", "ητε", "ωσι(ν)", "Present Active Subjunctive" },
+    { 0, 3, 0, 0, 0, "ω", "ῃς", "ῃ", "ωμεν", "ητε", "ωσι(ν)", "Aorist Active Subjunctive" },
+    { 0, 3, 0, 0, 0, "οιμι", "οις", "οι", "οιμεν", "οιτε", "οιεν", "Present Active Optative" },
+    { 0, 3, 0, 0, 0, "αιμι", "αις, ειας", "αι, ειε(ν)", "αιμεν", "αιτε", "αιεν, ειαν", "Aorist Active Optative" },
+    { 0, 5, 0, 0, 0, "ομαι", "ει, ῃ", "εται", "ομεθα", "εσθε", "ονται", "Present Middle/Passive Indicative" },
+    { 0, 5, 0, 0, 0, "ομην", "ου", "ετο", "ομεθα", "εσθε", "οντο", "Imperfect Middle/Passive Indicative" },
+    { 0, 5, 0, 0, 0, "ην", "ης", "η", "ημεν", "ητε", "ησαν", "Aorist Passive Indicative" },
+    { 0, 7, 0, 0, 0, "αμην", "ω", "ατο", "αμεθα", "ασθε", "αντο", "Aorist Middle Indicative" },
+    { 0, 5, 0, 0, 0, "ῶ", "ῇς", "ῇ", "ῶμεν", "ῆτε", "ῶσι(ν)", "Aorist Passive Subjunctive" },
+    { 0, 5, 0, 0, 0, "ειην", "ειης", "ειη", "εῖμεν, ειημεν", "εῖτε, ειητε", "εῖεν, ειησαν", "Aorist Passive Optative" },
+    { 0, 7, 0, 0, 0, "ωμαι", "ῃ", "ηται", "ωμεθα", "ησθε", "ωνται", "Aorist Middle Subjunctive" },
+    { 0, 7, 0, 0, 0, "αιμην", "αιο", "αιτο", "αιμεθα", "αισθε", "αιντο", "Aorist Middle Optative" },
+    { 0, 5, 0, 0, 0, "μαι", "σαι", "ται", "μεθα", "σθε", "νται", "Perfect Middle/Passive Indicative" },
+    { 0, 5, 0, 0, 0, "μην", "σο", "το", "μεθα", "σθε", "ντο", "Pluperfect Middle/Passive Indicative" },
+    { 0, 5, 0, 0, 0, "ωμαι", "ῃ", "ηται", "ωμεθα", "ησθε", "ωνται", "Present Middle/Passive Subjunctive" },
+    { 0, 5, 0, 0, 0, "οιμην", "οιο", "οιτο", "οιμεθα", "οισθε", "οιντο", "Present Middle/Passive Optative" },
+    { 0, 11, 0, 0, 0, "", "ε", "ετω",   "", "ετε", "οντων", "Present Active Imperative" },
+    { 0, 11, 0, 0, 0, "", "ου", "εσθω", "", "εσθε", "εσθων", "Present Middle/Passive Imperative" },
+    { 0, 11, 0, 0, 0, "", "ον", "ατω",  "", "ατε", "αντων", "Aorist Active Imperative" },
+    { 0, 11, 0, 0, 0, "", "αι", "ασθω", "", "ασθε", "ασθων", "Aorist Middle Imperative" },
+    { 0, 11, 0, 0, 0, "", "ητι, ηθι", "ητω", "", "ητε", "εντων", "Aorist Passive Imperative" },
+    { 0, 5, 0, 0, 0, "ομαι", "ει, ῃ", "εται", "ομεθα", "εσθε", "ονται", "Future Middle/Passive Indicative" },
+    
+    { 0, 9, 0, 0, 0, "ῶ", "ᾷς", "ᾷ", "ῶμεν", "ᾶτε", "ῶσι(ν)", "" },         //pres active indic a
+    { 0, 9, 0, 0, 0, "ῶμαι", "ᾷ", "ᾷται", "ώμεθα", "ᾶσθε", "ῶνται", "" },   //pres mid/ass indic a
+    { 0, 9, 0, 0, 0, "ων", "ᾶς", "ᾶ", "ῶμεν", "ᾶτε", "ων", "" },            //impf active indic a
+    { 0, 9, 0, 0, 0, "ώμην", "ῶ", "ᾶτο", "ώμεθα", "ᾶσθε", "ῶντο", "" },     //impf mid/pass indic a
+    { 0, 9, 0, 0, 0, "ῶ", "ᾷς", "ᾷ", "ῶμεν", "ᾶτε", "ῶσι(ν)", "" },         //pres active subj a
+    { 0, 9, 0, 0, 0, "ῶμαι", "ᾷ", "ᾷται", "ώμεθα", "ᾶσθε", "ῶνται", "" },   //pres mid/ass subj a
+    { 0, 9, 0, 0, 0, "ῷμι, ῴην", "ῷς, ῴης", "ῷ, ῴη", "ῷμεν, ῴημεν", "ῷτε, ῴητε", "ῷεν, ῴησαν", "" }, //pres active opt a
+    { 0, 9, 0, 0, 0, "ῴμην", "ῷο", "ῷτο", "ῴμεθα", "ῷσθε", "ῷντο", "" },   //pres mid/ass opt a
+    
+    { 0, 9, 0, 0, 0, "ῶ", "εῖς", "εῖ", "οῦμεν", "εῖτε", "οῦσι(ν)", "" },         //pres active indic e
+    { 0, 9, 0, 0, 0, "οῦμαι", "εῖ, ῇ", "εῖται", "οῦμεθα", "εῖσθε", "οῦνται", "" },   //pres mid/pass indic e
+    { 0, 9, 0, 0, 0, "ουν", "εις", "ει", "οῦμεν", "εῖτε", "ουν", "" },            //impf active indic e
+    { 0, 9, 0, 0, 0, "ούμην", "οῦ", "εῖτο", "ούμεθα", "εῖσθε", "οῦντο", "" },     //impf mid/pass indic e
+    { 0, 9, 0, 0, 0, "ῶ", "ῇς", "ῇ", "ῶμεν", "ῆτε", "ῶσι(ν)", "" },         //pres active subj e
+    { 0, 9, 0, 0, 0, "ῶμαι", "ῇ", "ῆται", "ώμεθα", "ῆσθε", "ῶνται", "" },   //pres mid/pass subj e
+    { 0, 9, 0, 0, 0, "οῖμι, οίην", "οῖς, οίης", "οῖ, οίη", "οῖμεν, οῖημεν", "οῖτε, οίητε", "οῖεν, οίησαν", "" },//pres act opt e
+    { 0, 9, 0, 0, 0, "οίμην", "οῖο", "οῖτο", "οίμεθα", "οῖσθε", "οίντο", "" },   //pres mid/ass opt e
+
+    { 0, 10, 0, 0, 0, "ῶ", "οῖς", "οῖ", "οῦμεν", "οῖτε", "οῦσι(ν)", "" },         //pres active indic o
+    { 0, 10, 0, 0, 0, "οῦμαι", "οῖ", "οῖται", "οῦμεθα", "οῦσθε", "οῦνται", "" },   //pres mid/pass indic o
+    { 0, 10, 0, 0, 0, "ουν", "ους", "ου", "οῦμεν", "οῦτε", "ουν", "" },            //impf active indic o
+    { 0, 10, 0, 0, 0, "ούμην", "οῦ", "οῦτο", "ούμεθα", "οῦσθε", "οῦντο", "" },     //impf mid/pass indic o
+    { 0, 10, 0, 0, 0, "ῶ", "οῖς", "οῖ", "ῶμεν", "ῶτε", "ῶσι(ν)", "" },         //pres active subj o
+    { 0, 10, 0, 0, 0, "ῶμαι", "οῖ", "ῶται", "ώμεθα", "ῶσθε", "ῶνται", "" },   //pres mid/pass subj o
+    { 0, 10, 0, 0, 0, "οῖμι, οίην", "οῖς, οίης", "οῖ, οίη", "οῖμεν, οῖημεν", "οῖτε, οίητε", "οῖεν, οίησαν", "" },//pres act opt o
+    { 0, 10, 0, 0, 0, "οίμην", "οῖο", "οῖτο", "οίμεθα", "οῖσθε", "οίντο", "" },   //pres mid/ass opt o
 };
 
 Verb *getRandomVerb(int *units, int numUnits)
@@ -114,13 +122,44 @@ Verb *getRandomVerb(int *units, int numUnits)
             }
         }
     }
-    int verb = randWithMax(numVerbsToChooseFrom);
+    int verb = (int)randWithMax(numVerbsToChooseFrom);
     return &verbs[ verbsToChooseFrom[verb] ];
+}
+
+Ending *getRandomEnding(int *units, int numUnits)
+{
+    int u, e;
+    int endingsToChooseFrom[NUM_ENDINGS];
+    int numEndingsToChooseFrom = 0;
+    for (e = 0; e < NUM_ENDINGS; e++)
+    {
+        for (u = 0; u < numUnits; u++)
+        {
+            if (endings[e].hq == units[u])
+            {
+                endingsToChooseFrom[numEndingsToChooseFrom] = e;
+                numEndingsToChooseFrom++;
+                break;
+            }
+        }
+    }
+    int ending = (int)randWithMax(numEndingsToChooseFrom);
+    return &endings[ endingsToChooseFrom[ending] ];
+}
+
+void getRandomEndingAsString(int *units, int numUnits, char *buffer, int bufferLen)
+{
+    //char description[512];
+    Ending *e = getRandomEnding(units, numUnits);
+    
+    //endingGetDescription(1, description, 512);
+    
+    snprintf(buffer, bufferLen, "%s; %s; %s; %s; %s; %s; %s", e->description, e->fs, e->ss, e->ts, e->fp, e->sp, e->tp);
 }
 
 void getPrincipalParts(Verb *v, char *buffer, int len)
 {
-    snprintf(buffer, len, "%s, %s, %s, %s, %s, %s", v->present, v->future, v->aorist, v->perf, v->perfmid, v->aoristpass);
+    snprintf(buffer, len, "%s; %s; %s; %s; %s; %s", v->present, v->future, v->aorist, v->perf, v->perfmid, v->aoristpass);
 }
 
 void getFullDescription (VerbFormC *vf, char *buffer, int len)
@@ -250,9 +289,98 @@ bool letterIsAccented(UCS2 letter)
     return false;
 }
 
+void randomAlternative(char *s, int *offset)
+{
+    int starts[5] = { 0,0,0,0,0 };
+    int numStarts = 1;
+    int lenS = strlen(s);
+    
+    for (int i = 0; i < lenS; i++)
+    {
+        if (s[i] == ',')
+        {
+            starts[numStarts] = i + 2;
+            numStarts++;
+        }
+    }
+    int random = randWithMax(numStarts);
+    *offset = starts[random];
+    if (numStarts > 1)
+    {
+        printf("%d of %d\n", random, numStarts);
+    }
+    if (random < numStarts - 1)
+        s[starts[random + 1] - 2] = '\0';
+}
+
 void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors, char *buffer)
 {
+    VerbFormC vf;
+    int i = 0;
+    int n = 0;
+    int starts[numDistractors + 1];
+    int numStarts = 0;
+    for (i = 0; i < numDistractors + 1; i++)
+    {
+        starts[i] = 0;
+    }
+
+    i = 0;
+    char tempBuffer[2048];
+    int offset = 0;
     
+    getForm(new, tempBuffer); //put the changed form on the buffer so no duplicates
+    randomAlternative(tempBuffer, &offset);
+    strncpy(&buffer[n], &tempBuffer[offset], strlen(&tempBuffer[offset]));
+    n += strlen(buffer);
+    strncpy(&buffer[n], "; ", 2);
+    n += 2;
+    
+    numStarts++;
+    
+    do
+    {
+        vf.verb = new->verb;
+        vf.person = new->person;
+        vf.number = new->number;
+        vf.tense = new->tense;
+        vf.voice = new->voice;
+        vf.mood = new->mood;
+        
+        changeFormByDegrees(&vf, 1);
+        
+        getForm(&vf, tempBuffer);
+        offset = 0;
+        randomAlternative(tempBuffer, &offset);
+
+        int j = 0;
+        int noMatches = 1;
+        for (j = 0; j < numStarts; j++)
+        {
+            if (memcmp(&tempBuffer[offset], &buffer[ starts[j] ], strlen(&tempBuffer[offset])) == 0 || memcmp(&tempBuffer[offset], "—", 1) == 0)
+            {
+                //printf("HEREREREREEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n");
+                noMatches = 0;
+                break;
+            }
+        }
+        
+        if (noMatches == 1)
+        {
+            //reduce alternate forms to just one
+            strncpy(&buffer[n], &tempBuffer[offset], strlen(&tempBuffer[offset]));
+            starts[numStarts] = n;
+            numStarts++;
+            
+            //printf("%s\n", tempBuffer);
+            n += strlen(&tempBuffer[offset]);
+            strncpy(&buffer[n], "; ", 2);
+            n += 2;
+            
+            i++;
+        }
+    } while (i < numDistractors);
+    buffer[n - 2] = '\0';
 }
 
 char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen)

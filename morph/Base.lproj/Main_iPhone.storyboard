@@ -191,6 +191,12 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" minimumFontSize="17" id="MVA-iS-lVA">
+                                <rect key="frame" x="112" y="258" width="97" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -211,6 +217,7 @@
                         <outlet property="pluralLabel" destination="z9L-cT-7L6" id="Zrb-Pn-bFU"/>
                         <outlet property="singLabel" destination="bGL-iS-ZdM" id="Uud-gf-35z"/>
                         <outlet property="stemLabel" destination="trn-YV-WRn" id="i7n-ky-CeJ"/>
+                        <outlet property="textfield" destination="MVA-iS-lVA" id="U2t-P0-Ftt"/>
                         <outlet property="timeLabel" destination="hGA-yc-f7P" id="Qil-hj-1cO"/>
                         <outlet property="verbModeButton" destination="ZqE-ls-Xgs" id="z4D-m6-4ub"/>
                     </connections>

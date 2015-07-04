@@ -10,5 +10,8 @@
 #define __morph__GreekForms__
 
 #include <stdio.h>
+#include "libmorph.h"
+
+Verb verbs[NUM_VERBS];
 
 #endif /* defined(__morph__GreekForms__) */
