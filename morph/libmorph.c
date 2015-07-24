@@ -305,14 +305,12 @@ void randomAlternative(char *s, int *offset)
     }
     int random = randWithMax(numStarts);
     *offset = starts[random];
-    if (numStarts > 1)
-    {
-        printf("%d of %d\n", random, numStarts);
-    }
+
     if (random < numStarts - 1)
         s[starts[random + 1] - 2] = '\0';
 }
 
+//problem if match and distractor have are alternate forms of each other.
 void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors, char *buffer)
 {
     VerbFormC vf;
@@ -332,7 +330,7 @@ void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors
     getForm(new, tempBuffer); //put the changed form on the buffer so no duplicates
     randomAlternative(tempBuffer, &offset);
     strncpy(&buffer[n], &tempBuffer[offset], strlen(&tempBuffer[offset]));
-    n += strlen(buffer);
+    n += strlen(&tempBuffer[offset]);
     strncpy(&buffer[n], "; ", 2);
     n += 2;
     

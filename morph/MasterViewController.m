@@ -7,7 +7,6 @@
 //
 
 #import "MasterViewController.h"
-
 #import "DetailViewController.h"
 
 @interface MasterViewController ()
@@ -175,6 +174,17 @@
         
         [self.detailViewController setLevelArray: self.popup.buttonStates];
         [self.detailViewController configureView];
+    }
+    
+    NSInteger card = [[object valueForKey:@"sort"] integerValue];
+    
+    if ( card == 5 )
+    {
+        [self performSegueWithIdentifier:@"SegueToVerbTable"sender:self];
+    }
+    else if (card > 0 && card < 5)
+    {
+        [self performSegueWithIdentifier:@"showDetail"sender:self];
     }
     
     /*

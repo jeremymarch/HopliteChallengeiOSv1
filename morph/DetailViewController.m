@@ -411,37 +411,26 @@ UIView *backSideTest;
         NSArray *distractorArr = [distractors componentsSeparatedByString:@"; "];
         
         [UIView setAnimationsEnabled:NO];
-        newForm = [self selectRandomFromCSV:newForm];
-        [self.MCButtonA setTitle:newForm forState:UIControlStateNormal];
-        [self.MCButtonA setTitle:newForm forState:UIControlStateSelected];
         
-        //changeFormByDegrees(&vf, 1);
-        //getForm(&vf, buffer);
-        //NSString *mc1 = [NSString stringWithUTF8String: (const char*)buffer];
-        //mc1 = [self selectRandomFromCSV:mc1];
+        newForm = [self selectRandomFromCSV:newForm];
+        [self.MCButtonA setTitle:[distractorArr objectAtIndex:0] forState:UIControlStateNormal];
+        [self.MCButtonA setTitle:[distractorArr objectAtIndex:0] forState:UIControlStateSelected];
+        
         [self.MCButtonB setTitle:[distractorArr objectAtIndex:1] forState:UIControlStateNormal];
         [self.MCButtonB setTitle:[distractorArr objectAtIndex:1] forState:UIControlStateSelected];
         
-        //changeFormByDegrees(&vf, 1);
-        //getForm(&vf, buffer);
-        //NSString *mc2 = [NSString stringWithUTF8String: (const char*)buffer];
-        //mc2 = [self selectRandomFromCSV:mc2];
         [self.MCButtonC setTitle:[distractorArr objectAtIndex:2] forState:UIControlStateNormal];
         [self.MCButtonC setTitle:[distractorArr objectAtIndex:2] forState:UIControlStateSelected];
         
-        //changeFormByDegrees(&vf, 1);
-        //getForm(&vf, buffer);
-        //NSString *mc3 = [NSString stringWithUTF8String: (const char*)buffer];
-        //mc3 = [self selectRandomFromCSV:mc3];
         [self.MCButtonD setTitle:[distractorArr objectAtIndex:3] forState:UIControlStateNormal];
         [self.MCButtonD setTitle:[distractorArr objectAtIndex:3] forState:UIControlStateSelected];
-        
-        [UIView setAnimationsEnabled:NO]; //re-enables view animation
         
         self.MCButtonA.hidden = NO;
         self.MCButtonB.hidden = NO;
         self.MCButtonC.hidden = NO;
         self.MCButtonD.hidden = NO;
+        
+        [UIView setAnimationsEnabled:NO]; //re-enables view animation
     }
     
     //self.stemLabel.text = [NSString stringWithFormat:@"Change\n\n(%@)\n\n %@\n\nto\n\n%@\n\n%@", origDescription, origForm, newDescription, newForm];
@@ -1013,7 +1002,7 @@ UIView *backSideTest;
     
 	// Do any additional setup after loading the view, typically from a nib.
     
-    self.verbQuestionType = MULTIPLE_CHOICE;//PRACTICE;  //
+    self.verbQuestionType = PRACTICE;  //MULTIPLE_CHOICE;//
     [self.verbModeButton setTitle:@"MC" forState:UIControlStateNormal];
 
     self.levels = [NSMutableArray arrayWithObjects: nil];

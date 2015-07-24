@@ -33,6 +33,8 @@
 		3F73EDD3189642DA003638C5 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDAB189642DA003638C5 /* CoreData.framework */; };
 		3F73EDDB189642DA003638C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3F73EDD9189642DA003638C5 /* InfoPlist.strings */; };
 		3F73EDDD189642DA003638C5 /* morphTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F73EDDC189642DA003638C5 /* morphTests.m */; };
+		3F8167291B615A9F005B0FAD /* VerbsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */; };
+		3F81672D1B619BC4005B0FAD /* VerbDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F81672B1B616869005B0FAD /* VerbDetailViewController.m */; };
 		3F8621C01B433E28002B5059 /* Ding.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621BF1B433E28002B5059 /* Ding.mp3 */; };
 		3F8621C21B433FAA002B5059 /* Buzz01.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C11B433FAA002B5059 /* Buzz01.wav */; };
 		3F8621C41B433FD7002B5059 /* Buzz02.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C31B433FD7002B5059 /* Buzz02.wav */; };
@@ -89,6 +91,10 @@
 		3F73EDD8189642DA003638C5 /* morphTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "morphTests-Info.plist"; sourceTree = "<group>"; };
 		3F73EDDA189642DA003638C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3F73EDDC189642DA003638C5 /* morphTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = morphTests.m; sourceTree = "<group>"; };
+		3F8167271B615A9F005B0FAD /* VerbsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerbsTableViewController.h; sourceTree = "<group>"; };
+		3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VerbsTableViewController.m; sourceTree = "<group>"; };
+		3F81672A1B616869005B0FAD /* VerbDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerbDetailViewController.h; sourceTree = "<group>"; };
+		3F81672B1B616869005B0FAD /* VerbDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VerbDetailViewController.m; sourceTree = "<group>"; };
 		3F8621BF1B433E28002B5059 /* Ding.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Ding.mp3; sourceTree = "<group>"; };
 		3F8621C11B433FAA002B5059 /* Buzz01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Buzz01.wav; sourceTree = "<group>"; };
 		3F8621C31B433FD7002B5059 /* Buzz02.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Buzz02.wav; sourceTree = "<group>"; };
@@ -184,6 +190,10 @@
 				3F73EDC3189642DA003638C5 /* MasterViewController.m */,
 				3F73EDC5189642DA003638C5 /* DetailViewController.h */,
 				3F73EDC6189642DA003638C5 /* DetailViewController.m */,
+				3F8167271B615A9F005B0FAD /* VerbsTableViewController.h */,
+				3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */,
+				3F81672A1B616869005B0FAD /* VerbDetailViewController.h */,
+				3F81672B1B616869005B0FAD /* VerbDetailViewController.m */,
 				3FAA55441A2797C0003EFEDA /* PopUp.h */,
 				3FAA55451A2797C0003EFEDA /* PopUp.m */,
 				3FAA4FF51A2A73C300D49487 /* Verbs.h */,
@@ -351,9 +361,11 @@
 				3F73EDC4189642DA003638C5 /* MasterViewController.m in Sources */,
 				3F73EDB8189642DA003638C5 /* AppDelegate.m in Sources */,
 				3F2FD3001AF0625300B4CE7F /* GreekForms.c in Sources */,
+				3F81672D1B619BC4005B0FAD /* VerbDetailViewController.m in Sources */,
 				3F39F47D1B456DF900A58885 /* keyboard.m in Sources */,
 				3F73EDC1189642DA003638C5 /* morph.xcdatamodeld in Sources */,
 				3FAA4FF71A2A73C300D49487 /* Verbs.m in Sources */,
+				3F8167291B615A9F005B0FAD /* VerbsTableViewController.m in Sources */,
 				3FCEE6DA1ADE636500C550AD /* libmorph.c in Sources */,
 				3F73EDB4189642DA003638C5 /* main.m in Sources */,
 				3FAA55461A2797C0003EFEDA /* PopUp.m in Sources */,

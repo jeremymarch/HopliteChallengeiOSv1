@@ -13,5 +13,11 @@
 #include "libmorph.h"
 
 Verb verbs[NUM_VERBS];
+char *persons[];
+char *personsabrev[];
+char *numbers[];
+char *tenses[];
+char *voices[];
+char *moods[];
 
 #endif /* defined(__morph__GreekForms__) */
