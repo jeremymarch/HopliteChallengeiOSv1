@@ -77,6 +77,7 @@
                 rowCount++;
                 
                 vf.voice = v;
+                int countPerSection = 0;
                 for (int h = 0; h < NUM_NUMBERS; h++)
                 {
                     for (int i = 0; i < NUM_PERSONS; i++)
@@ -90,9 +91,16 @@
                             l.text = [NSString stringWithUTF8String: buffer];
                             l.font = [UIFont fontWithName:@"NewAthenaUnicode" size:26.0];
                             [self.view addSubview:l];
+                            countPerSection++;
                             rowCount++;
                         }
                     }
+                }
+                if (countPerSection == 0)
+                {
+                    //remove label
+                    [l removeFromSuperview];
+                    rowCount--;
                 }
             }
             //rowCount++;

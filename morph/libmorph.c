@@ -729,7 +729,9 @@ long randWithMax(unsigned int max)
     return x/bin_size;
     */
 }
-
+/**
+ * return 1 for success, 0 for failure
+ */
 int getForm(VerbFormC *vf, char *utf8OutputBuffer)
 {
     char *utf8Stems = getPrincipalPartForTense(vf->verb, vf->tense, vf->voice);
