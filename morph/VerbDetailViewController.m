@@ -48,47 +48,54 @@
         vf.tense = g1;
         for (int v = 0; v < NUM_VOICES; v++)
         {
-            NSString *s;
-            if (v == ACTIVE || g1 == AORIST || g1 == FUTURE)
+            for (int m = 0; m < NUM_MOODS; m++)
             {
-                s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], [NSString stringWithUTF8String: voices[v]], [NSString stringWithUTF8String: moods[INDICATIVE]]];
-            }
-            else if (v == MIDDLE)
-            {
-                s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], @"middle/passive", [NSString stringWithUTF8String: moods[INDICATIVE]]];
-            }
-            else
-            {
-                continue; //skip passive if middle+passive are the same
-            }
-            
-            UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(0, rowCount * (labelHeight + verticalPadding), self.view.frame.size.width, labelHeight)];
-            l.text = s;
-            l.font = [UIFont fontWithName:@"HelveticaNeue" size:18.0];
-            l.textColor = [UIColor whiteColor];
-            l.backgroundColor = [UIColor blackColor];
-            
-            [self.view addSubview:l];
-            rowCount++;
-            
-            vf.voice = v;
-            for (int h = 0; h < NUM_NUMBERS; h++)
-            {
-                for (int i = 0; i < NUM_PERSONS; i++)
+                if (m != INDICATIVE && (g1 == PERFECT || g1 == PLUPERFECT || g1 == IMPERFECT || g1 == FUTURE))
+                    continue;
+                
+                NSString *s;
+                if (v == ACTIVE || g1 == AORIST || g1 == FUTURE)
                 {
-                    vf.number = h;
-                    vf.person = i;
-                    if (getForm(&vf, buffer))
+                    s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], [NSString stringWithUTF8String: voices[v]], [NSString stringWithUTF8String: moods[m]]];
+                }
+                else if (v == MIDDLE)
+                {
+                    s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], @"middle/passive", [NSString stringWithUTF8String: moods[m]]];
+                }
+                else
+                {
+                    continue; //skip passive if middle+passive are the same
+                }
+                
+                UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(0, rowCount * (labelHeight + verticalPadding), self.view.frame.size.width, labelHeight)];
+                l.text = s;
+                l.font = [UIFont fontWithName:@"HelveticaNeue" size:18.0];
+                l.textColor = [UIColor whiteColor];
+                l.backgroundColor = [UIColor blackColor];
+                
+                [self.view addSubview:l];
+                rowCount++;
+                
+                vf.voice = v;
+                for (int h = 0; h < NUM_NUMBERS; h++)
+                {
+                    for (int i = 0; i < NUM_PERSONS; i++)
                     {
-                        UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(leftPadding, rowCount * (labelHeight + verticalPadding), self.view.frame.size.width, labelHeight)];
-                        l.text = [NSString stringWithUTF8String: buffer];
-                        l.font = [UIFont fontWithName:@"NewAthenaUnicode" size:26.0];
-                        [self.view addSubview:l];
-                        rowCount++;
+                        vf.number = h;
+                        vf.person = i;
+                        vf.mood = m;
+                        if (getForm(&vf, buffer))
+                        {
+                            UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(leftPadding, rowCount * (labelHeight + verticalPadding), self.view.frame.size.width, labelHeight)];
+                            l.text = [NSString stringWithUTF8String: buffer];
+                            l.font = [UIFont fontWithName:@"NewAthenaUnicode" size:26.0];
+                            [self.view addSubview:l];
+                            rowCount++;
+                        }
                     }
                 }
             }
-            rowCount++;
+            //rowCount++;
         }
     }
     //set height of scrollview

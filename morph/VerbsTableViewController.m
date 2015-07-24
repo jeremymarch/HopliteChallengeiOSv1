@@ -30,6 +30,17 @@
     self->verbsPerSection[8] = 4;
     self->verbsPerSection[9] = 6;
     
+    self->verbsPerSection[10] = 7;
+    self->verbsPerSection[11] = 8;
+    self->verbsPerSection[12] = 8;
+    self->verbsPerSection[13] = 8;
+    self->verbsPerSection[14] = 8;
+    self->verbsPerSection[15] = 8;
+    self->verbsPerSection[16] = 6;
+    self->verbsPerSection[17] = 9;
+    self->verbsPerSection[18] = 9;
+    self->verbsPerSection[19] = 7;
+    
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -48,7 +59,7 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 #warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 10;
+    return 20;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

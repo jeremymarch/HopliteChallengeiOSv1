@@ -508,7 +508,7 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen)
     else if (vf->tense == FUTURE && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE)
         ending = FUTURE_MIDPASS_IND;
     else
-        return NULL;
+        return NULL; //or return ""?
     
     if (vf->person == FIRST && vf->number == SINGULAR)
         return endings[ending].fs;
@@ -523,7 +523,7 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen)
     else if (vf->person == THIRD && vf->number == PLURAL)
         return endings[ending].tp;
     else
-        return NULL;
+        return NULL; //or return ""?
     /*
     if ( mood == INFINITIVE)
     {

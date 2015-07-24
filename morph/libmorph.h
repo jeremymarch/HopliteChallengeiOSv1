@@ -17,7 +17,8 @@
 
 typedef int UCS2;
 
-#define NUM_VERBS 34//25 //113
+#define NUM_VERBS 113//34//25 //
+
 
 //verb classes
 enum {
