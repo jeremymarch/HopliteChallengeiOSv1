@@ -89,13 +89,14 @@
                         {
                             UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(leftPadding, rowCount * (labelHeight + verticalPadding), self.view.frame.size.width, labelHeight)];
                             l.text = [NSString stringWithUTF8String: buffer];
-                            l.font = [UIFont fontWithName:@"NewAthenaUnicode" size:26.0];
+                            l.font = [UIFont fontWithName:@"NewAthenaUnicode" size:24.0];
                             [self.view addSubview:l];
                             countPerSection++;
                             rowCount++;
                         }
                     }
                 }
+                //if no forms in a section, remove its label
                 if (countPerSection == 0)
                 {
                     //remove label

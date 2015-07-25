@@ -74,6 +74,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.title = @"Menu";
+    self.navigationItem.titleView = [[UIView alloc] init]; //hides title view
+    
     self.wantsFullScreenLayout = YES;
     self.navigationController.navigationBar.translucent = YES;
     //[[NSBundle mainBundle] loadNibNamed:@"PopUp" owner:self options:nil];

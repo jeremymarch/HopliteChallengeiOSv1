@@ -19,6 +19,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.title = @"Verbs";
+    self.navigationItem.titleView = [[UIView alloc] init]; //HIDES title from display
+    //self.navigationItem.titleView.hidden = YES; //doesn't work, use above
+    
+    //Verbs per unit
     self->verbsPerSection[0] = 2;
     self->verbsPerSection[1] = 2;
     self->verbsPerSection[2] = 4;
@@ -29,7 +34,6 @@
     self->verbsPerSection[7] = 2;
     self->verbsPerSection[8] = 4;
     self->verbsPerSection[9] = 6;
-    
     self->verbsPerSection[10] = 7;
     self->verbsPerSection[11] = 8;
     self->verbsPerSection[12] = 8;
@@ -84,7 +88,7 @@
     UIView *customTitleView = [ [UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 30)];
     UILabel *titleLabel = [ [UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 30)];
     
-    titleLabel.text = [NSString stringWithFormat:@"  Section %ld", section + 1];
+    titleLabel.text = [NSString stringWithFormat:@"  Unit %ld", section + 1];
     titleLabel.textColor = [UIColor whiteColor];
     titleLabel.backgroundColor = [UIColor blackColor];
     [customTitleView addSubview:titleLabel];
