@@ -28,6 +28,7 @@ enum {
     CONSONANT_STEM_PERFECT_3, // πεφύλαγμαι
     CONSONANT_STEM_PERFECT_4, // κεκέλευσμαι
     CONSONANT_STEM_PERFECT_5, // σῴζω one part is consonant stem, the other not, so check.
+    CONSONANT_STEM_PERFECT_6, // ἤγγελμαι
     PREFIXED,
     CONTRACTED_FUTURE,
     MI_VERB
@@ -61,10 +62,10 @@ enum {
 
 enum {
     PRESENT = 0,
-    AORIST,
-    PERFECT,
     IMPERFECT,
     FUTURE,
+    AORIST,
+    PERFECT,
     PLUPERFECT,
     NUM_TENSES
 };
@@ -92,6 +93,13 @@ enum {
     TENSE,
     VOICE,
     MOOD
+};
+
+enum {
+    NOT_DEPONENT = 0,
+    MIDDLE_DEPONENT,
+    PASSIVE_DEPONENT,
+    PARTIAL_DEPONENT
 };
 
 #define UNICODE_SURROGATE_PAIR    -1
@@ -198,7 +206,7 @@ enum {
     NUM_ENDINGS
 };
 
-int getForm(VerbFormC *vf, char *buffer);
+int getForm(VerbFormC *vf, char *buffer, int bufferLen);
 
 Verb *getRandomVerb(int *units, int numUnits);
 Ending *getRandomEnding(int *units, int numUnits);
@@ -214,6 +222,8 @@ void getAbbrevDescription (VerbFormC *vf, char *buffer, int len);
 void getPrincipalParts(Verb *v, char *buffer, int len);
 
 char *getPrincipalPartForTense(Verb *verb, int tense, int voice);
+
+bool isDeponent(VerbFormC *vf, UCS2 *stem, int stemLen);
 
 bool isVowel(UCS2 l);
 bool isLong(UCS2 l);

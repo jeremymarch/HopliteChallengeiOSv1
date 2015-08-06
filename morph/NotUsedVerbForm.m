@@ -17,7 +17,7 @@
  ID with rollers for parameters
  */
 
-#import "VerbForm.h"
+#import "NotUsedVerbForm.h"
 #import "AppDelegate.h"
 #import "libmorph.h"
 #import "GreekUnicode.h"
@@ -354,7 +354,7 @@
     char utf8[1024];
     //NSLog(@"Verb: %s %i %i %i %i %i", v->present, vf.person, vf.number, vf.tense, vf. voice, vf.mood);
     
-    getForm(&vf, utf8);
+    getForm(&vf, utf8, 1024);
  /*
     NSString *stem = [self getPrincipalPart];
     

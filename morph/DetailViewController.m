@@ -8,11 +8,9 @@
 
 #import "AppDelegate.h"
 #import "DetailViewController.h"
-#import "VerbForm.h"
 #import "libmorph.h"
 #import "GreekForms.h"
 #import <AudioToolbox/AudioToolbox.h>
-
 
 SystemSoundID DingSound;
 SystemSoundID BuzzSound;
@@ -31,7 +29,6 @@ SystemSoundID BuzzSound;
 UIView *flipContainer;
 UIView *frontSideTest;
 UIView *backSideTest;
-//...
 -(void)turnUp
 {
     flipContainer = self.view;
@@ -152,6 +149,7 @@ UIView *backSideTest;
 
 -(void)setLevelArray: (NSMutableArray*)array
 {
+    NSLog(@"set level array");
     self.buttonStates = array;
 }
 
@@ -367,6 +365,9 @@ UIView *backSideTest;
     char buffer[bufferLen];
     NSInteger units[20] = { 1,2,3,4,5,6,7,8,9,10,11 };
     int numUnits = 11;
+    
+    NSLog(@"num %lu", (unsigned long)[self.levels count]);
+    
     if ([self.levels count] > 0)
     {
         int i;
@@ -374,6 +375,7 @@ UIView *backSideTest;
         for (i = 0; i < [self.levels count]; i++)
         {
             units[i] = [[self.levels objectAtIndex:i] integerValue];
+            NSLog(@"num %ld", (long)units[i]);
             numUnits++;
         }
     }
@@ -386,7 +388,7 @@ UIView *backSideTest;
     do
     {
         generateForm(&vf);
-        getForm(&vf, buffer);
+        getForm(&vf, buffer, bufferLen);
     } while (!strncmp(buffer, "—", 1));
     
     NSString *origForm = [NSString stringWithUTF8String: (const char*)buffer];
@@ -396,7 +398,7 @@ UIView *backSideTest;
     //NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
     changeFormByDegrees(&vf, 2);
-    getForm(&vf, buffer);
+    getForm(&vf, buffer, bufferLen);
     NSString *newForm = [NSString stringWithUTF8String: (const char*)buffer];
     getAbbrevDescription(&vf, buffer, bufferLen);
     NSString *newDescription = [NSString stringWithUTF8String: (const char*)buffer];
@@ -647,7 +649,7 @@ UIView *backSideTest;
     vf.verb = v;
     
     generateForm(&vf);
-    getForm(&vf, buffer);
+    getForm(&vf, buffer, bufferLen);
     NSString *frontForm = [NSString stringWithUTF8String: (const char*)buffer];
     frontForm = [self selectRandomFromCSV:frontForm];
     
@@ -1065,8 +1067,10 @@ UIView *backSideTest;
     
     for (int i = 0; i < [self.buttonStates count]; i++)
     {
+        NSLog(@"Level1: %d", i);
         if ([[self.buttonStates objectAtIndex:i] boolValue] == YES)
         {
+            NSLog(@"Level2: %d", i);
             [self.levels addObject:[NSNumber numberWithInt:(i+1)]];
         }
     }

@@ -85,7 +85,7 @@
                         vf.number = h;
                         vf.person = i;
                         vf.mood = m;
-                        if (getForm(&vf, buffer))
+                        if (getForm(&vf, buffer, bufferLen))
                         {
                             UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(leftPadding, rowCount * (labelHeight + verticalPadding), self.view.frame.size.width, labelHeight)];
                             l.text = [NSString stringWithUTF8String: buffer];

@@ -175,7 +175,7 @@
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         self.detailViewController.detailItem = object;
-        
+        NSLog(@"buttons: %ld", [self.popup.buttonStates count]);
         [self.detailViewController setLevelArray: self.popup.buttonStates];
         [self.detailViewController configureView];
     }
@@ -188,6 +188,8 @@
     }
     else if (card > 0 && card < 5)
     {
+        NSLog(@"buttons: %ld", [self.popup.buttonStates count]);
+        [self.detailViewController setLevelArray: self.popup.buttonStates];
         [self performSegueWithIdentifier:@"showDetail"sender:self];
     }
     

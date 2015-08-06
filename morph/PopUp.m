@@ -120,12 +120,19 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
     UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
     BOOL b = NO;
     if (cell.accessoryType == UITableViewCellAccessoryCheckmark)
+    {
+        NSLog(@"no");
         b = NO;
+    }
     else
+    {
+        NSLog(@"yes");
         b = YES;
+    }
     [self.buttonStates setObject:[NSNumber numberWithBool:b] atIndexedSubscript:indexPath.row];
     [[NSUserDefaults standardUserDefaults] setObject:self.buttonStates forKey:@"Levels"];
     [tableView reloadData];
