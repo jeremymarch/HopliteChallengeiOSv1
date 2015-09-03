@@ -60,7 +60,15 @@
                 }
                 else if (v == MIDDLE)
                 {
-                    s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], @"middle/passive", [NSString stringWithUTF8String: moods[m]]];
+                    //FIX ME, is this right?? how do we label these?
+                    if ( deponentType(vf.verb) == MIDDLE_DEPONENT || deponentType(vf.verb) == PASSIVE_DEPONENT)
+                    {
+                        s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], @"middle", [NSString stringWithUTF8String: moods[m]]];
+                    }
+                    else
+                    {
+                        s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], @"middle/passive", [NSString stringWithUTF8String: moods[m]]];
+                    }
                 }
                 else
                 {
@@ -85,7 +93,7 @@
                         vf.number = h;
                         vf.person = i;
                         vf.mood = m;
-                        if (getForm(&vf, buffer, bufferLen))
+                        if (getForm(&vf, buffer, bufferLen, true))
                         {
                             UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(leftPadding, rowCount * (labelHeight + verticalPadding), self.view.frame.size.width, labelHeight)];
                             l.text = [NSString stringWithUTF8String: buffer];

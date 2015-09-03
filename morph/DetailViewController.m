@@ -12,6 +12,9 @@
 #import "GreekForms.h"
 #import <AudioToolbox/AudioToolbox.h>
 
+//http://stackoverflow.com/questions/1560081/how-can-i-create-a-uicolor-from-a-hex-string
+#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 SystemSoundID DingSound;
 SystemSoundID BuzzSound;
 
@@ -289,6 +292,232 @@ UIView *backSideTest;
 
 -(void) loadMorphTraining
 {
+    //this should be done elsewhere
+    VerbFormC vf;
+    Verb *v;
+    int bufferLen = 1024;
+    char buffer[bufferLen];
+    NSInteger units[20] = { 1,2,3,4,5,6,7,8,9,10,11 };
+    int numUnits = 11;
+    
+    NSLog(@"num %lu", (unsigned long)[self.levels count]);
+    
+    if ([self.levels count] > 0)
+    {
+        int i;
+        numUnits = 0;
+        for (i = 0; i < [self.levels count]; i++)
+        {
+            units[i] = [[self.levels objectAtIndex:i] integerValue];
+            NSLog(@"num %ld", (long)units[i]);
+            numUnits++;
+        }
+    }
+
+    v = getRandomVerb( (int*)units, numUnits);//&verbs[13];//
+    vf.verb = v;
+    
+    //don't use dash for first verb form.
+    do
+    {
+        generateForm(&vf);
+        getForm(&vf, buffer, bufferLen, false);
+    } while (!strncmp(buffer, "—", 1));
+    
+    NSString *distractors = nil;
+    NSArray *distractorArr = nil;
+    NSString *origForm = nil;
+    NSString *newForm = nil;
+    NSString *newDescription = nil;
+    
+    origForm = [NSString stringWithUTF8String: (const char*)buffer];
+    origForm = [self selectRandomFromCSV:origForm];
+    
+    //getAbbrevDescription(&vf, buffer, bufferLen);
+    //NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
+    
+    changeFormByDegrees(&vf, 2);
+    
+    getForm(&vf, buffer, bufferLen, true);
+    newForm = [NSString stringWithUTF8String: (const char*)buffer];
+    
+    getAbbrevDescription(&vf, buffer, bufferLen);
+    newDescription = [NSString stringWithUTF8String: (const char*)buffer];
+    
+    if (self.verbQuestionType == MULTIPLE_CHOICE)
+    {
+        //stops pause when updating button text
+        //http://stackoverflow.com/questions/18946490/how-to-stop-unwanted-uibutton-animation-on-title-change
+        
+        getDistractorsForChange(&vf, &vf, 3, buffer);
+        distractors = [NSString stringWithUTF8String: (const char*)buffer];
+        distractorArr = [distractors componentsSeparatedByString:@"; "];
+    }
+    
+    /*** Set label and button text ***/
+    self.origForm.text = origForm;
+    self.stemLabel.text = [NSString stringWithFormat:@"to\n\n%@", newDescription];
+    
+    if (self.verbQuestionType == PRACTICE)
+    {
+        self.changedForm.text = newForm;
+    }
+    else if (self.verbQuestionType == MULTIPLE_CHOICE)
+    {
+        //stops pause when updating button text
+        //http://stackoverflow.com/questions/18946490/how-to-stop-unwanted-uibutton-animation-on-title-change
+        
+        [UIView setAnimationsEnabled:NO];
+        
+        //newForm = [self selectRandomFromCSV:newForm];
+        
+        [self.MCButtonA setTitle:[distractorArr objectAtIndex:0] forState:UIControlStateNormal];
+        [self.MCButtonB setTitle:[distractorArr objectAtIndex:1] forState:UIControlStateNormal];
+        [self.MCButtonC setTitle:[distractorArr objectAtIndex:2] forState:UIControlStateNormal];
+        [self.MCButtonD setTitle:[distractorArr objectAtIndex:3] forState:UIControlStateNormal];
+        
+        [UIView setAnimationsEnabled:YES]; //re-enables view animation
+    }
+    
+    CGRect screenBound = [[UIScreen mainScreen] bounds];
+    CGSize screenSize = screenBound.size;
+    
+    /******* NOW SETUP THE VIEW: static layout which should be done elsewhere ******/
+    self.origForm.backgroundColor = [UIColor whiteColor];
+    self.origForm.layer.cornerRadius = 8;
+    [self.origForm.layer setMasksToBounds:YES];
+    self.changedForm.backgroundColor = [UIColor whiteColor];
+    self.changedForm.layer.cornerRadius = 8;
+    [self.changedForm.layer setMasksToBounds:YES];
+    
+    [self.verbModeButton setFrame:CGRectMake(self.view.frame.size.width - 60 - 6, 6, 60, 36.0)];
+    
+    self.stemLabel.textAlignment = NSTextAlignmentCenter;
+    if (self.verbQuestionType == PRACTICE)
+    {
+        [self.correctButton.layer setMasksToBounds:YES];
+        self.correctButton.layer.borderWidth = 2.0f;
+        self.correctButton.layer.borderColor = [UIColor blackColor].CGColor;
+        
+        [self.incorrectButton.layer setMasksToBounds:YES];
+        self.incorrectButton.layer.borderWidth = 2.0f;
+        self.incorrectButton.layer.borderColor = [UIColor blackColor].CGColor;
+    }
+    
+    /* init stuff */
+    
+    self.origForm.hidden = NO;
+    self.stemLabel.hidden = NO;
+    self.backLabel.hidden = YES;
+    self.changedForm.hidden = YES;
+    self.correctButton.hidden = YES;
+    self.incorrectButton.hidden = YES;
+
+    if (self.verbQuestionType != MULTIPLE_CHOICE)
+    {
+        self.MCButtonA.hidden = YES;
+        self.MCButtonB.hidden = YES;
+        self.MCButtonC.hidden = YES;
+        self.MCButtonD.hidden = YES;
+    }
+    else if (self.verbQuestionType == MULTIPLE_CHOICE)
+    {
+        self.MCButtonA.hidden = NO;
+        self.MCButtonB.hidden = NO;
+        self.MCButtonC.hidden = NO;
+        self.MCButtonD.hidden = NO;
+    }
+    
+    if (self.verbQuestionType == MULTIPLE_CHOICE)
+    {
+        NSInteger sidePadding = 9;
+        NSInteger verticalPadding = 9;
+        NSInteger mcHeight = 58;
+        
+        NSInteger mcWidth = self.view.frame.size.width - (sidePadding * 2); //was screenSize.width
+        NSInteger topStart = self.view.frame.size.height - (4*mcHeight) - (4*verticalPadding);//270;
+        double cornerRadius = mcHeight / 2.2;
+        float borderWidth = 4.0f;
+        UIColor *borderColor = [UIColor blackColor];
+        UIColor *textColor = [UIColor blackColor];
+        UIColor *backgroundColor = [UIColor whiteColor];
+        
+        for (NSInteger i = self.mcButtonsOrder.count - 1; i > 0; i--)
+        {
+            [self.mcButtonsOrder exchangeObjectAtIndex:i withObjectAtIndex:arc4random_uniform(i+1)];
+        }
+        
+        NSInteger i = 0;
+        
+        for (UIButton *mcButton in self.mcButtons)
+        {
+            NSInteger n = [[self.mcButtonsOrder objectAtIndex:i] integerValue];
+            
+            [mcButton.layer setMasksToBounds:YES];
+            mcButton.layer.borderWidth = borderWidth;
+            mcButton.layer.borderColor = borderColor.CGColor;
+            mcButton.layer.cornerRadius = cornerRadius;
+            [mcButton setTitleColor:textColor forState:UIControlStateNormal];
+            mcButton.backgroundColor = backgroundColor;
+
+            [mcButton setFrame:CGRectMake(sidePadding, topStart + ((mcHeight + verticalPadding) * n), mcWidth, mcHeight)];
+
+            i++;
+        }
+
+        self.stemLabel.layer.borderWidth = 0.0;
+        [self.stemLabel setFrame:CGRectMake(0, 140, self.view.frame.size.width, 100.0)];
+        [self.origForm setFrame:CGRectMake(0, 80, self.view.frame.size.width, 50.0)];
+    }
+    
+
+    if (!self.animate)
+    {
+        if (self.verbQuestionType == PRACTICE)
+        {
+            [self.stemLabel setFrame:CGRectMake(0, 70, self.view.frame.size.width, 240.0)];
+            [self.changedForm setFrame:CGRectMake(0, 200, self.view.frame.size.width, 240.0)];
+        }
+        
+        [self.stemLabel setFrame:CGRectMake(0, (screenSize.height - 240)/2, self.view.frame.size.width, 240.0)];
+    }
+    else if (self.animate)
+    {
+        [self.changedForm setFrame:CGRectMake(6, 340, self.view.frame.size.width - 12, self.changedForm.frame.size.height)];
+        
+        //for acceleration see this:
+        //http://stackoverflow.com/questions/5100811/algorithm-to-control-acceleration-until-a-position-is-reached
+        
+        //http://stackoverflow.com/questions/21848864/uilabel-animation-up-and-down
+        self.origForm.alpha = 1;
+        self.origForm.frame = CGRectMake(6, screenBound.size.height, screenBound.size.width - 12, 60);
+        
+        
+        [UIView animateWithDuration:0.3
+                              delay:0
+                            options:0//UIViewAnimationOptionCurveEaseIn
+                         animations:^{
+                             self.origForm.frame = CGRectMake(self.origForm.frame.origin.x, 80, self.origForm.frame.size.width, self.origForm.frame.size.height); // 200 is considered to be center
+                             self.origForm.alpha = 1;
+                         }
+                         completion:nil ];
+        
+        self.stemLabel.frame = CGRectMake(0, screenBound.size.height, screenBound.size.width, 100);
+        
+        [UIView animateWithDuration:0.3
+                              delay:0.5
+                            options:0//UIViewAnimationOptionCurveEaseIn
+                         animations:^{
+                             self.stemLabel.frame = CGRectMake(self.stemLabel.frame.origin.x, 170, self.stemLabel.frame.size.width, self.stemLabel.frame.size.height);                             self.stemLabel.alpha = 1;
+                         }
+                         completion:nil ];
+    }
+
+    self.startTime = CACurrentMediaTime();
+}
+/*
+-(void) loadMorphTrainingOLD
+{
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
     
@@ -301,7 +530,7 @@ UIView *backSideTest;
     
     self.correctButton.hidden = YES;
     self.incorrectButton.hidden = YES;
-
+    
     if (self.verbQuestionType == PRACTICE)
     {
         [self.correctButton.layer setMasksToBounds:YES];
@@ -349,17 +578,17 @@ UIView *backSideTest;
             mcButton.layer.cornerRadius = cornerRadius;
             [mcButton setTitleColor:textColor forState:UIControlStateNormal];
             mcButton.backgroundColor = backgroundColor;
-
+            
             [mcButton setFrame:CGRectMake(sidePadding, topStart + ((mcHeight + verticalPadding) * n), mcWidth, mcHeight)];
-
+            
             i++;
         }
-
+        
         self.stemLabel.layer.borderWidth = 0.0;
         [self.stemLabel setFrame:CGRectMake(0, 140, self.view.frame.size.width, 100.0)];
         [self.origForm setFrame:CGRectMake(0, 80, self.view.frame.size.width, 50.0)];
     }
-
+    
     //this should be done elsewhere
     int bufferLen = 1024;
     char buffer[bufferLen];
@@ -393,7 +622,7 @@ UIView *backSideTest;
     
     NSString *origForm = [NSString stringWithUTF8String: (const char*)buffer];
     origForm = [self selectRandomFromCSV:origForm];
-
+    
     getAbbrevDescription(&vf, buffer, bufferLen);
     //NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
@@ -438,6 +667,34 @@ UIView *backSideTest;
     //self.stemLabel.text = [NSString stringWithFormat:@"Change\n\n(%@)\n\n %@\n\nto\n\n%@\n\n%@", origDescription, origForm, newDescription, newForm];
     self.origForm.text = origForm;
     self.origForm.hidden = NO;
+    
+    if (self.animate) //if animate
+    {
+        //http://stackoverflow.com/questions/21848864/uilabel-animation-up-and-down
+        self.origForm.alpha = 1;
+        self.origForm.frame = CGRectMake(self.origForm.frame.origin.x, screenBound.size.height, self.origForm.frame.size.width, self.origForm.frame.size.height);
+        
+        [UIView animateWithDuration:0.3
+                              delay:0
+                            options:UIViewAnimationOptionCurveEaseIn
+                         animations:^{
+                             self.origForm.frame = CGRectMake(self.origForm.frame.origin.x, 80, self.origForm.frame.size.width, self.origForm.frame.size.height); // 200 is considered to be center
+                             self.origForm.alpha = 1;
+                         }
+                         completion:nil];
+        
+        self.stemLabel.frame = CGRectMake(self.stemLabel.frame.origin.x, screenBound.size.height, self.stemLabel.frame.size.width, self.stemLabel.frame.size.height);
+        
+        [UIView animateWithDuration:0.3
+                              delay:0.5
+                            options:UIViewAnimationOptionCurveEaseIn
+                         animations:^{
+                             self.stemLabel.frame = CGRectMake(self.origForm.frame.origin.x, 70, self.origForm.frame.size.width, self.origForm.frame.size.height); // 200 is considered to be center
+                             self.origForm.alpha = 1;
+                         }
+                         completion:nil ];
+    }
+    
     self.stemLabel.text = [NSString stringWithFormat:@"to\n\n%@", newDescription];
     
     if (self.verbQuestionType == PRACTICE)
@@ -452,7 +709,7 @@ UIView *backSideTest;
     self.stemLabel.hidden = NO;
     self.startTime = CACurrentMediaTime();
 }
-
+*/
 -(void) loadEnding
 {
     /*
@@ -649,7 +906,7 @@ UIView *backSideTest;
     vf.verb = v;
     
     generateForm(&vf);
-    getForm(&vf, buffer, bufferLen);
+    getForm(&vf, buffer, bufferLen, false);
     NSString *frontForm = [NSString stringWithUTF8String: (const char*)buffer];
     frontForm = [self selectRandomFromCSV:frontForm];
     
@@ -797,7 +1054,7 @@ UIView *backSideTest;
     ///Users/jeremy/Dropbox/Code/cocoa/morphv5/morph/DetailViewController.mNSString *font = @"Kailasa";
     //NSString *font = @"ArialMT";
     
-    UIFont *greekFont = [UIFont fontWithName:self.greekFont size:30.0];
+    UIFont *greekFont = [UIFont fontWithName:self.greekFont size:36.0];
     
     self.origForm.font = greekFont;
     self.changedForm.font = greekFont;
@@ -961,24 +1218,25 @@ UIView *backSideTest;
 {
     [super viewDidLoad];
 
+    self.animate = true;
     self.systemFont = @"HelveticaNeue";
     self.greekFont = @"NewAthenaUnicode";
     
-    /*
+    
     //if (!self.keyboard)
     //{
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-    {
-        self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 172.0) lang:1];
-    }
-    else
-    {
-        self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 266.0) lang:1];
-    }
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+        {
+            self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 172.0) lang:1];
+        }
+        else
+        {
+            self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 266.0) lang:1];
+        }
     //}
-    */
-    //[self.textfield setInputView: self.keyboard];
-    self.textfield.hidden = YES;
+    
+    [self.textfield setInputView: self.keyboard];
+    self.textfield.hidden = NO;
     
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
@@ -989,6 +1247,7 @@ UIView *backSideTest;
     self.wantsFullScreenLayout = YES;
     self.view.frame = [[UIScreen mainScreen] bounds];
     self.view.backgroundColor = [UIColor whiteColor];
+    //self.view.backgroundColor = UIColorFromRGB(0xEEEEEE);//[UIColor lightGrayColor];//[UIColor whiteColor];
     
     self.backgroundOrBorder = YES;
 

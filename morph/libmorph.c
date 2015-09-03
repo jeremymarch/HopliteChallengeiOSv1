@@ -17,7 +17,7 @@
  TO DO:
  
  future contracts
- labeling of pass/mid for deponent verbs
+ add in imperatives
  check the randomVerb units code
  
  *remember, don't copy and paste unicode files into android studio, copy and paste file in finder
@@ -26,11 +26,11 @@
 bool letterIsAccented(UCS2 letter);
 void stripAccent(UCS2 *word, int *len);
 char *getEnding(VerbFormC *vf, UCS2 *ending, int endingLen);
-void stripEndingFromPrincipalPart(UCS2 *stem, int *len, int tense, int voice);
+void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, unsigned char voice);
 void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len);
-void stripAugmentFromPrincipalPart(UCS2 *ucs2, int *len, int tense, int voice, int mood, int presentStemInitial);
+void stripAugmentFromPrincipalPart(UCS2 *ucs2, int *len, unsigned char tense, unsigned char voice, unsigned char mood, UCS2 presentStemInitial);
 void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen);
-bool accentRecessive(UCS2 *tempUcs2String, int *len, int optative);
+bool accentRecessive(UCS2 *tempUcs2String, int *len, bool optative);
 bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent);
 bool isContractedVerb(VerbFormC *vf, UCS2 *ucs2, int *len);
 
@@ -112,9 +112,23 @@ Ending endings[NUM_ENDINGS] = {
     { 0, 10, 0, 0, 0, "ῶ", "οῖς", "οῖ", "ῶμεν", "ῶτε", "ῶσι(ν)", "" },         //pres active subj o
     { 0, 10, 0, 0, 0, "ῶμαι", "οῖ", "ῶται", "ώμεθα", "ῶσθε", "ῶνται", "" },   //pres mid/pass subj o
     { 0, 10, 0, 0, 0, "οῖμι, οίην", "οῖς, οίης", "οῖ, οίη", "οῖμεν, οῖημεν", "οῖτε, οίητε", "οῖεν, οίησαν", "" },//pres act opt o
-    { 0, 10, 0, 0, 0, "οίμην", "οῖο", "οῖτο", "οίμεθα", "οῖσθε", "οῖντο", "" },   //pres mid/ass opt o
+    
+    { 0, 10, 0, 0, 0, "μι", "ς", "σι", "μεν", "τε", "ᾱσι(ν)", "" },   //pres mid/ass opt o
 };
+/*
+void VFToShort(VerbFormC *vf, unsigned short *s)
+{
+    
+}
 
+void shortToVF(unsigned short s, VerbFormC *vf)
+{
+    if ( (s & PRESENT_) == PRESENT_)
+        vf->tense = PRESENT;
+    else if (s & FUTURE_) == FUTURE_)
+        vf->tense = FUTURE;
+}
+*/
 Verb *getRandomVerb(int *units, int numUnits)
 {
     int u, v;
@@ -303,7 +317,7 @@ void randomAlternative(char *s, int *offset)
 {
     int starts[5] = { 0,0,0,0,0 };
     int numStarts = 1;
-    int lenS = strlen(s);
+    unsigned long lenS = strlen(s);
     
     for (int i = 0; i < lenS; i++)
     {
@@ -313,7 +327,7 @@ void randomAlternative(char *s, int *offset)
             numStarts++;
         }
     }
-    int random = randWithMax(numStarts);
+    long random = randWithMax(numStarts);
     *offset = starts[random];
 
     if (random < numStarts - 1)
@@ -337,7 +351,7 @@ void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors
     char tempBuffer[2048];
     int offset = 0;
     
-    getForm(new, tempBuffer, 2048); //put the changed form on the buffer so no duplicates
+    getForm(new, tempBuffer, 2048, false); //put the changed form on the buffer so no duplicates
     randomAlternative(tempBuffer, &offset);
     strncpy(&buffer[n], &tempBuffer[offset], strlen(&tempBuffer[offset]));
     n += strlen(&tempBuffer[offset]);
@@ -357,7 +371,7 @@ void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors
         
         changeFormByDegrees(&vf, 1);
         
-        getForm(&vf, tempBuffer, 2048);
+        getForm(&vf, tempBuffer, 2048, false);
         offset = 0;
         randomAlternative(tempBuffer, &offset);
 
@@ -393,8 +407,8 @@ void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors
 
 char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen)
 {
-    int secondAorist[2] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_NU };
-    int secondAorist2[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
+    UCS2 secondAorist[2] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_NU };
+    UCS2 secondAorist2[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
     
     int ending = 0;
     /* CONTRACTED FUTURES */
@@ -555,7 +569,7 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen)
     */
 }
 
-char * getPrincipalPartForTense(Verb *verb, int tense, int voice)
+char * getPrincipalPartForTense(Verb *verb, unsigned char tense, unsigned char voice)
 {
     //also need to consider deponent verbs
     if (tense == PRESENT || tense == IMPERFECT)
@@ -576,11 +590,11 @@ char * getPrincipalPartForTense(Verb *verb, int tense, int voice)
 
 void changeFormByDegrees(VerbFormC *verbform, int degrees)
 {
-    int tempPerson;
-    int tempNumber;
-    int tempTense;
-    int tempVoice;
-    int tempMood;
+    unsigned char tempPerson;
+    unsigned char tempNumber;
+    unsigned char tempTense;
+    unsigned char tempVoice;
+    unsigned char tempMood;
     
     int components[degrees];
     
@@ -639,7 +653,7 @@ void changeFormByDegrees(VerbFormC *verbform, int degrees)
             }
         }
     } //make sure form is valid and this verb has the required principal part
-    while(!formIsValidReal((int)tempPerson, (int)tempNumber, (int)tempTense, (int)tempVoice, (int)tempMood) || getPrincipalPartForTense(verbform->verb, tempTense, tempVoice)[0] == '\0');
+    while(!formIsValidReal(tempPerson, tempNumber, tempTense, tempVoice, tempMood) || getPrincipalPartForTense(verbform->verb, tempTense, tempVoice)[0] == '\0');
     
     verbform->person = tempPerson;
     verbform->number = tempNumber;
@@ -664,16 +678,16 @@ int chooseRandomFromArrayWithWeighting(int *values, int len, int *weights)
 
 void generateForm(VerbFormC *verbform)
 {
-    int iTense, iMood, iVoice, iPerson, iNumber;
+    unsigned char iTense, iMood, iVoice, iPerson, iNumber;
     
     do
     {
-        iTense = (int)randWithMax(NUM_TENSES);
-        iMood = (int)randWithMax(NUM_MOODS);
+        iTense = (unsigned char)randWithMax(NUM_TENSES);
+        iMood = (unsigned char)randWithMax(NUM_MOODS);
         while ( iTense != PRESENT && iTense != AORIST && iMood != INDICATIVE )
-            iMood = (int)randWithMax(NUM_MOODS);
+            iMood = (unsigned char)randWithMax(NUM_MOODS);
         
-        iVoice = (int)randWithMax(NUM_VOICES);
+        iVoice = (unsigned char)randWithMax(NUM_VOICES);
         /*
          if (iMood == 1)
          {
@@ -690,8 +704,8 @@ void generateForm(VerbFormC *verbform)
          else
          {
          */
-        iPerson = (int)randWithMax(NUM_PERSONS);
-        iNumber = (int)randWithMax(NUM_NUMBERS);
+        iPerson = (unsigned char)randWithMax(NUM_PERSONS);
+        iNumber = (unsigned char)randWithMax(NUM_NUMBERS);
         //}
         
         //NSArray conj = [NSArray arrayWithObjects: [NSNumber  v], nil];
@@ -751,7 +765,7 @@ long randWithMax(unsigned int max)
 /**
  * return 1 for success, 0 for failure
  */
-int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen)
+int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAlternateForms)
 {
     //clear buffer
     for (int i = 0; i < bufferLen; i++)
@@ -766,10 +780,9 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen)
     UCS2 ucs2Stems[(strlen(utf8Stems) * 3) + 1];
     int ucs2StemsLen = 0;
     utf8_to_ucs2_string((const unsigned char*)utf8Stems, ucs2Stems, &ucs2StemsLen);
-    
     stripAccent(ucs2Stems, &ucs2StemsLen);
-    char *utf8Ending = getEnding(vf, ucs2Stems, ucs2StemsLen); //get ending here before stripping from pp, so know if 2nd aorist
     
+    char *utf8Ending = getEnding(vf, ucs2Stems, ucs2StemsLen); //get ending here before stripping from pp, so know if 2nd aorist
     UCS2 ucs2Endings[(strlen(utf8Ending) * 3) + 1];
     int ucs2EndingsLen = 0;
     utf8_to_ucs2_string((const unsigned char*)utf8Ending, ucs2Endings, &ucs2EndingsLen);
@@ -808,7 +821,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen)
     int stemLen = 0;
     int endingStart = 0;
     int endingLen = 0;
-    int ucs2StemPlusEndingBuffer[1024];
+    UCS2 ucs2StemPlusEndingBuffer[1024];
     //buffer needs to be cleared
     for (i = 0; i < 1024; i++)
         ucs2StemPlusEndingBuffer[i] = 0;
@@ -822,7 +835,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen)
         
         //eliminate FUTURE PASSIVE blaphthhsomai here
         //NB: accent is already stripped by now
-        int blaph[8] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_BETA, GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_PHI, GREEK_SMALL_LETTER_THETA, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
+        UCS2 blaph[8] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_BETA, GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_PHI, GREEK_SMALL_LETTER_THETA, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
         if (vf->tense == FUTURE && vf->voice == PASSIVE && stemLen == 8 && hasPrefix(&ucs2Stems[stemStart], 8, blaph, 8))
         {
             continue;
@@ -848,7 +861,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen)
             int stemStartInBuffer = ucs2StemPlusEndingBufferLen - stemLen; //set to the index in ucs2StemPlusEndingBuffer
             int tempStemLen = stemLen;
             
-            stripEndingFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, (int)vf->tense, (int)vf->voice);
+            stripEndingFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, vf->tense, vf->voice);
             
             if (vf->tense == IMPERFECT || vf->tense == PLUPERFECT)
             {
@@ -862,9 +875,9 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen)
                 int ucs2PresentLen = 0;
                 utf8_to_ucs2_string((const unsigned char*)vf->verb->present, ucs2Present, &ucs2PresentLen);
                 stripAccent(ucs2Present, &ucs2PresentLen);
-                int presentInitialLetter = ucs2Present[0];
+                UCS2 presentInitialLetter = ucs2Present[0];
                 
-                stripAugmentFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, (int)vf->tense, (int)vf->voice, (int)vf->mood, presentInitialLetter);
+                stripAugmentFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, vf->tense, vf->voice, vf->mood, presentInitialLetter);
             }
             
             addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen);
@@ -872,11 +885,11 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen)
             //add accent, if word does not already have one
             if (!wordIsAccented(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen))
             {
-                int isOpt = 0;
+                bool isOpt = false;
                 if (vf->mood == OPTATIVE)
-                    isOpt = 1;
+                    isOpt = true;
                 else
-                    isOpt = 0;
+                    isOpt = false;
                 
                 accentRecessive(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, isOpt);
             }
@@ -907,8 +920,8 @@ bool utf8HasSuffix(char *s, char *suffix)
     if (suffixLen > len)
         return false;
     
-    long j = 0;
-    for (long i = suffixLen; i >= 0; i--, j--)
+    long j = len - 1;
+    for (long i = suffixLen - 1; i >= 0; i--, j--)
     {
         if (suffix[i] != s[j])
             return false;
@@ -919,11 +932,11 @@ bool utf8HasSuffix(char *s, char *suffix)
 //page 316 in h&q
 int deponentType(Verb *v)
 {
-    if ( utf8HasSuffix(v->present, "ομαι") && utf8HasSuffix(v->future, "ομαι") && utf8HasSuffix(v->aorist, "άμην") && v->perf == '\0' && utf8HasSuffix(v->perfmid, "μαι") && v->aoristpass == '\0')
+    if ( utf8HasSuffix(v->present, "ομαι") && utf8HasSuffix(v->future, "ομαι") && utf8HasSuffix(v->aorist, "άμην") && v->perf[0] == '\0' && utf8HasSuffix(v->perfmid, "μαι") && v->aoristpass[0] == '\0')
     {
         return MIDDLE_DEPONENT;
     }
-    else if ( utf8HasSuffix(v->present, "ομαι") && utf8HasSuffix(v->future, "ομαι") && v->aorist == '\0' && v->perf == '\0' && utf8HasSuffix(v->perfmid, "μαι") && v->aoristpass != '\0')
+    else if ( utf8HasSuffix(v->present, "ομαι") && utf8HasSuffix(v->future, "ομαι") && v->aorist[0] == '\0' && v->perf[0] == '\0' && utf8HasSuffix(v->perfmid, "μαι") && v->aoristpass[0] != '\0')
     {
         return PASSIVE_DEPONENT;
     }
@@ -952,7 +965,7 @@ bool isDeponent(VerbFormC *vf, UCS2 *stem, int stemLen)
     return false;
 }
 
-bool accentRecessive(UCS2 *tempUcs2String, int *len, int isOptative)
+bool accentRecessive(UCS2 *tempUcs2String, int *len, bool isOptative)
 {
     //find syllable
     int i = 0;
@@ -1616,9 +1629,9 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
 
 bool isContractedVerb(VerbFormC *vf, UCS2 *ucs2, int *len)
 {
-    int oStem[2] = { GREEK_SMALL_LETTER_OMICRON_WITH_OXIA, GREEK_SMALL_LETTER_OMEGA };
-    int aStem[2] = { GREEK_SMALL_LETTER_ALPHA_WITH_OXIA, GREEK_SMALL_LETTER_OMEGA };
-    int eStem[2] = { GREEK_SMALL_LETTER_EPSILON_WITH_OXIA, GREEK_SMALL_LETTER_OMEGA };
+    UCS2 oStem[2] = { GREEK_SMALL_LETTER_OMICRON_WITH_OXIA, GREEK_SMALL_LETTER_OMEGA };
+    UCS2 aStem[2] = { GREEK_SMALL_LETTER_ALPHA_WITH_OXIA, GREEK_SMALL_LETTER_OMEGA };
+    UCS2 eStem[2] = { GREEK_SMALL_LETTER_EPSILON_WITH_OXIA, GREEK_SMALL_LETTER_OMEGA };
     
     if (hasSuffix(ucs2, *len, aStem, 2))
     {
@@ -1633,7 +1646,7 @@ bool isContractedVerb(VerbFormC *vf, UCS2 *ucs2, int *len)
     return false;
 }
 
-void stripAugmentFromPrincipalPart(UCS2 *ucs2, int *len, int tense, int voice, int mood, UCS2 presentStemInitial)
+void stripAugmentFromPrincipalPart(UCS2 *ucs2, int *len, unsigned char tense, unsigned char voice, unsigned char mood, UCS2 presentStemInitial)
 {
     if (tense == AORIST && (mood == SUBJUNCTIVE || mood == OPTATIVE))
     {
@@ -1818,13 +1831,13 @@ void stripAccent(UCS2 *word, int *len)
 }
 
 //accents should be stripped before calling this
-void stripEndingFromPrincipalPart(UCS2 *stem, int *len, int tense, int voice)
+void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, unsigned char voice)
 {
-    int presDeponent[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
-    int aoristDeponent[4] = { GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
+    UCS2 presDeponent[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
+    UCS2 aoristDeponent[4] = { GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
     
-    int secondAoristDeponent[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
-    int secondAorist[2] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_NU };
+    UCS2 secondAoristDeponent[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
+    UCS2 secondAorist[2] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_NU };
     
     if ((tense == PRESENT || tense == IMPERFECT) && hasSuffix(stem, *len, presDeponent, 4)) //ομαι
         *len -= 4;
@@ -2146,7 +2159,7 @@ bool isConsonant(UCS2 l)
     }
 }
 
-bool formIsValidReal(int person, int number, int tense, int voice, int mood)
+bool formIsValidReal(unsigned char person, unsigned char number, unsigned char tense, unsigned char voice, unsigned char mood)
 {
     if ( tense == IMPERFECT && (mood == SUBJUNCTIVE || mood == OPTATIVE) )
         return false;

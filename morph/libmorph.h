@@ -15,7 +15,7 @@
 #define NUM_VOWELS 14
 #define NUM_CONSONANTS 35
 
-typedef int UCS2;
+typedef unsigned short UCS2;
 
 #define NUM_VERBS 113//34//25 //
 
@@ -84,7 +84,8 @@ enum {
     SUBJUNCTIVE,
     OPTATIVE,
     INFINITIVE,
-    IMPERATIVE
+    IMPERATIVE,
+    PARTICIPLE
 };
 
 enum {
@@ -120,20 +121,20 @@ typedef struct v {
 } Verb;
 
 typedef struct vf {
-    int person;
-    int number;
-    int tense;
-    int voice;
-    int mood;
+    unsigned char person;
+    unsigned char number;
+    unsigned char tense;
+    unsigned char voice;
+    unsigned char mood;
     Verb *verb;
 } VerbFormC;
 
 typedef struct e {
     unsigned int id;
     unsigned char hq;
-    int tense;
-    int voice;
-    int mood;
+    unsigned char tense;
+    unsigned char voice;
+    unsigned char mood;
     char *fs;
     char *ss;
     char *ts;
@@ -206,7 +207,7 @@ enum {
     NUM_ENDINGS
 };
 
-int getForm(VerbFormC *vf, char *buffer, int bufferLen);
+int getForm(VerbFormC *vf, char *buffer, int bufferLen, bool includeAlternateForms);
 
 Verb *getRandomVerb(int *units, int numUnits);
 Ending *getRandomEnding(int *units, int numUnits);
@@ -221,8 +222,9 @@ void getAbbrevDescription (VerbFormC *vf, char *buffer, int len);
 
 void getPrincipalParts(Verb *v, char *buffer, int len);
 
-char *getPrincipalPartForTense(Verb *verb, int tense, int voice);
+char *getPrincipalPartForTense(Verb *verb, unsigned char tense, unsigned char voice);
 
+int deponentType(Verb *v);
 bool isDeponent(VerbFormC *vf, UCS2 *stem, int stemLen);
 
 bool isVowel(UCS2 l);
@@ -230,7 +232,7 @@ bool isLong(UCS2 l);
 bool isSecondVowelOfDiphthong(UCS2 *tempUcs2String, int len, int i);
 bool isConsonant(UCS2 l);
 
-bool formIsValidReal(int person, int number, int tense, int voice, int mood);
+bool formIsValidReal(unsigned char person, unsigned char number, unsigned char tense, unsigned char voice, unsigned char mood);
 
 int ucs2_to_utf8 (UCS2 ucs2, unsigned char * utf8);
 UCS2 utf8_to_ucs2 (const unsigned char * input, const unsigned char ** end_ptr);
@@ -238,6 +240,7 @@ UCS2 utf8_to_ucs2 (const unsigned char * input, const unsigned char ** end_ptr);
 void utf8_to_ucs2_string(const unsigned char *utf8, UCS2 *ucs2, int *len);
 int ucs2_to_utf8_string(UCS2 *ucs2, int len, unsigned char *utf8);
 
+bool utf8HasSuffix(char *s, char *suffix);
 bool hasPrefix(UCS2 *stem, int len, UCS2 *prefix, int preflen);
 bool hasSuffix(UCS2 *stem, int len, UCS2 *suffix, int sufflen);
 

@@ -23,6 +23,7 @@ enum {
 @property NSMutableArray *buttonStates;
 @property NSMutableArray *levels;
 @property bool front;
+@property bool animate;
 @property NSString *backCard;
 @property CFTimeInterval startTime;
 @property NSInteger menuItem;

@@ -354,7 +354,7 @@
     char utf8[1024];
     //NSLog(@"Verb: %s %i %i %i %i %i", v->present, vf.person, vf.number, vf.tense, vf. voice, vf.mood);
     
-    getForm(&vf, utf8, 1024);
+    getForm(&vf, utf8, 1024, true);
  /*
     NSString *stem = [self getPrincipalPart];
     
