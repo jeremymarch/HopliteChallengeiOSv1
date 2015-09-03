@@ -33,6 +33,7 @@
 		3F73EDD3189642DA003638C5 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDAB189642DA003638C5 /* CoreData.framework */; };
 		3F73EDDB189642DA003638C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3F73EDD9189642DA003638C5 /* InfoPlist.strings */; };
 		3F73EDDD189642DA003638C5 /* morphTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F73EDDC189642DA003638C5 /* morphTests.m */; };
+		3F75F5541B98837800BCA4AD /* checkVerbForms.c in Sources */ = {isa = PBXBuildFile; fileRef = 3F75F5531B98837800BCA4AD /* checkVerbForms.c */; };
 		3F8167291B615A9F005B0FAD /* VerbsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */; };
 		3F81672D1B619BC4005B0FAD /* VerbDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F81672B1B616869005B0FAD /* VerbDetailViewController.m */; };
 		3F8167301B674935005B0FAD /* GreekGlobals.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F81672F1B674935005B0FAD /* GreekGlobals.m */; };
@@ -92,6 +93,7 @@
 		3F73EDD8189642DA003638C5 /* morphTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "morphTests-Info.plist"; sourceTree = "<group>"; };
 		3F73EDDA189642DA003638C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3F73EDDC189642DA003638C5 /* morphTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = morphTests.m; sourceTree = "<group>"; };
+		3F75F5531B98837800BCA4AD /* checkVerbForms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = checkVerbForms.c; sourceTree = "<group>"; };
 		3F8167271B615A9F005B0FAD /* VerbsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerbsTableViewController.h; sourceTree = "<group>"; };
 		3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VerbsTableViewController.m; sourceTree = "<group>"; };
 		3F81672A1B616869005B0FAD /* VerbDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerbDetailViewController.h; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 		3F73EDAE189642DA003638C5 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				3F75F5531B98837800BCA4AD /* checkVerbForms.c */,
 				3F8621BF1B433E28002B5059 /* Ding.mp3 */,
 				3F8621C51B433FE6002B5059 /* Ding.wav */,
 				3F8621C11B433FAA002B5059 /* Buzz01.wav */,
@@ -375,6 +378,7 @@
 				3FCEE6DA1ADE636500C550AD /* libmorph.c in Sources */,
 				3F73EDB4189642DA003638C5 /* main.m in Sources */,
 				3FAA55461A2797C0003EFEDA /* PopUp.m in Sources */,
+				3F75F5541B98837800BCA4AD /* checkVerbForms.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

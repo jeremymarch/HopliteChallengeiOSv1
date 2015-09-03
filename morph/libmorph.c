@@ -782,6 +782,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     utf8_to_ucs2_string((const unsigned char*)utf8Stems, ucs2Stems, &ucs2StemsLen);
     stripAccent(ucs2Stems, &ucs2StemsLen);
     
+    //This needs to be in the stems loop.  What if the stems require different endings?
     char *utf8Ending = getEnding(vf, ucs2Stems, ucs2StemsLen); //get ending here before stripping from pp, so know if 2nd aorist
     UCS2 ucs2Endings[(strlen(utf8Ending) * 3) + 1];
     int ucs2EndingsLen = 0;
