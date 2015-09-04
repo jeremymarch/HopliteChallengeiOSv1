@@ -13,6 +13,8 @@
 #include "libmorph.h"
 
 Verb verbs[NUM_VERBS];
+Ending endings[NUM_ENDINGS];
+
 char *persons[];
 char *personsabrev[];
 char *numbers[];

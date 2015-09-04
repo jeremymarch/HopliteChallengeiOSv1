@@ -15,8 +15,7 @@
 
 /*
  TO DO:
- 
- need to add contracted imperatives
+ verb prefixes
  check the randomVerb units code
  
  *remember, don't copy and paste unicode files into android studio, copy and paste file in finder
@@ -45,7 +44,7 @@ char *tensesabbrev[NUM_TENSES] = { "pres.", "imp.", "fut.", "aor.", "perf.", "pl
 char *voices[NUM_VOICES] = { "active", "middle", "passive" };
 char *voicesabbrev[NUM_VOICES] = { "act.", "mid.", "pass." };
 char *moods[NUM_MOODS] = { "indicative", "subjunctive", "optative", "imperative", "infinitive" };
-char *moodsabbrev[NUM_MOODS] = { "ind.", "subj.", "opt." };
+char *moodsabbrev[NUM_MOODS] = { "ind.", "subj.", "opt.", "imper." };
 
 void endingGetDescription(int e, char *buffer, int bufferLen)
 {
@@ -56,72 +55,6 @@ void endingGetDescription(int e, char *buffer, int bufferLen)
     snprintf(buffer, bufferLen, "%s %s %s", "Present", "Active", "Subjunctive");
 }
 
-Ending endings[NUM_ENDINGS] = {
-    { 0, 2, 0, 0, 0, "ω", "εις", "ει", "ομεν", "ετε", "ουσι(ν)", "Present Active Indicative" },
-    { 0, 2, 0, 0, 0, "ον", "ες", "ε(ν)", "ομεν", "ετε", "ον", "Imperfect Active Indicative" },
-    { 0, 2, 0, 0, 0, "α", "ας", "ε(ν)", "αμεν", "ατε", "αν", "Aorist Active Indicative" },
-    { 0, 3, 0, 0, 0, "α", "ας", "ε(ν)", "αμεν", "ατε", "ᾱσι(ν)", "Perfect Active Indicative" },
-    { 0, 3, 0, 0, 0, "η", "ης", "ει(ν)", "εμεν", "ετε", "εσαν", "Pluperfect Active Indicative" },
-    { 0, 2, 0, 0, 0, "ω", "εις", "ει", "ομεν", "ετε", "ουσι(ν)", "Future Active Indicative" },
-    { 0, 3, 0, 0, 0, "ω", "ῃς", "ῃ", "ωμεν", "ητε", "ωσι(ν)", "Present Active Subjunctive" },
-    { 0, 3, 0, 0, 0, "ω", "ῃς", "ῃ", "ωμεν", "ητε", "ωσι(ν)", "Aorist Active Subjunctive" },
-    { 0, 3, 0, 0, 0, "οιμι", "οις", "οι", "οιμεν", "οιτε", "οιεν", "Present Active Optative" },
-    { 0, 3, 0, 0, 0, "αιμι", "αις, ειας", "αι, ειε(ν)", "αιμεν", "αιτε", "αιεν, ειαν", "Aorist Active Optative" },
-    { 0, 5, 0, 0, 0, "ομαι", "ει, ῃ", "εται", "ομεθα", "εσθε", "ονται", "Present Middle/Passive Indicative" },
-    { 0, 5, 0, 0, 0, "ομην", "ου", "ετο", "ομεθα", "εσθε", "οντο", "Imperfect Middle/Passive Indicative" },
-    { 0, 5, 0, 0, 0, "ην", "ης", "η", "ημεν", "ητε", "ησαν", "Aorist Passive Indicative" },
-    { 0, 7, 0, 0, 0, "αμην", "ω", "ατο", "αμεθα", "ασθε", "αντο", "Aorist Middle Indicative" },
-    { 0, 5, 0, 0, 0, "ῶ", "ῇς", "ῇ", "ῶμεν", "ῆτε", "ῶσι(ν)", "Aorist Passive Subjunctive" },
-    { 0, 5, 0, 0, 0, "ειην", "ειης", "ειη", "εῖμεν, ειημεν", "εῖτε, ειητε", "εῖεν, ειησαν", "Aorist Passive Optative" },
-    { 0, 7, 0, 0, 0, "ωμαι", "ῃ", "ηται", "ωμεθα", "ησθε", "ωνται", "Aorist Middle Subjunctive" },
-    { 0, 7, 0, 0, 0, "αιμην", "αιο", "αιτο", "αιμεθα", "αισθε", "αιντο", "Aorist Middle Optative" },
-    { 0, 5, 0, 0, 0, "μαι", "σαι", "ται", "μεθα", "σθε", "νται", "Perfect Middle/Passive Indicative" },
-    { 0, 5, 0, 0, 0, "μην", "σο", "το", "μεθα", "σθε", "ντο", "Pluperfect Middle/Passive Indicative" },
-    { 0, 5, 0, 0, 0, "ωμαι", "ῃ", "ηται", "ωμεθα", "ησθε", "ωνται", "Present Middle/Passive Subjunctive" },
-    { 0, 5, 0, 0, 0, "οιμην", "οιο", "οιτο", "οιμεθα", "οισθε", "οιντο", "Present Middle/Passive Optative" },
-    { 0, 11, 0, 0, 0, "", "ε", "ετω",   "", "ετε", "οντων", "Present Active Imperative" },
-    { 0, 11, 0, 0, 0, "", "ου", "εσθω", "", "εσθε", "εσθων", "Present Middle/Passive Imperative" },
-    { 0, 11, 0, 0, 0, "", "ον", "ατω",  "", "ατε", "αντων", "Aorist Active Imperative" },
-    { 0, 11, 0, 0, 0, "", "αι", "ασθω", "", "ασθε", "ασθων", "Aorist Middle Imperative" },
-    { 0, 11, 0, 0, 0, "", "ητι, ηθι", "ητω", "", "ητε", "εντων", "Aorist Passive Imperative" },
-    { 0, 5, 0, 0, 0, "ομαι", "ει, ῃ", "εται", "ομεθα", "εσθε", "ονται", "Future Middle/Passive Indicative" },
-    
-    { 0, 9, 0, 0, 0, "ῶ", "ᾷς", "ᾷ", "ῶμεν", "ᾶτε", "ῶσι(ν)", "" },         //pres active indic a
-    { 0, 9, 0, 0, 0, "ῶμαι", "ᾷ", "ᾷται", "ώμεθα", "ᾶσθε", "ῶνται", "" },   //pres mid/ass indic a
-    { 0, 9, 0, 0, 0, "ων", "ᾶς", "ᾶ", "ῶμεν", "ᾶτε", "ων", "" },            //impf active indic a
-    { 0, 9, 0, 0, 0, "ώμην", "ῶ", "ᾶτο", "ώμεθα", "ᾶσθε", "ῶντο", "" },     //impf mid/pass indic a
-    { 0, 9, 0, 0, 0, "ῶ", "ᾷς", "ᾷ", "ῶμεν", "ᾶτε", "ῶσι(ν)", "" },         //pres active subj a
-    { 0, 9, 0, 0, 0, "ῶμαι", "ᾷ", "ᾷται", "ώμεθα", "ᾶσθε", "ῶνται", "" },   //pres mid/ass subj a
-    { 0, 9, 0, 0, 0, "ῷμι, ῴην", "ῷς, ῴης", "ῷ, ῴη", "ῷμεν, ῴημεν", "ῷτε, ῴητε", "ῷεν, ῴησαν", "" }, //pres active opt a
-    { 0, 9, 0, 0, 0, "ῴμην", "ῷο", "ῷτο", "ῴμεθα", "ῷσθε", "ῷντο", "" },   //pres mid/ass opt a
-    
-    { 0, 9, 0, 0, 0, "ῶ", "εῖς", "εῖ", "οῦμεν", "εῖτε", "οῦσι(ν)", "" },         //pres active indic e
-    { 0, 9, 0, 0, 0, "οῦμαι", "εῖ, ῇ", "εῖται", "οῦμεθα", "εῖσθε", "οῦνται", "" },   //pres mid/pass indic e
-    { 0, 9, 0, 0, 0, "ουν", "εις", "ει", "οῦμεν", "εῖτε", "ουν", "" },            //impf active indic e
-    { 0, 9, 0, 0, 0, "ούμην", "οῦ", "εῖτο", "ούμεθα", "εῖσθε", "οῦντο", "" },     //impf mid/pass indic e
-    { 0, 9, 0, 0, 0, "ῶ", "ῇς", "ῇ", "ῶμεν", "ῆτε", "ῶσι(ν)", "" },         //pres active subj e
-    { 0, 9, 0, 0, 0, "ῶμαι", "ῇ", "ῆται", "ώμεθα", "ῆσθε", "ῶνται", "" },   //pres mid/pass subj e
-    { 0, 9, 0, 0, 0, "οῖμι, οίην", "οῖς, οίης", "οῖ, οίη", "οῖμεν, οῖημεν", "οῖτε, οίητε", "οῖεν, οίησαν", "" },//pres act opt e
-    { 0, 9, 0, 0, 0, "οίμην", "οῖο", "οῖτο", "οίμεθα", "οῖσθε", "οῖντο", "" },   //pres mid/ass opt e
-
-    { 0, 10, 0, 0, 0, "ῶ", "οῖς", "οῖ", "οῦμεν", "οῖτε", "οῦσι(ν)", "" },         //pres active indic o
-    { 0, 10, 0, 0, 0, "οῦμαι", "οῖ", "οῖται", "οῦμεθα", "οῦσθε", "οῦνται", "" },   //pres mid/pass indic o
-    { 0, 10, 0, 0, 0, "ουν", "ους", "ου", "οῦμεν", "οῦτε", "ουν", "" },            //impf active indic o
-    { 0, 10, 0, 0, 0, "ούμην", "οῦ", "οῦτο", "ούμεθα", "οῦσθε", "οῦντο", "" },     //impf mid/pass indic o
-    { 0, 10, 0, 0, 0, "ῶ", "οῖς", "οῖ", "ῶμεν", "ῶτε", "ῶσι(ν)", "" },         //pres active subj o
-    { 0, 10, 0, 0, 0, "ῶμαι", "οῖ", "ῶται", "ώμεθα", "ῶσθε", "ῶνται", "" },   //pres mid/pass subj o
-    { 0, 10, 0, 0, 0, "οῖμι, οίην", "οῖς, οίης", "οῖ, οίη", "οῖμεν, οῖημεν", "οῖτε, οίητε", "οῖεν, οίησαν", "" },//pres act opt o
-    { 0, 9, 0, 0, 0, "οίμην", "οῖο", "οῖτο", "οίμεθα", "οῖσθε", "οῖντο", "" },   //pres mid/ass opt o
-    
-    { 0, 11, 0, 0, 0, "", "ᾱ", "ᾱ́τω",   "", "ᾶτε", "ώντων", "Present Active Imperative" }, //pres. active imper a
-    { 0, 11, 0, 0, 0, "", "ῶ", "ᾱ́σθω", "", "ᾶσθε", "ᾱ́σθων", "Present Middle/Passive Imperative" }, //pres. mid/pass imper a
-    { 0, 11, 0, 0, 0, "", "ει", "είτω",   "", "εῖτε", "ούντων", "Present Active Imperative" }, //pres. active imper e
-    { 0, 11, 0, 0, 0, "", "οῦ", "είσθω", "", "εῖσθε", "είσθων", "Present Middle/Passive Imperative" }, //pres. mid/pass imper e
-    { 0, 11, 0, 0, 0, "", "ου", "ούτω",   "", "οῦτε", "ούντων", "Present Active Imperative" }, //pres. active imper o
-    { 0, 11, 0, 0, 0, "", "οῦ", "ούσθω", "", "οῦσθε", "ούσθων", "Present Middle/Passive Imperative" }, //pres. mid/pass imper o
-    
-    { 0, 10, 0, 0, 0, "μι", "ς", "σι", "μεν", "τε", "ᾱσι(ν)", "" }   //mi
-};
 /*
 void VFToShort(VerbFormC *vf, unsigned short *s)
 {
@@ -217,6 +150,7 @@ bool letterIsAccented(UCS2 letter)
 {
     switch (letter)
     {
+        case COMBINING_ACUTE:
             /* ALPHA */
         case GREEK_SMALL_LETTER_ALPHA_WITH_TONOS:
         case GREEK_SMALL_LETTER_ALPHA_WITH_OXIA:
@@ -418,8 +352,20 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture)
     UCS2 secondAorist2[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
     
     int ending = 0;
+    /* MI */
+    if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == INDICATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
+        ending = PRESENT_ACTIVE_INDICATIVE_MI;
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
+        ending = PERFECT_MIDPASS_IND;
+    
+    if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == SUBJUNCTIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
+        ending = AORIST_PASSIVE_SUBJ;
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == SUBJUNCTIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
+        ending = AORIST_PASSIVE_SUBJ;
+    
+    /* /MI */
     /* CONTRACTED FUTURES */
-    if (vf->tense == FUTURE && vf->voice == ACTIVE && contractedFuture)
+    else if (vf->tense == FUTURE && vf->voice == ACTIVE && contractedFuture)
         ending = PRESENT_ACTIVE_INDIC_E_CONTRACTED;
     else if (vf->tense == FUTURE && vf->voice == MIDDLE && contractedFuture)
         ending = PRESENT_MIDPASS_INDIC_E_CONTRACTED;
@@ -867,6 +813,9 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         
         //This needs to be in the stems loop.  What if the stems require different endings?
         char *utf8Ending = getEnding(vf, ucs2Stems, ucs2StemsLen, contractedFuture); //get ending here before stripping from pp, so know if 2nd aorist
+        if (!utf8Ending)
+            return 0;
+        
         UCS2 ucs2Endings[(strlen(utf8Ending) * 3) + 1];
         int ucs2EndingsLen = 0;
         utf8_to_ucs2_string((const unsigned char*)utf8Ending, ucs2Endings, &ucs2EndingsLen);
@@ -882,8 +831,6 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             }
         }
         endingStarts[numEndings] = i + 2; //to get length of last stem. plus 2 to simulate a comma and space
-        
-        
         
         for (ending = 0; ending < numEndings; ending++)
         {
@@ -920,6 +867,13 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             }
             
             addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen);
+            
+            //Labe/ Accent EXCEPTION H&Q page 326
+            UCS2 labe[] = { GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_BETA, GREEK_SMALL_LETTER_EPSILON } ;
+            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, labe, 4))
+            {
+                ucs2StemPlusEndingBuffer[3] = GREEK_SMALL_LETTER_EPSILON_WITH_OXIA;
+            }
             
             //add accent, if word does not already have one
             if (!wordIsAccented(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen))
@@ -1229,7 +1183,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
     }
     else if (vf->tense == PERFECT && (vf->voice == MIDDLE || vf->voice == PASSIVE))
     {
-        if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_1) //γέγραμμαι
+        if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_1) == CONSONANT_STEM_PERFECT_1) //γέγραμμαι
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
@@ -1280,7 +1234,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
                 return;
             }
         }
-        else if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_2) //πέπεμμαι
+        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_2) == CONSONANT_STEM_PERFECT_2) //πέπεμμαι
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
@@ -1331,7 +1285,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
                 return;
             }
         }
-        else if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_3) //πεφύλαγμαι
+        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_3) == CONSONANT_STEM_PERFECT_3) //πεφύλαγμαι
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
@@ -1382,7 +1336,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
                 return;
             }
         }
-        else if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_4 || (vf->verb->verbclass == CONSONANT_STEM_PERFECT_5 &&  ucs2[(*len)-1] == GREEK_SMALL_LETTER_SIGMA)) //κεκέλευσμαι or σῴζω which is both consonant stem and not.
+        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_4) == CONSONANT_STEM_PERFECT_4 || ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_5) == CONSONANT_STEM_PERFECT_5 &&  ucs2[(*len)-1] == GREEK_SMALL_LETTER_SIGMA)) //κεκέλευσμαι or σῴζω which is both consonant stem and not.
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
@@ -1430,7 +1384,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
                 return;
             }
         }
-        else if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_6) //ἄγγελμαι
+        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_6) == CONSONANT_STEM_PERFECT_6) //ἄγγελμαι
         {
             //H&Q page 273, only different in 2nd and 3rd person plural
             if (vf->person == SECOND && vf->number == PLURAL)
@@ -1450,7 +1404,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
     }
     else if (vf->tense == PLUPERFECT && (vf->voice == MIDDLE || vf->voice == PASSIVE))
     {
-        if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_1) //γέγραμμαι
+        if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_1) == CONSONANT_STEM_PERFECT_1) //γέγραμμαι
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
@@ -1499,7 +1453,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
                 return;
             }
         }
-        else if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_2) //πέπεμμαι
+        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_2) == CONSONANT_STEM_PERFECT_2) //πέπεμμαι
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
@@ -1548,7 +1502,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
                 return;
             }
         }
-        else if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_3) //πεφύλαγμαι
+        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_3) == CONSONANT_STEM_PERFECT_3) //πεφύλαγμαι
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
@@ -1597,7 +1551,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
                 return;
             }
         }
-        else if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_4 || (vf->verb->verbclass == CONSONANT_STEM_PERFECT_5 &&  ucs2[(*len)-1] == GREEK_SMALL_LETTER_SIGMA)) //κεκέλευσμαι or σῴζω which is both consonant stem and not.
+        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_4) == CONSONANT_STEM_PERFECT_4 || ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_5) == CONSONANT_STEM_PERFECT_5 &&  ucs2[(*len)-1] == GREEK_SMALL_LETTER_SIGMA)) //κεκέλευσμαι or σῴζω which is both consonant stem and not.
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
@@ -1643,7 +1597,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
                 return;
             }
         }
-        else if (vf->verb->verbclass == CONSONANT_STEM_PERFECT_6) //ἄγγελμαι
+        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_6) == CONSONANT_STEM_PERFECT_6) //ἄγγελμαι
         {
             //H&Q page 273, only different in 2nd and 3rd person plural
             if (vf->person == SECOND && vf->number == PLURAL)
@@ -1670,6 +1624,18 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
         ucs2[*len] = GREEK_SMALL_LETTER_ETA;
         ucs2[(*len) + 1] = GREEK_SMALL_LETTER_SIGMA;
         (*len) += 2; //parens required here fyi
+    }
+    else if (vf->tense == PRESENT && utf8HasSuffix(vf->verb->present, "μι"))
+    {
+        if (vf->voice != ACTIVE || vf->number == PLURAL)
+        {
+            if (ucs2[*len - 1] == GREEK_SMALL_LETTER_OMEGA)
+                ucs2[*len - 1] = GREEK_SMALL_LETTER_OMICRON;
+            else if (ucs2[*len - 1] == GREEK_SMALL_LETTER_ETA && ucs2[*len - 2] == GREEK_SMALL_LETTER_TAU)
+                ucs2[*len - 1] = GREEK_SMALL_LETTER_ALPHA;
+            else if (ucs2[*len - 1] == GREEK_SMALL_LETTER_ETA)
+                ucs2[*len - 1] = GREEK_SMALL_LETTER_EPSILON;
+        }
     }
     
     int i = 0;
@@ -1887,13 +1853,17 @@ void stripAccent(UCS2 *word, int *len)
 //accents should be stripped before calling this
 void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, unsigned char voice)
 {
+    UCS2 presMi[2] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_IOTA };
+    
     UCS2 presDeponent[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
     UCS2 aoristDeponent[4] = { GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
     
     UCS2 secondAoristDeponent[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
     UCS2 secondAorist[2] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_NU };
-    
-    if ((tense == PRESENT || tense == IMPERFECT) && hasSuffix(stem, *len, presDeponent, 4)) //ομαι
+
+    if ((tense == PRESENT || tense == IMPERFECT) && hasSuffix(stem, *len, presMi, 2)) //μι
+        *len -= 2;
+    else if ((tense == PRESENT || tense == IMPERFECT) && hasSuffix(stem, *len, presDeponent, 4)) //ομαι
         *len -= 4;
     else if (tense == PRESENT || tense == IMPERFECT)
         *len -= 1;
@@ -2215,13 +2185,13 @@ bool isConsonant(UCS2 l)
 
 bool formIsValidReal(unsigned char person, unsigned char number, unsigned char tense, unsigned char voice, unsigned char mood)
 {
-    if ( tense == IMPERFECT && (mood == SUBJUNCTIVE || mood == OPTATIVE) )
+    if ( tense == IMPERFECT && (mood == SUBJUNCTIVE || mood == OPTATIVE || mood == IMPERATIVE) )
         return false;
-    if ( tense == FUTURE && (mood == SUBJUNCTIVE || mood == OPTATIVE) )
+    if ( tense == FUTURE && (mood == SUBJUNCTIVE || mood == OPTATIVE || mood == IMPERATIVE) )
         return false;
-    if ( tense == PERFECT && (mood == SUBJUNCTIVE || mood == OPTATIVE) )
+    if ( tense == PERFECT && (mood == SUBJUNCTIVE || mood == OPTATIVE || mood == IMPERATIVE) )
         return false;
-    if ( tense == PLUPERFECT && (mood == SUBJUNCTIVE || mood == OPTATIVE) )
+    if ( tense == PLUPERFECT && (mood == SUBJUNCTIVE || mood == OPTATIVE || mood == IMPERATIVE) )
         return false;
     
     return true;
