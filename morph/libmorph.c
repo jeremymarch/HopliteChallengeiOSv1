@@ -25,7 +25,7 @@
 
 bool letterIsAccented(UCS2 letter);
 void stripAccent(UCS2 *word, int *len);
-char *getEnding(VerbFormC *vf, UCS2 *ending, int endingLen);
+char *getEnding(VerbFormC *vf, UCS2 *ending, int endingLen, bool contractedFuture);
 void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, unsigned char voice);
 void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len);
 void stripAugmentFromPrincipalPart(UCS2 *ucs2, int *len, unsigned char tense, unsigned char voice, unsigned char mood, UCS2 presentStemInitial);
@@ -405,16 +405,16 @@ void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors
     buffer[n - 2] = '\0';
 }
 
-char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen)
+char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture)
 {
     UCS2 secondAorist[2] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_NU };
     UCS2 secondAorist2[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
     
     int ending = 0;
     /* CONTRACTED FUTURES */
-    if (vf->tense == FUTURE && vf->voice == ACTIVE && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI)
+    if (vf->tense == FUTURE && vf->voice == ACTIVE && contractedFuture)
         ending = PRESENT_ACTIVE_INDIC_E_CONTRACTED;
-    else if (vf->tense == FUTURE && vf->voice == MIDDLE && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI)
+    else if (vf->tense == FUTURE && vf->voice == MIDDLE && contractedFuture)
         ending = PRESENT_MIDPASS_INDIC_E_CONTRACTED;
     /* CONTRACTED PRESENT AND IMPERFECT */
     else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == INDICATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_ALPHA && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA)
@@ -780,13 +780,6 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     UCS2 ucs2Stems[(strlen(utf8Stems) * 3) + 1];
     int ucs2StemsLen = 0;
     utf8_to_ucs2_string((const unsigned char*)utf8Stems, ucs2Stems, &ucs2StemsLen);
-    stripAccent(ucs2Stems, &ucs2StemsLen);
-    
-    //This needs to be in the stems loop.  What if the stems require different endings?
-    char *utf8Ending = getEnding(vf, ucs2Stems, ucs2StemsLen); //get ending here before stripping from pp, so know if 2nd aorist
-    UCS2 ucs2Endings[(strlen(utf8Ending) * 3) + 1];
-    int ucs2EndingsLen = 0;
-    utf8_to_ucs2_string((const unsigned char*)utf8Ending, ucs2Endings, &ucs2EndingsLen);
     
     //find out how many stems, then how many endings.  loop through stems adding each ending in an inner loop.
     //accent each inside the loop
@@ -804,18 +797,6 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     }
     stemStarts[numStems] = i + 2; //to get length of last stem. plus 2 to simulate a comma and space
     
-    int endingStarts[5] = { 0,0,0,0,0 };  //we leave space for up to five alternate endings
-    int numEndings = 1;
-    for (i = 0; i < ucs2EndingsLen; i++)
-    {
-        if (ucs2Endings[i] == 0x0020)//space, 002C == comma
-        {
-            endingStarts[numEndings] = i + 1;
-            numEndings++;
-        }
-    }
-    endingStarts[numEndings] = i + 2; //to get length of last stem. plus 2 to simulate a comma and space
-    
     int stem;
     int ending;
     int stemStart = 0;
@@ -831,8 +812,16 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
 
     for (stem = 0; stem < numStems; stem++)
     {
+        bool contractedFuture = false;
         stemStart = stemStarts[stem];
         stemLen = stemStarts[stem + 1] - stemStarts[stem] - 2;
+        
+        if (vf->tense == FUTURE && ucs2Stems[stemLen - 1] == GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI)
+        {
+            contractedFuture = true;
+        }
+        
+        stripAccent(&ucs2Stems[stemStart], &stemLen);
         
         //eliminate FUTURE PASSIVE blaphthhsomai here
         //NB: accent is already stripped by now
@@ -846,6 +835,26 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         {
             continue;
         }
+        
+        //This needs to be in the stems loop.  What if the stems require different endings?
+        char *utf8Ending = getEnding(vf, ucs2Stems, ucs2StemsLen, contractedFuture); //get ending here before stripping from pp, so know if 2nd aorist
+        UCS2 ucs2Endings[(strlen(utf8Ending) * 3) + 1];
+        int ucs2EndingsLen = 0;
+        utf8_to_ucs2_string((const unsigned char*)utf8Ending, ucs2Endings, &ucs2EndingsLen);
+        
+        int endingStarts[5] = { 0,0,0,0,0 };  //we leave space for up to five alternate endings
+        int numEndings = 1;
+        for (i = 0; i < ucs2EndingsLen; i++)
+        {
+            if (ucs2Endings[i] == 0x0020)//space, 002C == comma
+            {
+                endingStarts[numEndings] = i + 1;
+                numEndings++;
+            }
+        }
+        endingStarts[numEndings] = i + 2; //to get length of last stem. plus 2 to simulate a comma and space
+        
+        
         
         for (ending = 0; ending < numEndings; ending++)
         {
