@@ -89,10 +89,11 @@
                 for (int h = 0; h < NUM_NUMBERS; h++)
                 {
                     for (int i = 0; i < NUM_PERSONS; i++)
-                    {
+                    {                        
                         vf.number = h;
                         vf.person = i;
                         vf.mood = m;
+                        
                         if (getForm(&vf, buffer, bufferLen, true))
                         {
                             UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(leftPadding, rowCount * (labelHeight + verticalPadding), self.view.frame.size.width, labelHeight)];

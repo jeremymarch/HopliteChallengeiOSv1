@@ -16,8 +16,7 @@
 /*
  TO DO:
  
- future contracts
- add in imperatives
+ need to add contracted imperatives
  check the randomVerb units code
  
  *remember, don't copy and paste unicode files into android studio, copy and paste file in finder
@@ -45,7 +44,7 @@ char *tenses[NUM_TENSES] = { "present", "imperfect", "future", "aorist", "perfec
 char *tensesabbrev[NUM_TENSES] = { "pres.", "imp.", "fut.", "aor.", "perf.", "plup." };
 char *voices[NUM_VOICES] = { "active", "middle", "passive" };
 char *voicesabbrev[NUM_VOICES] = { "act.", "mid.", "pass." };
-char *moods[NUM_MOODS] = { "indicative", "subjunctive", "optative" };
+char *moods[NUM_MOODS] = { "indicative", "subjunctive", "optative", "imperative", "infinitive" };
 char *moodsabbrev[NUM_MOODS] = { "ind.", "subj.", "opt." };
 
 void endingGetDescription(int e, char *buffer, int bufferLen)
@@ -112,8 +111,16 @@ Ending endings[NUM_ENDINGS] = {
     { 0, 10, 0, 0, 0, "ῶ", "οῖς", "οῖ", "ῶμεν", "ῶτε", "ῶσι(ν)", "" },         //pres active subj o
     { 0, 10, 0, 0, 0, "ῶμαι", "οῖ", "ῶται", "ώμεθα", "ῶσθε", "ῶνται", "" },   //pres mid/pass subj o
     { 0, 10, 0, 0, 0, "οῖμι, οίην", "οῖς, οίης", "οῖ, οίη", "οῖμεν, οῖημεν", "οῖτε, οίητε", "οῖεν, οίησαν", "" },//pres act opt o
+    { 0, 9, 0, 0, 0, "οίμην", "οῖο", "οῖτο", "οίμεθα", "οῖσθε", "οῖντο", "" },   //pres mid/ass opt o
     
-    { 0, 10, 0, 0, 0, "μι", "ς", "σι", "μεν", "τε", "ᾱσι(ν)", "" },   //pres mid/ass opt o
+    { 0, 11, 0, 0, 0, "", "ᾱ", "ᾱ́τω",   "", "ᾶτε", "ώντων", "Present Active Imperative" }, //pres. active imper a
+    { 0, 11, 0, 0, 0, "", "ῶ", "ᾱ́σθω", "", "ᾶσθε", "ᾱ́σθων", "Present Middle/Passive Imperative" }, //pres. mid/pass imper a
+    { 0, 11, 0, 0, 0, "", "ει", "είτω",   "", "εῖτε", "ούντων", "Present Active Imperative" }, //pres. active imper e
+    { 0, 11, 0, 0, 0, "", "οῦ", "είσθω", "", "εῖσθε", "είσθων", "Present Middle/Passive Imperative" }, //pres. mid/pass imper e
+    { 0, 11, 0, 0, 0, "", "ου", "ούτω",   "", "οῦτε", "ούντων", "Present Active Imperative" }, //pres. active imper o
+    { 0, 11, 0, 0, 0, "", "οῦ", "ούσθω", "", "οῦσθε", "ούσθων", "Present Middle/Passive Imperative" }, //pres. mid/pass imper o
+    
+    { 0, 10, 0, 0, 0, "μι", "ς", "σι", "μεν", "τε", "ᾱσι(ν)", "" }   //mi
 };
 /*
 void VFToShort(VerbFormC *vf, unsigned short *s)
@@ -465,10 +472,27 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture)
         ending = PRESENT_ACTIVE_OPT_O_CONTRACTED;
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == OPTATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_OMICRON && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA)
         ending = PRESENT_MIDPASS_OPT_O_CONTRACTED;
+    
+    /* CONTRACTED IMPERATIVES */
+    else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == IMPERATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_ALPHA && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA)
+        ending = PRESENT_ACTIVE_IMPERATIVE_A_CONTRACTED;
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == IMPERATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_ALPHA && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA)
+        ending = PRESENT_MIDPASS_IMPERATIVE_A_CONTRACTED;
+    else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == IMPERATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_EPSILON && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA)
+        ending = PRESENT_ACTIVE_IMPERATIVE_E_CONTRACTED;
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == IMPERATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_EPSILON && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA)
+        ending = PRESENT_MIDPASS_IMPERATIVE_E_CONTRACTED;
+    else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == IMPERATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_OMICRON && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA)
+        ending = PRESENT_ACTIVE_IMPERATIVE_O_CONTRACTED;
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == IMPERATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_OMICRON && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA)
+        ending = PRESENT_MIDPASS_IMPERATIVE_O_CONTRACTED;
+    /* /CONTRACTED IMPERATIVES */
+    
     else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == INDICATIVE)
         ending = PRESENT_ACTIVE_IND;
     else if (vf->tense == IMPERFECT && vf->voice == ACTIVE && vf->mood == INDICATIVE)
         ending = IMPERFECT_ACTIVE_IND;
+    
 /* SECOND AORIST */
     else if (vf->tense == AORIST && vf->voice == ACTIVE && vf->mood == INDICATIVE && hasSuffix(word, wordLen, secondAorist, 2))
         ending = IMPERFECT_ACTIVE_IND;
@@ -478,6 +502,10 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture)
         ending = PRESENT_ACTIVE_OPT;
     else if (vf->tense == AORIST && vf->voice == MIDDLE && vf->mood == OPTATIVE && (hasSuffix(word, wordLen, secondAorist, 2) || hasSuffix(word, wordLen, secondAorist2, 4)))
         ending = PRESENT_MIDPASS_OPT;
+    else if (vf->tense == AORIST && vf->voice == ACTIVE && vf->mood == IMPERATIVE && hasSuffix(word, wordLen, secondAorist, 2))
+        ending = PRESENT_ACTIVE_IMPERATIVE;
+    else if (vf->tense == AORIST && vf->voice == MIDDLE && vf->mood == IMPERATIVE && (hasSuffix(word, wordLen, secondAorist, 2) || hasSuffix(word, wordLen, secondAorist2, 4)))
+        ending = PRESENT_MIDPASS_IMPERATIVE;
 /* SECOND AORIST */
     else if (vf->tense == AORIST && vf->voice == ACTIVE && vf->mood == INDICATIVE)
         ending = AORIST_ACTIVE_IND;
@@ -777,6 +805,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         utf8OutputBuffer[0] = '\0'; //clear buffer
         return 0;
     }
+    
     UCS2 ucs2Stems[(strlen(utf8Stems) * 3) + 1];
     int ucs2StemsLen = 0;
     utf8_to_ucs2_string((const unsigned char*)utf8Stems, ucs2Stems, &ucs2StemsLen);
@@ -879,7 +908,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             }
             
             //De-augment
-            if ( (vf->tense == AORIST && (vf->mood == SUBJUNCTIVE || vf->mood == OPTATIVE)) || (vf->tense == FUTURE && vf->voice == PASSIVE))
+            if ( (vf->tense == AORIST && (vf->mood == SUBJUNCTIVE || vf->mood == OPTATIVE || vf->mood == IMPERATIVE)) || (vf->tense == FUTURE && vf->voice == PASSIVE))
             {
                 UCS2 ucs2Present[(strlen(vf->verb->present) * 2) + 1];
                 int ucs2PresentLen = 0;
@@ -913,6 +942,12 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         }
     }
     ucs2StemPlusEndingBufferLen -= 2; //remove trailing comma and space.
+    
+    if (vf->mood == IMPERATIVE && vf->person == FIRST)
+    {
+        ucs2StemPlusEndingBuffer[0] = EM_DASH;
+        ucs2StemPlusEndingBufferLen = 1;
+    }
     
     ucs2_to_utf8_string(ucs2StemPlusEndingBuffer, ucs2StemPlusEndingBufferLen, (unsigned char *)utf8OutputBuffer);
     
@@ -1149,6 +1184,15 @@ bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent)
     }
     else if (accent == CIRCUMFLEX)
     {
+        //remove combining macron if a circumflex is going on that syllable.
+        if (i < *len - 1 && ucs2String[i + 1] == COMBINING_MACRON )
+        {
+            //change to shift left?
+            for (int j = i + 1; j < *len; j++)
+                ucs2String[j] = ucs2String[j + 1];
+            (*len)--;
+        }
+        
         if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
             ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PERISPOMENI;
         else if (ucs2String[i] == GREEK_SMALL_LETTER_ETA)
@@ -1658,7 +1702,7 @@ bool isContractedVerb(VerbFormC *vf, UCS2 *ucs2, int *len)
 
 void stripAugmentFromPrincipalPart(UCS2 *ucs2, int *len, unsigned char tense, unsigned char voice, unsigned char mood, UCS2 presentStemInitial)
 {
-    if (tense == AORIST && (mood == SUBJUNCTIVE || mood == OPTATIVE))
+    if (tense == AORIST && (mood == SUBJUNCTIVE || mood == OPTATIVE || mood == IMPERATIVE))
     {
         if (ucs2[0] == GREEK_SMALL_LETTER_EPSILON_WITH_PSILI || ucs2[0] == GREEK_SMALL_LETTER_EPSILON_WITH_DASIA)
         {
