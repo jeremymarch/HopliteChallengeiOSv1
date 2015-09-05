@@ -28,7 +28,7 @@ enum {
 @property CFTimeInterval startTime;
 @property NSInteger menuItem;
 @property (nonatomic, retain) Keyboard *keyboard;
-@property (strong, nonatomic) IBOutlet UITextField *textfield;
+@property (retain, nonatomic) IBOutlet UITextField *textfield;
 
 @property NSString *greekFont;
 @property NSString *systemFont;

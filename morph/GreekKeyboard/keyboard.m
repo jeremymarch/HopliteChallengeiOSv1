@@ -78,8 +78,8 @@ enum {
         [self setAutoresizesSubviews: NO];
 
 
-        CAGradientLayer *gradient = [CAGradientLayer layer];
-        gradient.frame = self.bounds;
+        //CAGradientLayer *gradient = [CAGradientLayer layer];
+        //gradient.frame = self.bounds;
         
         UIColor *lightColor;
         UIColor *darkColor;
@@ -96,8 +96,8 @@ enum {
             lightColor = [UIColor colorWithRed:(185/255.0) green:(185/255.0) blue:(197/255.0) alpha:1.0];
             darkColor = [UIColor colorWithRed:(130/255.0) green:(130/255.0) blue:(150/255.0) alpha:1.0];
         }
-        gradient.colors = [NSArray arrayWithObjects:(id)[lightColor CGColor], (id)[darkColor CGColor], nil];
-        [self.layer insertSublayer:gradient atIndex:0];
+        //gradient.colors = [NSArray arrayWithObjects:(id)[lightColor CGColor], (id)[darkColor CGColor], nil];
+        //[self.layer insertSublayer:gradient atIndex:0];
 
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotate:) name:UIDeviceOrientationDidChangeNotification object:nil];
         
@@ -121,7 +121,9 @@ enum {
         
         self.latinLetters = [NSArray arrayWithObjects: [NSArray arrayWithObjects:@"Q", @"W", @"E", @"R", @"T", @"Y", @"U", @"I", @"O", @"P", nil], [NSArray arrayWithObjects:@"A", @"S", @"D", @"F", @"G", @"H", @"J", @"K", @"L", nil], [NSArray arrayWithObjects:@"Z", @"X", @"C", @"V", @"B", @"N", @"M", nil], nil];
         
-        self.greekLetters = [NSArray arrayWithObjects: [NSArray arrayWithObjects:@"Ε", @"Ρ", @"Τ", @"Υ", @"Θ", @"Ι", @"Ο", @"Π" /*, @"Ϝ" */, nil], [NSArray arrayWithObjects:@"Α", @"Σ", @"Δ", @"Φ", @"Γ", @"Η", @"Ξ", @"Κ", @"Λ", nil], [NSArray arrayWithObjects:@"Ζ", @"Χ", @"Ψ", @"Ω", @"Β", @"Ν", @"Μ", nil], nil];
+        //self.greekLettersUpper = [NSArray arrayWithObjects: [NSArray arrayWithObjects:@"Ε", @"Ρ", @"Τ", @"Υ", @"Θ", @"Ι", @"Ο", @"Π" /*, @"Ϝ" */, nil], [NSArray arrayWithObjects:@"Α", @"Σ", @"Δ", @"Φ", @"Γ", @"Η", @"Ξ", @"Κ", @"Λ", nil], [NSArray arrayWithObjects:@"Ζ", @"Χ", @"Ψ", @"Ω", @"Β", @"Ν", @"Μ", nil], nil];
+        
+        self.greekLetters = [NSArray arrayWithObjects: [NSArray arrayWithObjects:@"ε", @"ρ", @"τ", @"υ", @"θ", @"ι", @"ο", @"π" /*, @"Ϝ" */, nil], [NSArray arrayWithObjects:@"α", @"σ", @"δ", @"φ", @"γ", @"η", @"ξ", @"κ", @"λ", nil], [NSArray arrayWithObjects:@"ζ", @"χ", @"ψ", @"ω", @"β", @"ν", @"μ", nil], nil];
         
         self.keys = [[NSMutableArray alloc] init];
         int numKeys = 26;
@@ -261,6 +263,8 @@ enum {
 
 -(void)setButtons:(int) theLang
 {
+    //self.systemFont = @"HelveticaNeue";
+    //self.greekFont = @"NewAthenaUnicode";
     NSArray *letterRows;
     self->lang = theLang;
     if (self->lang == GREEK)
@@ -279,6 +283,7 @@ enum {
         {
             CustomButton *button = [self.keys objectAtIndex:key++];
             [button setTitle:[letters objectAtIndex:letter] forState:UIControlStateNormal];
+            //button.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:24.0];
         }
     }
     [self setNeedsLayout]; //def need this

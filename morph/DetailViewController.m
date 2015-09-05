@@ -1217,29 +1217,21 @@ UIView *backSideTest;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    CGRect screenBound = [[UIScreen mainScreen] bounds];
+    CGSize screenSize = screenBound.size;
+    
     self.animate = true;
     self.systemFont = @"HelveticaNeue";
     self.greekFont = @"NewAthenaUnicode";
     
+    [self.textfield setInputView: [(AppDelegate*)[[UIApplication sharedApplication] delegate] keyboard]];
     
-    //if (!self.keyboard)
-    //{
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-        {
-            self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 172.0) lang:1];
-        }
-        else
-        {
-            self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 266.0) lang:1];
-        }
-    //}
-    
-    [self.textfield setInputView: self.keyboard];
+    self.textfield.font = [UIFont fontWithName:self.greekFont size:34.0];
+    self.textfield.frame = CGRectMake(0, self.textfield.frame.origin.y, screenSize.width, 40.0);
     self.textfield.hidden = NO;
     
-    CGRect screenBound = [[UIScreen mainScreen] bounds];
-    CGSize screenSize = screenBound.size;
+    //sets focus and raises keyboard
+    [self.textfield becomeFirstResponder];
     
     [[UIApplication sharedApplication] setStatusBarHidden:YES
                                             withAnimation:NO];

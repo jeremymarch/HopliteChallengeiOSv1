@@ -111,8 +111,8 @@ enum {
                 self.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:24];
             [self setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
             [self setTitle:text forState:UIControlStateNormal];
-            [self setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            self.titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+            //[self setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            //self.titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
             
             self.deleteButton = NO;
         }
@@ -185,7 +185,9 @@ enum {
     else
         outerPath = createRoundedRectForRect(outerRect, buttonRadius);
     //add bottom shadow
+    
     CGContextSaveGState(context);
+    
     if (self.device == IPHONE && self.selected && !self.deleteButton)
         CGContextSetShadowWithColor(context, CGSizeMake(0, 0), 3.0, [UIColor blackColor].CGColor);
     else if (self.device == IPAD)
@@ -193,6 +195,7 @@ enum {
     else
         CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 1.0, [UIColor blackColor].CGColor);
     //CGContextSetShadow(context, CGSizeMake (0, 2), 5.0);
+    
     CGContextAddPath(context, outerPath);
     if (self.device == IPHONE && self.deleteButton)
         CGContextSetFillColorWithColor(context, delIconColor.CGColor);
@@ -208,10 +211,12 @@ enum {
         CGContextSaveGState(context);
         CGContextAddPath(context, outerPath);
         CGContextClip(context);
+        /*
         if (self.device == IPHONE && self.deleteButton)
             drawLinearGradient(context, outerRect, delIconColorLight, delIconColor);
         else
             drawLinearGradient(context, outerRect, buttonLight, buttonDark);
+         */
         CGContextRestoreGState(context);
         
         if (self.device == IPAD)
@@ -227,7 +232,7 @@ enum {
             CGContextAddPath(context, outerPath);
             CGContextAddPath(context, highlightPath);
             CGContextEOClip(context);
-            drawLinearGradient(context, CGRectMake(outerRect.origin.x, outerRect.origin.y, outerRect.size.width, outerRect.size.height/6), highlightStart, buttonLight);
+            //drawLinearGradient(context, CGRectMake(outerRect.origin.x, outerRect.origin.y, outerRect.size.width, outerRect.size.height/6), highlightStart, buttonLight);
             
             CGContextRestoreGState(context);
             CFRelease(highlightPath);
@@ -240,13 +245,14 @@ enum {
         CGContextSaveGState(context);
         CGContextAddPath(context, outerPath);
         CGContextClip(context);
-        
+        /*
         if (self.device == IPAD && self.deleteButton)
             drawLinearGradient(context, outerRect, delIconColorLight, delIconColor);
         else if (self.device == IPAD)
             drawLinearGradient(context, outerRect, buttonDownLight, buttonDownDark);
         else
             drawLinearGradient(context, outerRect, buttonLight, buttonDark);
+        */
         CGContextRestoreGState(context);
         
 	}
@@ -254,8 +260,8 @@ enum {
     {
         //Draw delete button icon
         CGContextSaveGState(context);
-        if (self.device == IPAD)
-            CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 1.0, [UIColor whiteColor].CGColor);
+        //if (self.device == IPAD)
+        //    CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 1.0, [UIColor whiteColor].CGColor);
         CGFloat delHeight = self.bounds.size.height;
         CGFloat delWidth = self.bounds.size.width;
         CGFloat topPadding;
