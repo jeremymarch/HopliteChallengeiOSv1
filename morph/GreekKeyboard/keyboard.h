@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "CustomButton.h"
+#import "DetailViewController.h"
 
 @interface Keyboard : UIView <UIInputViewAudioFeedback>
 {
@@ -22,6 +23,11 @@
     int lang;
     int deleteWidth;
 }
+//http://stackoverflow.com/questions/14228191/pass-a-reference-to-viewcontroller-in-prepareforsegue
+@property (nonatomic, weak) UIViewController *targetViewController;
+//@property (nonatomic, weak) id <DetailViewController> delegate;
+
+
 @property (nonatomic, retain) id<UITextInput> targetTextInput;
 @property (nonatomic, retain) NSMutableArray *keys;
 @property (nonatomic, retain) NSArray *greekLetters;
@@ -31,5 +37,6 @@
 - (id)initWithFrame:(CGRect)frame lang:(int)lang;
 
 -(void)setButtons:(int) lang;
+-(void)setTargetViewController:(UIViewController*) vc;
 
 @end

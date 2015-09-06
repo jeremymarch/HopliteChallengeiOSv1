@@ -46,18 +46,14 @@
         controller.managedObjectContext = self.managedObjectContext;
     }
     
-    if (!self.keyboard)
+    NSLog(@"keyboard loaded1");
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
     {
-        NSLog(@"keyboard loaded1");
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-        {
-            self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 172.0) lang:1];
-        }
-        else
-        {
-            self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 266.0) lang:1];
-        }
-        
+        self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 172.0) lang:1]; //was 320 x 172
+    }
+    else
+    {
+        self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 266.0) lang:1];  //was 1024 x 266
     }
     
     return YES;

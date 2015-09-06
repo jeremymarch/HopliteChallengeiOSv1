@@ -358,10 +358,15 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture)
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
         ending = PERFECT_MIDPASS_IND;
     
-    if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == SUBJUNCTIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
+    else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == SUBJUNCTIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
         ending = AORIST_PASSIVE_SUBJ;
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == SUBJUNCTIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
-        ending = AORIST_PASSIVE_SUBJ;
+        ending = PRESENT_MIDPASS_SUBJ_E_CONTRACTED;
+    
+    else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == OPTATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
+        ending = AORIST_PASSIVE_OPT;
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == OPTATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
+        ending = PRESENT_MIDPASS_OPT;
     
     /* /MI */
     /* CONTRACTED FUTURES */
@@ -1085,6 +1090,10 @@ bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent)
         }
         else if (i < *len - 1 && ucs2String[i + 1] == COMBINING_MACRON )
         {
+            //or should we use the private codes for this?  looks good on iphone as three combining characters
+            if (ucs2String[i + 2] == COMBINING_SMOOTH_BREATHING || ucs2String[i + 2] == COMBINING_ROUGH_BREATHING)
+                i++;
+            
             //change to shift right?
             for (int j = *len - 1; j > i + 1; j--)
                 ucs2String[j + 1] = ucs2String[j];
@@ -1619,15 +1628,16 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
     {
         //if ();
     }
-    else if (vf->tense == FUTURE && vf->voice == PASSIVE)
+    else if (vf->tense == FUTURE && vf->voice == PASSIVE) //add future passive infix hs here
     {
         ucs2[*len] = GREEK_SMALL_LETTER_ETA;
         ucs2[(*len) + 1] = GREEK_SMALL_LETTER_SIGMA;
         (*len) += 2; //parens required here fyi
     }
-    else if (vf->tense == PRESENT && utf8HasSuffix(vf->verb->present, "μι"))
+    else if (vf->tense == PRESENT && utf8HasSuffix(vf->verb->present, "μι")) //mi verbs
     {
-        if (vf->voice != ACTIVE || vf->number == PLURAL)
+        //shorten stem vowel
+        if (vf->voice != ACTIVE || vf->number == PLURAL || vf->mood == OPTATIVE || vf->mood == IMPERATIVE)
         {
             if (ucs2[*len - 1] == GREEK_SMALL_LETTER_OMEGA)
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_OMICRON;
@@ -1635,6 +1645,177 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_ALPHA;
             else if (ucs2[*len - 1] == GREEK_SMALL_LETTER_ETA)
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_EPSILON;
+        }
+        //contract third plural indicative of isthmi
+        if (vf->person == THIRD && vf->number == PLURAL && vf->mood == INDICATIVE && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "ἵστημι"))
+        {
+            --(*len);
+            leftShift(ending, &elen);
+            ending[0] = GREEK_SMALL_LETTER_ALPHA_WITH_PERISPOMENI;
+        }
+        if (vf->mood == SUBJUNCTIVE)
+        {
+            --(*len);
+           // UCS2 didw[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA , GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_OMEGA };
+            if ( utf8HasSuffix(vf->verb->present, "δίδωμι"))
+            {
+                if ( vf->person == SECOND && vf->number == SINGULAR)
+                    ending[0] = GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI_AND_YPOGEGRAMMENI;
+                else if ( vf->person == THIRD && vf->number == SINGULAR && vf->voice == ACTIVE)
+                    ending[0] = GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI_AND_YPOGEGRAMMENI;
+                else if ( vf->person == THIRD && vf->number == SINGULAR && vf->voice != ACTIVE)
+                    ending[0] = GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI;
+                else if ( vf->person == SECOND && vf->number == PLURAL)
+                    ending[0] = GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI;
+            }
+        }
+        if (vf->mood == OPTATIVE)
+        {
+            leftShift(ending, &elen);
+            if (vf->person != FIRST && vf->voice != ACTIVE)
+            {
+                ending[0] = GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI;
+            }
+        }
+        if (vf->mood == IMPERATIVE)
+        {
+            if (vf->person == SECOND && vf->number == SINGULAR)
+            {
+                if ( utf8HasSuffix(vf->verb->present, "δίδωμι"))
+                {
+                    if (vf->voice == ACTIVE)
+                    {
+                        ending[0] = GREEK_SMALL_LETTER_UPSILON;
+                    }
+                    else
+                    {
+                        ending[0] = GREEK_SMALL_LETTER_SIGMA;
+                        ending[1] = GREEK_SMALL_LETTER_OMICRON;
+                    }
+                }
+                else if ( utf8HasSuffix(vf->verb->present, "ἵστημι"))
+                {
+                    if (vf->voice == ACTIVE)
+                    {
+                        --(*len);
+                        ending[0] = GREEK_SMALL_LETTER_ETA;
+                    }
+                    else
+                    {
+                        ending[0] = GREEK_SMALL_LETTER_SIGMA;
+                        ending[1] = GREEK_SMALL_LETTER_OMICRON;
+                    }
+                }
+                else if ( utf8HasSuffix(vf->verb->present, "τίθημι"))
+                {
+                    if (vf->voice == ACTIVE)
+                    {
+                        ending[0] = GREEK_SMALL_LETTER_IOTA;
+                    }
+                    else
+                    {
+                        ending[0] = GREEK_SMALL_LETTER_SIGMA;
+                        ending[1] = GREEK_SMALL_LETTER_OMICRON;
+                    }
+                }
+            }
+            else
+            {
+                leftShift(ending, &elen);
+            }
+            
+        }
+    }
+    else if (vf->tense == IMPERFECT && utf8HasSuffix(vf->verb->present, "μι")) //mi verbs
+    {
+        if ( utf8HasSuffix(vf->verb->present, "δίδωμι") && vf->voice == ACTIVE)
+        {
+            //shorten stem vowel
+            if (ucs2[*len - 1] == GREEK_SMALL_LETTER_OMEGA)
+                ucs2[*len - 1] = GREEK_SMALL_LETTER_OMICRON;
+            
+            if ( vf->number == SINGULAR && vf->voice == ACTIVE)
+            {
+                ending[0] = GREEK_SMALL_LETTER_UPSILON;
+                if (vf->person == THIRD)
+                    elen -= 3;
+            }
+            else if (vf->number == PLURAL && vf->voice == ACTIVE)
+            {
+                leftShift(ending, &elen);
+                if (vf->person == THIRD)
+                {
+                    ending[0] = GREEK_SMALL_LETTER_SIGMA;
+                    ending[1] = GREEK_SMALL_LETTER_ALPHA;
+                    ending[2] = GREEK_SMALL_LETTER_NU;
+                    elen += 2;
+                }
+            }
+        }
+        if ( utf8HasSuffix(vf->verb->present, "ἵστημι") && vf->voice == ACTIVE)
+        {
+            //shorten stem vowel
+            if (vf->number == PLURAL)
+                ucs2[*len - 1] = GREEK_SMALL_LETTER_ALPHA;
+            
+            leftShift(ending, &elen);
+            if (vf->person == THIRD && vf->number == SINGULAR)
+            {
+                elen -= 3;
+            }
+            if (vf->person == THIRD && vf->number == PLURAL)
+            {
+                ending[0] = GREEK_SMALL_LETTER_SIGMA;
+                ending[1] = GREEK_SMALL_LETTER_ALPHA;
+                ending[2] = GREEK_SMALL_LETTER_NU;
+                elen += 2;
+            }
+        }
+        if ( utf8HasSuffix(vf->verb->present, "τίθημι") && vf->voice == ACTIVE)
+        {
+            if (vf->person != FIRST || vf->number == PLURAL)
+                ucs2[*len - 1] = GREEK_SMALL_LETTER_EPSILON;
+            
+            if (vf->person == THIRD && vf->number == PLURAL)
+            {
+                leftShift(ending, &elen);
+                ending[0] = GREEK_SMALL_LETTER_SIGMA;
+                ending[1] = GREEK_SMALL_LETTER_ALPHA;
+                ending[2] = GREEK_SMALL_LETTER_NU;
+                elen += 2;
+            }
+            else if (vf->person == FIRST || vf->number == PLURAL)
+            {
+                leftShift(ending, &elen);
+            }
+            else if (vf->person == SECOND && vf->number == SINGULAR)
+            {
+                ending[0] = GREEK_SMALL_LETTER_IOTA;
+                ending[1] = GREEK_SMALL_LETTER_FINAL_SIGMA;
+            }
+            else if (vf->person == THIRD && vf->number == SINGULAR)
+            {
+                ending[0] = GREEK_SMALL_LETTER_IOTA;
+                elen -= 3;
+            }
+        }
+        else if (vf->voice != ACTIVE)
+        {
+            //shorten stem vowel
+            if (ucs2[*len - 1] == GREEK_SMALL_LETTER_OMEGA)
+                ucs2[*len - 1] = GREEK_SMALL_LETTER_OMICRON;
+            else if (ucs2[*len - 1] == GREEK_SMALL_LETTER_ETA && ucs2[*len - 2] == GREEK_SMALL_LETTER_TAU )
+                ucs2[*len - 1] = GREEK_SMALL_LETTER_ALPHA;
+            else if (ucs2[*len - 1] == GREEK_SMALL_LETTER_ETA )
+                ucs2[*len - 1] = GREEK_SMALL_LETTER_EPSILON;
+            
+            leftShift(ending, &elen);
+            if (vf->person == SECOND && vf->number == SINGULAR)
+            {
+                ending[0] = GREEK_SMALL_LETTER_SIGMA;
+                ending[1] = GREEK_SMALL_LETTER_OMICRON;
+                elen = 2;
+            }
         }
     }
     
@@ -1982,14 +2163,15 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len)
         rightShift(ucs2, len);
         ucs2[0] = GREEK_SMALL_LETTER_IOTA;
         ucs2[1] = COMBINING_MACRON;
-        ucs2[2] = GREEK_PSILI;
+        ucs2[2] = COMBINING_SMOOTH_BREATHING;
     }
     else if (ucs2[0] == GREEK_SMALL_LETTER_IOTA_WITH_DASIA)
     {
         rightShift(ucs2, len);
+        rightShift(ucs2, len);
         ucs2[0] = GREEK_SMALL_LETTER_IOTA;
         ucs2[1] = COMBINING_MACRON;
-        ucs2[2] = GREEK_DASIA;
+        ucs2[2] = COMBINING_ROUGH_BREATHING;
     }
     else if (ucs2[0] == GREEK_SMALL_LETTER_OMICRON)
     {
@@ -2029,14 +2211,14 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len)
         rightShift(ucs2, len);
         ucs2[0] = GREEK_SMALL_LETTER_UPSILON;
         ucs2[1] = COMBINING_MACRON;
-        ucs2[2] = GREEK_PSILI;
+        ucs2[2] = COMBINING_SMOOTH_BREATHING;
     }
     else if (ucs2[0] == GREEK_SMALL_LETTER_UPSILON_WITH_DASIA)
     {
         rightShift(ucs2, len);
         ucs2[0] = GREEK_SMALL_LETTER_UPSILON;
         ucs2[1] = COMBINING_MACRON;
-        ucs2[2] = GREEK_DASIA;
+        ucs2[2] = COMBINING_ROUGH_BREATHING;
     }
     else if (isConsonant(ucs2[0]))
     {

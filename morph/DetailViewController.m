@@ -1224,11 +1224,35 @@ UIView *backSideTest;
     self.systemFont = @"HelveticaNeue";
     self.greekFont = @"NewAthenaUnicode";
     
+    /*
+     //crashes if here, so put in appdelegate
+    NSLog(@"keyboard loaded1");
+    self.keyboard = nil;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+    {
+        self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 172.0) lang:1]; //was 320 x 172
+    }
+    else
+    {
+        self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 266.0) lang:1];  //was 1024 x 266
+    }
+    */
+    [[(AppDelegate*)[[UIApplication sharedApplication] delegate] keyboard] setTargetViewController: self];
+    
+    //http://stackoverflow.com/questions/16868117/uitextview-that-expands-to-text-using-auto-layout
     [self.textfield setInputView: [(AppDelegate*)[[UIApplication sharedApplication] delegate] keyboard]];
+    //[self.textfield setInputView: self.keyboard];
     
     self.textfield.font = [UIFont fontWithName:self.greekFont size:34.0];
-    self.textfield.frame = CGRectMake(0, self.textfield.frame.origin.y, screenSize.width, 40.0);
+    self.textfield.frame = CGRectMake(10, self.textfield.frame.origin.y, screenSize.width - 20, 40.0);
     self.textfield.hidden = NO;
+    [self.textfield setBorderStyle:UITextBorderStyleNone];
+    self.textfield.textAlignment =
+    
+    //self.textfield.contentVerticalAlignment;
+    //self.textfield.contentHorizontalAlignment = UIControlContentHorizontalAlignment.Center;
+    self.textfield.textAlignment = NSTextAlignmentCenter;
+    self.textfield.adjustsFontSizeToFitWidth = true;
     
     //sets focus and raises keyboard
     [self.textfield becomeFirstResponder];

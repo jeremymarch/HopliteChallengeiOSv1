@@ -8,6 +8,7 @@
 #include <math.h> // for M_PI
 #import <QuartzCore/QuartzCore.h>
 #import "keyboard.h"
+#import "DetailViewController.h"
 
 enum {
     GREEK = 1,
@@ -31,6 +32,14 @@ enum {
 
 - (BOOL) enableInputClicksWhenVisible {
     return YES;
+}
+
+-(void)setTargetViewController:(UIViewController*) vc
+{
+    if (vc)
+    {
+        //self.targetViewController = vc;
+    }
 }
 
 /**
@@ -357,6 +366,11 @@ enum {
     NSString *numberPressed  = [sender titleLabel].text;
     if ([numberPressed length] == 0) {
         return;
+    }
+    
+    if ([numberPressed isEqual: @"π"])
+    {
+        [(DetailViewController*)self.targetViewController loadNext];
     }
     
     UITextRange *selectedTextRange = self.targetTextInput.selectedTextRange;

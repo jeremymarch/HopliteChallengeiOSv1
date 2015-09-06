@@ -27,7 +27,7 @@ enum {
 @property NSString *backCard;
 @property CFTimeInterval startTime;
 @property NSInteger menuItem;
-@property (nonatomic, retain) Keyboard *keyboard;
+//@property (nonatomic, retain) Keyboard *keyboard;
 @property (retain, nonatomic) IBOutlet UITextField *textfield;
 
 @property NSString *greekFont;
@@ -64,4 +64,6 @@ enum {
 
 -(void)setLevelArray: (NSMutableArray*)array;
 - (void)configureView;
+-(void) loadNext;
+
 @end
