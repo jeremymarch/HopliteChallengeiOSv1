@@ -8,10 +8,11 @@
 #include <math.h> // for M_PI
 #import <QuartzCore/QuartzCore.h>
 #import "keyboard.h"
-#import "DetailViewController.h"
+#import "GreekUnicode.h"
+#import "libmorph.h"
 
 enum {
-    GREEK = 1,
+    GREEK1 = 1,
     LATIN = 2
 };
 
@@ -132,10 +133,16 @@ enum {
         
         //self.greekLettersUpper = [NSArray arrayWithObjects: [NSArray arrayWithObjects:@"Ε", @"Ρ", @"Τ", @"Υ", @"Θ", @"Ι", @"Ο", @"Π" /*, @"Ϝ" */, nil], [NSArray arrayWithObjects:@"Α", @"Σ", @"Δ", @"Φ", @"Γ", @"Η", @"Ξ", @"Κ", @"Λ", nil], [NSArray arrayWithObjects:@"Ζ", @"Χ", @"Ψ", @"Ω", @"Β", @"Ν", @"Μ", nil], nil];
         
-        self.greekLetters = [NSArray arrayWithObjects: [NSArray arrayWithObjects:@"ε", @"ρ", @"τ", @"υ", @"θ", @"ι", @"ο", @"π" /*, @"Ϝ" */, nil], [NSArray arrayWithObjects:@"α", @"σ", @"δ", @"φ", @"γ", @"η", @"ξ", @"κ", @"λ", nil], [NSArray arrayWithObjects:@"ζ", @"χ", @"ψ", @"ω", @"β", @"ν", @"μ", nil], nil];
-        
+        self.greekLetters = [NSArray arrayWithObjects: [NSArray arrayWithObjects:@"᾿", @"῾", @"´", @"˜", @"¯", @"ͺ"  /*, @"Ϝ" */, nil],[NSArray arrayWithObjects:@"ε", @"ρ", @"τ", @"υ", @"θ", @"ι", @"ο", @"π" /*, @"Ϝ" */, nil], [NSArray arrayWithObjects:@"α", @"σ", @"δ", @"φ", @"γ", @"η", @"ξ", @"κ", @"λ", nil], [NSArray arrayWithObjects:@"ζ", @"χ", @"ψ", @"ω", @"β", @"ν", @"μ", nil], nil];
+        NSLog(@"keyboard1");
         self.keys = [[NSMutableArray alloc] init];
-        int numKeys = 26;
+        
+        NSInteger letterCount = 0;
+        for (int i = 0; i < [self.greekLetters count]; i++)
+        {
+            letterCount += [[self.greekLetters objectAtIndex:i] count];
+        }
+        int numKeys = letterCount;//26;
         for (int i = 0; i < numKeys; i++)
         {
             CustomButton* button = [[CustomButton alloc] initWithText:@"" AndDevice:device];
@@ -153,9 +160,10 @@ enum {
         self.deleteButton = [[CustomButton alloc] initWithText:@"XXX" AndDevice:device];
         [self addSubview:self.deleteButton];
         [self.deleteButton addTarget:self action:@selector(keyboardDeletePressed:) forControlEvents:UIControlEventTouchDown];
-        
+    NSLog(@"keyboard1.5");    
         [self setButtons:theLang];
     }
+    NSLog(@"keyboard2");
     return self;
 }
 
@@ -205,7 +213,7 @@ enum {
     
     NSArray *letterRows;
     
-    if (self->lang == GREEK)
+    if (self->lang == GREEK1)
         letterRows = self.greekLetters;
     else
         letterRows = self.latinLetters;
@@ -244,13 +252,13 @@ enum {
         //needed to redraw icon and x at correct size
         [self.deleteButton setNeedsDisplay];
     }
-    if (self->lang == GREEK)
+    if (self->lang == GREEK1)
     {
         UIButton *button;
-        button = [self.keys objectAtIndex:24];
-        button.hidden = YES;
-        button = [self.keys objectAtIndex:25];
-        button.hidden = YES;
+        //button = [self.keys objectAtIndex:24];
+        //button.hidden = YES;
+        //button = [self.keys objectAtIndex:25];
+        //button.hidden = YES;
     }
     else
     {
@@ -276,11 +284,11 @@ enum {
     //self.greekFont = @"NewAthenaUnicode";
     NSArray *letterRows;
     self->lang = theLang;
-    if (self->lang == GREEK)
+    if (self->lang == GREEK1)
         letterRows = self.greekLetters;
     else
         letterRows = self.latinLetters;
-    
+    NSLog(@"keyboard1.6");
     int letter = 0;
     int key = 0;
     for (int row = 0; row < [letterRows count]; row++)
@@ -295,6 +303,7 @@ enum {
             //button.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:24.0];
         }
     }
+    NSLog(@"keyboard1.7");
     [self setNeedsLayout]; //def need this
 }
 
@@ -346,18 +355,72 @@ enum {
 */
 }
 
-- (IBAction)keyboardLetterUpInside:(UIButton *)sender {
-    /*
-    UIButton *button = sender;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-    {
- 
-    }
-    else
-    {
+void printUCS2(UCS2 *u, int len)
+{
+    NSLog(@"UCS2 Length: %d", len);
+    for(int i = 0; i < len; i++)
+        NSLog(@"UCS2 %d: %0x", i, u[i]);
+}
 
+void printUtf8(char *u, int len)
+{
+    NSLog(@"UTF8 Length: %d", len);
+    for(int i = 0; i < len; i++)
+        NSLog(@"UTF8 %d: %0x", i, u[i]);
+}
+
+-(void)addAccent:(int)accent
+{
+    UITextRange *textRange;
+    NSString *s;
+    unsigned char buffer[1024];
+    UCS2 ucs2[1024];
+    int ucs2Len = 0;
+    
+    UITextRange *selectedTextRange = self.targetTextInput.selectedTextRange;
+    
+    if (!selectedTextRange) {
+        return;
     }
-    */
+    //unsigned long l = 0;
+    //unsigned long l2 = 0;
+    const char *s2;
+    int i;
+    for (i = 1; i < 7; i++)
+    {
+        UITextPosition *start = [self.targetTextInput positionFromPosition:selectedTextRange.end offset: -i];
+        textRange = [self.targetTextInput textRangeFromPosition:start toPosition:selectedTextRange.start];
+        
+        s = [self.targetTextInput textInRange:textRange];
+        s2 = [s UTF8String];
+        utf8_to_ucs2_string((const unsigned char *)s2, ucs2, &ucs2Len);
+        
+        if (ucs2[0] != COMBINING_ACUTE && ucs2[0] != COMBINING_MACRON && ucs2[0] != COMBINING_ROUGH_BREATHING && ucs2[0] != COMBINING_SMOOTH_BREATHING)
+            break;
+    }
+    //l2 = [s length];
+    //l = strlen(s2);
+    //printUtf8(s2, l);
+    NSLog(@"before");
+    printUCS2(ucs2, ucs2Len);
+    
+    //NSLog(@"text1: %@, lenutf8: %d, lenucs2: %d, First char: %0x", s, l, ucs2Len, ucs2[0]);
+    //NSLog(@"Before: NS: %lu, c: %ld, i: %d", l2, l, i);
+    accentSyllable(ucs2, 0, &ucs2Len, accent, true);
+
+    NSLog(@"after");
+    
+    printUCS2(ucs2, ucs2Len);
+    
+    ucs2_to_utf8_string(ucs2, ucs2Len, buffer);
+    s = [NSString stringWithUTF8String: (const char*)buffer];
+    
+    //NSLog(@"text2: %@", s);
+    
+    [self textInput:self.targetTextInput replaceTextAtTextRange:textRange withString:s];
+}
+
+- (IBAction)keyboardLetterUpInside:(UIButton *)sender {
     //Add letter to text field:
     if (!self.targetTextInput) {
         return;
@@ -368,16 +431,47 @@ enum {
         return;
     }
     
-    if ([numberPressed isEqual: @"π"])
-    {
-        [(DetailViewController*)self.targetViewController loadNext];
-    }
-    
     UITextRange *selectedTextRange = self.targetTextInput.selectedTextRange;
+    
     if (!selectedTextRange) {
         return;
     }
-    [self textInput:self.targetTextInput replaceTextAtTextRange:selectedTextRange withString:[numberPressed lowercaseString]];
+    
+    if ([numberPressed isEqual: @"RET"])
+    {
+        if ([self.delegate respondsToSelector:@selector(loadNext)])
+        {
+            [self.delegate loadNext];
+        }
+    }
+    else if ([numberPressed isEqual: @"῾"])
+    {
+        [self addAccent:ROUGH_BREATHING];
+    }
+    else if ([numberPressed isEqual: @"᾿"])
+    {
+        [self addAccent:SMOOTH_BREATHING];
+    }
+    else if ([numberPressed isEqual: @"´"])
+    {
+        [self addAccent:ACUTE];
+    }
+    else if ([numberPressed isEqual: @"˜"])
+    {
+        [self addAccent:CIRCUMFLEX];
+    }
+    else if ([numberPressed isEqual: @"¯"])
+    {
+        [self addAccent:MACRON];
+    }
+    else if ([numberPressed isEqual: @"ͺ"])
+    {
+        [self addAccent:IOTA_SUBSCRIPT];
+    }
+    else
+    {
+        [self textInput:self.targetTextInput replaceTextAtTextRange:selectedTextRange withString:[numberPressed lowercaseString]];
+    }
 }
 
 /**
@@ -385,6 +479,37 @@ enum {
  */
 - (IBAction)keyboardDeletePressed:(UIButton *)sender
 {
+    /*
+     add this in to delete combining characters too
+     
+     UITextRange *textRange;
+     NSString *s;
+     unsigned char buffer[1024];
+     UCS2 ucs2[1024];
+     int ucs2Len = 0;
+     
+     UITextRange *selectedTextRange = self.targetTextInput.selectedTextRange;
+     
+     if (!selectedTextRange) {
+     return;
+     }
+     //unsigned long l = 0;
+     //unsigned long l2 = 0;
+     const char *s2;
+     int i;
+     for (i = 1; i < 7; i++)
+     {
+     UITextPosition *start = [self.targetTextInput positionFromPosition:selectedTextRange.end offset: -i];
+     textRange = [self.targetTextInput textRangeFromPosition:start toPosition:selectedTextRange.start];
+     
+     s = [self.targetTextInput textInRange:textRange];
+     s2 = [s UTF8String];
+     utf8_to_ucs2_string((const unsigned char *)s2, ucs2, &ucs2Len);
+     
+     if (ucs2[0] != COMBINING_ACUTE && ucs2[0] != COMBINING_MACRON && ucs2[0] != COMBINING_ROUGH_BREATHING && ucs2[0] != COMBINING_SMOOTH_BREATHING)
+     break;
+     }
+     */
     if (!self.targetTextInput)
     {
         return;

@@ -38,7 +38,11 @@ enum {
     NO_ACCENT = 0,
     ACUTE,
     CIRCUMFLEX,
-    GRAVE
+    GRAVE,
+    MACRON,
+    ROUGH_BREATHING,
+    SMOOTH_BREATHING,
+    IOTA_SUBSCRIPT
 };
 
 enum {
@@ -234,7 +238,8 @@ char *getPrincipalPartForTense(Verb *verb, unsigned char tense, unsigned char vo
 
 int deponentType(Verb *v);
 bool isDeponent(VerbFormC *vf, UCS2 *stem, int stemLen);
-
+bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent);
+void accentSyllable(UCS2 *ucs2String, int i, int *len, int accent, bool toggleOff);
 bool isVowel(UCS2 l);
 bool isLong(UCS2 l);
 bool isSecondVowelOfDiphthong(UCS2 *tempUcs2String, int len, int i);

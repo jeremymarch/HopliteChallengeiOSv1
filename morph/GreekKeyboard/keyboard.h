@@ -8,7 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "CustomButton.h"
-#import "DetailViewController.h"
+
+@protocol vc2delegate <NSObject>          //[3] (in vc2.h)
+- (void) loadNext;
+@end
 
 @interface Keyboard : UIView <UIInputViewAudioFeedback>
 {
@@ -24,7 +27,8 @@
     int deleteWidth;
 }
 //http://stackoverflow.com/questions/14228191/pass-a-reference-to-viewcontroller-in-prepareforsegue
-@property (nonatomic, weak) UIViewController *targetViewController;
+//@property (nonatomic, weak) UIViewController *targetViewController;
+@property (nonatomic, weak) id <vc2delegate> delegate;
 //@property (nonatomic, weak) id <DetailViewController> delegate;
 
 
@@ -38,5 +42,6 @@
 
 -(void)setButtons:(int) lang;
 -(void)setTargetViewController:(UIViewController*) vc;
+-(void)addAccent:(int)accent;
 
 @end

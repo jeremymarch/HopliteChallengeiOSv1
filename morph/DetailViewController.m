@@ -1237,7 +1237,7 @@ UIView *backSideTest;
         self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 266.0) lang:1];  //was 1024 x 266
     }
     */
-    [[(AppDelegate*)[[UIApplication sharedApplication] delegate] keyboard] setTargetViewController: self];
+    [(AppDelegate*)[[UIApplication sharedApplication] delegate] keyboard].delegate = self;
     
     //http://stackoverflow.com/questions/16868117/uitextview-that-expands-to-text-using-auto-layout
     [self.textfield setInputView: [(AppDelegate*)[[UIApplication sharedApplication] delegate] keyboard]];

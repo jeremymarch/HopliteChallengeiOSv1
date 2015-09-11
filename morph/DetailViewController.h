@@ -15,7 +15,7 @@ enum {
     TOURNAMENT
 };
 
-@interface DetailViewController : UIViewController <UISplitViewControllerDelegate>
+@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, vc2delegate>
 
 @property (strong, nonatomic) id detailItem;
 

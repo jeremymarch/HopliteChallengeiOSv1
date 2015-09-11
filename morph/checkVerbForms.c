@@ -11,7 +11,7 @@ extern char *tenses[];
 extern char *moods[];
 extern char *voices[];
 
-int numVerbs = 42;
+int numVerbs = 50;
 
 void printCurrentTime()
 {
