@@ -406,18 +406,21 @@ void printUtf8(char *u, int len)
     
     //NSLog(@"text1: %@, lenutf8: %d, lenucs2: %d, First char: %0x", s, l, ucs2Len, ucs2[0]);
     //NSLog(@"Before: NS: %lu, c: %ld, i: %d", l2, l, i);
-    accentSyllable(ucs2, 0, &ucs2Len, accent, true);
-
-    NSLog(@"after");
+    if (ucs2Len > 0)
+    {
+        accentSyllable(ucs2, 0, &ucs2Len, accent, true);
     
-    printUCS2(ucs2, ucs2Len);
-    
-    ucs2_to_utf8_string(ucs2, ucs2Len, buffer);
-    s = [NSString stringWithUTF8String: (const char*)buffer];
-    
-    //NSLog(@"text2: %@", s);
-    
-    [self textInput:self.targetTextInput replaceTextAtTextRange:textRange withString:s];
+        NSLog(@"after");
+        
+        printUCS2(ucs2, ucs2Len);
+        
+        ucs2_to_utf8_string(ucs2, ucs2Len, buffer);
+        s = [NSString stringWithUTF8String: (const char*)buffer];
+        
+        //NSLog(@"text2: %@", s);
+        
+        [self textInput:self.targetTextInput replaceTextAtTextRange:textRange withString:s];
+    }
 }
 
 - (IBAction)keyboardLetterUpInside:(UIButton *)sender {
