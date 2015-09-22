@@ -50,10 +50,14 @@ enum {
 - (id)initWithFrame:(CGRect)frame lang:(int)theLang
 {
     self = [super initWithFrame:frame];
-    int device;
     if (self)
     {
         // Initialization code
+        
+        //self.systemFont = @"HelveticaNeue";
+        //self.greekFont = @"NewAthenaUnicode";
+        //@"Helvetica-Bold
+        self.greekFont = @"Helvetica";
 
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
         {
@@ -65,7 +69,7 @@ enum {
             self->topMargin = 4;
             self->spaceWidth = 150;
             self->buttonDownAddHeight = 55;
-            device = 1;
+            self->device = 1;
         }
         else
         {
@@ -80,7 +84,7 @@ enum {
             self->topMargin = 4;
             self->spaceWidth = 150;
             self->buttonDownAddHeight = 55;
-            device = 0;
+            self->device = 0;
         }
         //[super setAutoresizingMask: UIViewAutoresizingNone];
         //self.autoresizingMask = UIViewAutoresizingNone; //so that the keyboard can have a custom height; actually not really needed.
@@ -93,7 +97,7 @@ enum {
         
         UIColor *lightColor;
         UIColor *darkColor;
-        if (device == 0) //iPad
+        if (self->device == 0) //iPad
         {
             //lightColor = [UIColor colorWithRed:(187/255.0) green:(187/255.0) blue:(198/255.0) alpha:1.0];
             //darkColor = [UIColor colorWithRed:(143/255.0) green:(143/255.0) blue:(155/255.0) alpha:1.0];
@@ -133,8 +137,8 @@ enum {
         
         //self.greekLettersUpper = [NSArray arrayWithObjects: [NSArray arrayWithObjects:@"Ε", @"Ρ", @"Τ", @"Υ", @"Θ", @"Ι", @"Ο", @"Π" /*, @"Ϝ" */, nil], [NSArray arrayWithObjects:@"Α", @"Σ", @"Δ", @"Φ", @"Γ", @"Η", @"Ξ", @"Κ", @"Λ", nil], [NSArray arrayWithObjects:@"Ζ", @"Χ", @"Ψ", @"Ω", @"Β", @"Ν", @"Μ", nil], nil];
         
-        self.greekLetters = [NSArray arrayWithObjects: [NSArray arrayWithObjects:@"᾿", @"῾", @"´", @"˜", @"¯", @"ͺ"  /*, @"Ϝ" */, nil],[NSArray arrayWithObjects:@"ε", @"ρ", @"τ", @"υ", @"θ", @"ι", @"ο", @"π" /*, @"Ϝ" */, nil], [NSArray arrayWithObjects:@"α", @"σ", @"δ", @"φ", @"γ", @"η", @"ξ", @"κ", @"λ", nil], [NSArray arrayWithObjects:@"ζ", @"χ", @"ψ", @"ω", @"β", @"ν", @"μ", nil], nil];
-        NSLog(@"keyboard1");
+        self.greekLetters = [NSArray arrayWithObjects: [NSArray arrayWithObjects:@"῾", @"᾿", @"´", @"˜", @"¯", @"ͺ"  /*, @"Ϝ" */, nil],[NSArray arrayWithObjects:@"ε", @"ρ", @"τ", @"υ", @"θ", @"ι", @"ο", @"π" /*, @"Ϝ" */, nil], [NSArray arrayWithObjects:@"α", @"σ", @"δ", @"φ", @"γ", @"η", @"ξ", @"κ", @"λ", nil], [NSArray arrayWithObjects:@"ζ", @"χ", @"ψ", @"ω", @"β", @"ν", @"μ", @"ς", @"( )", nil], nil];
+
         self.keys = [[NSMutableArray alloc] init];
         
         NSInteger letterCount = 0;
@@ -145,7 +149,7 @@ enum {
         int numKeys = letterCount;//26;
         for (int i = 0; i < numKeys; i++)
         {
-            CustomButton* button = [[CustomButton alloc] initWithText:@"" AndDevice:device];
+            CustomButton* button = [[CustomButton alloc] initWithText:@"" AndDevice:self->device AndFont:self.greekFont];
             //button.frame = CGRectMake(0 + (i * self->width), self->topMargin + (1 * self->height), self->width, self->height);
 
             [self.keys addObject: button];
@@ -157,13 +161,21 @@ enum {
             [button addTarget:self action:@selector(keyboardLetterDown:) forControlEvents:UIControlEventTouchDown];
             //[button release];
         }
-        self.deleteButton = [[CustomButton alloc] initWithText:@"XXX" AndDevice:device];
+        self.deleteButton = [[CustomButton alloc] initWithText:@"XXX" AndDevice:self->device AndFont:self.greekFont];
         [self addSubview:self.deleteButton];
         [self.deleteButton addTarget:self action:@selector(keyboardDeletePressed:) forControlEvents:UIControlEventTouchDown];
-    NSLog(@"keyboard1.5");    
+    
+        self.submitButton = [[CustomButton alloc] initWithText:@"S" AndDevice:self->device AndFont:self.greekFont];
+        [self addSubview:self.submitButton];
+        [self.submitButton addTarget:self action:@selector(submitPressed:) forControlEvents:UIControlEventTouchDown];
+        
+        self.multipleFormsButton = [[CustomButton alloc] initWithText:@"MF" AndDevice:self->device AndFont:self.greekFont];
+        [self addSubview:self.multipleFormsButton];
+        [self.multipleFormsButton addTarget:self action:@selector(multipleFormsPressed:) forControlEvents:UIControlEventTouchDown];
+        
         [self setButtons:theLang];
     }
-    NSLog(@"keyboard2");
+
     return self;
 }
 
@@ -171,18 +183,19 @@ enum {
 {
     //NSLog(@"Layout sub views keyboard width: %f", self.bounds.size.width);
 
-    if ( self.bounds.size.width < 321.0 )
+    if ( self.bounds.size.width < 321.0 || self->device == 1)
+        
     {
         self->windowWidth = 320;
-        self->width = 32; //includes left and right padding
-        self->height = 54; //includes top and bottom padding
+        self->width = 34;//32; //includes left and right padding
+        self->height = 50; //includes top and bottom padding
         self->hPadding = 3;
         self->vPadding = 8;
-        self->topMargin = 4;
+        self->topMargin = 0;
         self->spaceWidth = 150;
         self->buttonDownAddHeight = 55;
         
-        self->deleteWidth = self->height - 16 + 6;
+        self->deleteWidth = self->height - 16 + 10;
     }
     else if ( self.bounds.size.width < 769.0 )
     {
@@ -201,7 +214,7 @@ enum {
     {
         self->windowWidth = 1024;
         self->width = 94; //includes left and right padding
-        self->height = 86; //includes top and bottom padding
+        self->height = 76; //includes top and bottom padding
         self->hPadding = 7;
         self->vPadding = 6;
         self->topMargin = 4;
@@ -238,19 +251,46 @@ enum {
             CustomButton *button = [self.keys objectAtIndex:key++];
             //Check that it's not selected because layout subviews is called
             //when button is selected and this would negate that resizing on iphone
+            
+            int width1 = 0;
+            if (0)//row == rows - 1 && letter == numLetters - 1)
+                width1 = self->deleteWidth;
+            else
+                width1 = self->width;
+            
+            int xOffset = 0;
+            if (row == 0)
+            {
+                xOffset = -12;
+                button.diacriticButton = true;
+            }
+            else if (row == 1)
+                xOffset = -21;
+            else if (row == 2)
+                xOffset = -4;
+            else
+                xOffset = 0;
+            
+            
+            
             if (button.selected == NO)
-                button.frame = CGRectMake(rowStart + (letter * self->width), self->topMargin + (row * self->height), self->width, self->height);
+                button.frame = CGRectMake(rowStart + (letter * self->width) + xOffset, self->topMargin + (row * self->height), width1, self->height);
         }
     }
     if (self->windowWidth < 321)
     {
-        self.deleteButton.frame = CGRectMake(self->windowWidth - self->width - 15, self->topMargin + (2 * self->height), self->deleteWidth, self->height);
+        self.deleteButton.frame = CGRectMake(self->windowWidth - self->width - 12, self->topMargin + (1 * self->height), self->deleteWidth, self->height);
+        self.submitButton.frame = CGRectMake(self->windowWidth - 70, self->topMargin, 68, self->height);
+        self.multipleFormsButton.frame = CGRectMake(3, self->topMargin, self->deleteWidth, self->height);
     }
     else
     {
         self.deleteButton.frame = CGRectMake(rowStart + (letter * self->width), self->topMargin + (2 * self->height), self->deleteWidth, self->height);
         //needed to redraw icon and x at correct size
         [self.deleteButton setNeedsDisplay];
+        
+        self.submitButton.frame = CGRectMake(self->windowWidth - self->width - 15, self->topMargin, self->deleteWidth, self->height);
+        self.multipleFormsButton.frame = CGRectMake(5, self->topMargin, self->deleteWidth, self->height);
     }
     if (self->lang == GREEK1)
     {
@@ -282,13 +322,14 @@ enum {
 {
     //self.systemFont = @"HelveticaNeue";
     //self.greekFont = @"NewAthenaUnicode";
+    //@"Helvetica-Bold
     NSArray *letterRows;
     self->lang = theLang;
     if (self->lang == GREEK1)
         letterRows = self.greekLetters;
     else
         letterRows = self.latinLetters;
-    NSLog(@"keyboard1.6");
+
     int letter = 0;
     int key = 0;
     for (int row = 0; row < [letterRows count]; row++)
@@ -300,10 +341,9 @@ enum {
         {
             CustomButton *button = [self.keys objectAtIndex:key++];
             [button setTitle:[letters objectAtIndex:letter] forState:UIControlStateNormal];
-            //button.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:24.0];
+            button.titleLabel.font = [UIFont fontWithName:self.greekFont size:24.0];
         }
     }
-    NSLog(@"keyboard1.7");
     [self setNeedsLayout]; //def need this
 }
 
@@ -442,9 +482,14 @@ void printUtf8(char *u, int len)
     
     if ([numberPressed isEqual: @"RET"])
     {
-        if ([self.delegate respondsToSelector:@selector(loadNext)])
+/*        if ([self.delegate respondsToSelector:@selector(loadNext)])
         {
             [self.delegate loadNext];
+        }
+  */
+        if ([self.delegate respondsToSelector:@selector(checkVerb)])
+        {
+            [self.delegate checkVerb];
         }
     }
     else if ([numberPressed isEqual: @"῾"])
@@ -471,10 +516,38 @@ void printUtf8(char *u, int len)
     {
         [self addAccent:IOTA_SUBSCRIPT];
     }
+    else if ([numberPressed isEqual: @"( )"])
+    {
+        [self addAccent:SURROUNDING_PARENTHESES];
+    }
     else
     {
         [self textInput:self.targetTextInput replaceTextAtTextRange:selectedTextRange withString:[numberPressed lowercaseString]];
     }
+}
+
+- (IBAction)submitPressed:(UIButton *)sender {
+
+    if (!self.targetTextInput) {
+        return;
+    }
+    /*        if ([self.delegate respondsToSelector:@selector(loadNext)])
+     {
+     [self.delegate loadNext];
+     }
+     */
+    if ([self.delegate respondsToSelector:@selector(checkVerb)])
+    {
+        [self.delegate checkVerb];
+    }
+}
+
+- (IBAction)multipleFormsPressed:(UIButton *)sender {
+
+    if (!self.targetTextInput) {
+        return;
+    }
+
 }
 
 /**

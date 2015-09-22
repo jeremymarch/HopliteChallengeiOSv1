@@ -11,6 +11,7 @@
 
 @protocol vc2delegate <NSObject>          //[3] (in vc2.h)
 - (void) loadNext;
+- (void) checkVerb;
 @end
 
 @interface Keyboard : UIView <UIInputViewAudioFeedback>
@@ -25,6 +26,7 @@
     int buttonDownAddHeight;
     int lang;
     int deleteWidth;
+    int device;
 }
 //http://stackoverflow.com/questions/14228191/pass-a-reference-to-viewcontroller-in-prepareforsegue
 //@property (nonatomic, weak) UIViewController *targetViewController;
@@ -37,6 +39,9 @@
 @property (nonatomic, retain) NSArray *greekLetters;
 @property (nonatomic, retain) NSArray *latinLetters;
 @property (nonatomic, retain) CustomButton *deleteButton;
+@property (nonatomic, retain) CustomButton *submitButton;
+@property (nonatomic, retain) CustomButton *multipleFormsButton;
+@property (nonatomic, retain) NSString *greekFont;
 
 - (id)initWithFrame:(CGRect)frame lang:(int)lang;
 

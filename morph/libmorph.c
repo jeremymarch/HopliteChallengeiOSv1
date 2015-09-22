@@ -18,9 +18,26 @@ bool onlyUseCombiningDiacritics = false;
 /*
  TO DO:
  verb prefixes
- check the randomVerb units code
+ aorist passive imperative, 2nd sing not alternate endings.  Fix!
+ 
+ four modes, hc time up, hc time down, self test, mc
+ 
+ change opening screen to plain view, not a table.
+ add settings popup or in settings section?
+ Settings:
+ disable animation (or select from different animation modes)
+ loadMorph mode
+ disable sound
+ include dual
+ ask principal parts
+ ask verb endings
+ white on black color scheme
+ 
+ 
  
  *remember, don't copy and paste unicode files into android studio, copy and paste file in finder
+ 
+
  */
 
 bool letterIsAccented(UCS2 letter);
@@ -45,9 +62,9 @@ char *tenses[NUM_TENSES] = { "present", "imperfect", "future", "aorist", "perfec
 char *tensesabbrev[NUM_TENSES] = { "pres.", "imp.", "fut.", "aor.", "perf.", "plup." };
 char *voices[NUM_VOICES] = { "active", "middle", "passive" };
 char *voicesabbrev[NUM_VOICES] = { "act.", "mid.", "pass." };
-char *moods[NUM_MOODS] = { "indicative", "subjunctive", "optative", "imperative", "infinitive" };
+char *moods[NUM_MOODS] = { "indicative", "subjunctive", "optative", "imperative" };
 char *moodsabbrev[NUM_MOODS] = { "ind.", "subj.", "opt.", "imper." };
-
+/*
 void endingGetDescription(int e, char *buffer, int bufferLen)
 {
     char present[] = "Present";
@@ -56,7 +73,7 @@ void endingGetDescription(int e, char *buffer, int bufferLen)
     
     snprintf(buffer, bufferLen, "%s %s %s", "Present", "Active", "Subjunctive");
 }
-
+*/
 /*
 void VFToShort(VerbFormC *vf, unsigned short *s)
 {
@@ -860,7 +877,29 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             int tempStemLen = stemLen;
             
             stripEndingFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, vf->tense, vf->voice);
-            
+            /*
+             not working for some reason
+            //aorist passive imperative second sing
+            if ( vf->mood == IMPERATIVE && vf->tense == AORIST && vf->voice == PASSIVE && vf->person == SECOND && vf->number == SINGULAR)
+            {
+                if (ucs2StemPlusEndingBuffer[tempStemLen] == GREEK_SMALL_LETTER_CHI || ucs2StemPlusEndingBuffer[tempStemLen] == GREEK_SMALL_LETTER_PHI || ucs2StemPlusEndingBuffer[tempStemLen] == GREEK_SMALL_LETTER_THETA)
+                {
+                    if ( ucs2Endings[endingStart + 1] == GREEK_SMALL_LETTER_THETA)
+                    {
+                        ucs2StemPlusEndingBufferLen -= tempStemLen;
+                        continue;
+                    }
+                }
+                else
+                {
+                    if ( ucs2Endings[endingStart + 1] == GREEK_SMALL_LETTER_TAU)
+                    {
+                        ucs2StemPlusEndingBufferLen -= tempStemLen;
+                        continue;
+                    }
+                }
+            }
+            */
             if (vf->tense == IMPERFECT || vf->tense == PLUPERFECT)
             {
                 augmentStem(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen);
@@ -2676,6 +2715,17 @@ void accentSyllable(UCS2 *ucs2String, int i, int *len, int accent, bool toggleOf
                 ucs2String[i] = GREEK_SMALL_LETTER_OMEGA_WITH_PSILI_AND_PERISPOMENI;
         }
     }
+    else if (accent == SURROUNDING_PARENTHESES)
+    {
+        if (ucs2String[i] == GREEK_SMALL_LETTER_NU)
+        {
+            rightShiftFromOffset(ucs2String, i, len);
+            rightShiftFromOffset(ucs2String, i, len);
+            ucs2String[i] = LEFT_PARENTHESIS;
+            ucs2String[i + 1] = GREEK_SMALL_LETTER_NU;
+            ucs2String[i + 2] = RIGHT_PARENTHESIS;
+        }
+    }
 }
 
 void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
@@ -4103,12 +4153,20 @@ int ucs2_to_utf8_string(UCS2 *ucs2, int len, unsigned char *utf8)
 
 void utf8_to_ucs2_string(const unsigned char *utf8, UCS2 *ucs2, int *len)
 {
+    int temp; //because UCS2 is unsigned.
     *len = 0;
+    
     for( int i = 0; *utf8 ; i++)
     {
-        ucs2[i] = utf8_to_ucs2 (utf8, &utf8);
-        if (ucs2[i] == -1)
+        temp = utf8_to_ucs2 (utf8, &utf8);
+        if (temp == -1)
+        {
             break;
+        }
+        else
+        {
+            ucs2[i] = temp;
+        }
         (*len)++;
     }
 }

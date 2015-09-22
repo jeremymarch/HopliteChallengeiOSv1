@@ -10,6 +10,24 @@
 
 @implementation PopUp
 
+-(IBAction)segmentValueChaged:(id)sender
+{
+    switch (self.segment.selectedSegmentIndex)
+    {
+        case UNITS:
+        {
+            self->unitsOrOptions = UNITS;
+            break;
+        }
+        case OPTIONS:
+        {
+            self->unitsOrOptions = OPTIONS;
+            break;
+        }
+    }
+    [self.table reloadData];
+}
+
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
@@ -34,7 +52,14 @@
         //self.layer.borderColor = [[UIColor blackColor] CGColor];
         //self.layer.borderWidth = 2.0;
         self.alpha = 1.0;
+        self->useSwitch = YES;
+        self->unitsOrOptions = UNITS;
+        self.backgroundColor = [UIColor whiteColor];
         
+        self.modePicker = [[UIPickerView alloc]initWithFrame:CGRectMake(0, 50, 100, 150)];
+        self.modePicker.delegate = self;
+        self.modePicker.dataSource = self;
+        self.modePicker.showsSelectionIndicator = YES;
         
         self.buttonStates = [[NSMutableArray alloc] initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"Levels"]];
 
@@ -42,9 +67,20 @@
         
         for (int i = 0; i < 15; i++)
         {
-            [self.buttons insertObject:[NSString stringWithFormat:@"H&Q Unit %i", (i + 1)] atIndex:i];
+            [self.buttons insertObject:[NSString stringWithFormat:@"Unit %i", (i + 1)] atIndex:i];
             //[self.buttonStates insertObject:[NSNumber numberWithBool:NO] atIndex:i];
         }
+        
+        self.optionLabels = @[@"Mode", @"Disable Animation", @"Disable Sound", @"White on Black", @"Include Dual"];
+        self.modePickerLabels = @[@"Hoplite Challenge", @"Hoplite Practice", @"Self Practice", @"Multiple Choice"];
+
+        
+        self.segment=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"H&Q Units", @"Options", nil]];
+        [self.segment setFrame:CGRectMake(0, 0, self.frame.size.width, 45)];
+        //[self.segment setSegmentedControlStyle:UISegmentedControlStyleBar];
+        self.segment.selectedSegmentIndex = 0;
+        [self.segment addTarget:self action:@selector(segmentValueChaged:) forControlEvents:UIControlEventValueChanged];
+        [self addSubview:self.segment];
         
         self.table = [self makeTableView];
         [self addSubview:self.table];
@@ -59,7 +95,7 @@
 -(UITableView *)makeTableView
 {
     CGFloat x = 0;
-    CGFloat y = 0;
+    CGFloat y = 50.0;
     CGFloat width = self.frame.size.width;
     CGFloat height = self.frame.size.height - 64;
     CGRect tableFrame = CGRectMake(x, y, width, height);
@@ -84,16 +120,56 @@
 -(void) layoutSubviews
 {
     CGFloat x = 0;
-    CGFloat y = 0;
+    CGFloat y = 45;
     CGFloat width = self.frame.size.width;
-    CGFloat height = self.frame.size.height - 64;
+    CGFloat height = self.frame.size.height - 64 - 50;
     CGRect tableFrame = CGRectMake(x, y, width, height);
     self.table.frame = tableFrame;
  }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.buttons count];
+    if (self->unitsOrOptions == UNITS)
+        return [self.buttons count];
+    else
+        return [self.optionLabels count];
+}
+//http://stackoverflow.com/questions/13121139/select-uitableviews-row-when-clicking-on-uiswitch
+- (void) switchChanged:(id)sender {
+    UISwitch *switchInCell = (UISwitch *)sender;
+    UITableViewCell * cell = (UITableViewCell*) switchInCell.superview;
+    NSIndexPath *indexPath = [self.table indexPathForCell:cell];
+    BOOL b = (switchInCell.on) ? YES : NO;
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    if (self->unitsOrOptions == UNITS)
+    {
+        [self.buttonStates setObject:[NSNumber numberWithBool:b] atIndexedSubscript:indexPath.row];
+        [defaults setObject:self.buttonStates forKey:@"Levels"];
+    }
+    else
+    {
+        switch (indexPath.row) {
+            case 0:
+                [defaults setBool:b forKey:@"Mode"];
+                break;
+            case 1:
+                [defaults setBool:b forKey:@"DisableAnimations"];
+                break;
+            case 2:
+                [defaults setBool:b forKey:@"DisableSound"];
+                break;
+            case 3:
+                [defaults setBool:b forKey:@"WhiteOnBlack"];
+                break;
+            case 4:
+                [defaults setBool:b forKey:@"IncludeDual"];
+                break;
+            default:
+                break;
+        }
+    }
+    [defaults synchronize];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -102,40 +178,134 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
     
-    if (cell == nil) {
+    if (indexPath.row >= [self.buttonStates count] || [self.buttonStates objectAtIndex:indexPath.row] == nil )
+        [self.buttonStates insertObject:[NSNumber numberWithBool:NO] atIndex:indexPath.row];
+
+
+    if( cell == nil )
+    {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
     }
     
-    if (indexPath.row >= [self.buttonStates count] || [self.buttonStates objectAtIndex:indexPath.row] == nil )
-        [self.buttonStates insertObject:[NSNumber numberWithBool:NO] atIndex:indexPath.row];
-    
-    if ( [[self.buttonStates objectAtIndex:indexPath.row] boolValue] == YES)
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    if (self->unitsOrOptions == UNITS)
+        cell.textLabel.text = [self.buttons objectAtIndex:indexPath.row];
     else
-        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.textLabel.text = [self.optionLabels objectAtIndex:indexPath.row];
     
-    cell.textLabel.text = [self.buttons objectAtIndex:indexPath.row];
-    //cell.backgroundColor = [UIColor blueColor];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    if (self->useSwitch)
+    {
+        if (self->unitsOrOptions == OPTIONS && indexPath.row == 0)
+        {
+            UITextField *tf = [[UITextField alloc] initWithFrame:CGRectMake(-10, 0, 150, 40)];
+            tf.font = [UIFont fontWithName:@"Helvetica" size:16.0];
+            tf.textAlignment = NSTextAlignmentRight;
+            tf.inputView = self.modePicker;
+            cell.accessoryView = tf;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            if ([defaults objectForKey:@"Mode"] && [[defaults objectForKey:@"Mode"] length] > 0)
+            {
+                tf.text = [defaults objectForKey:@"Mode"];
+            }
+            else
+            {
+                tf.text = @"Hoplite Challenge";
+                [defaults setObject:@"Hoplite Challenge" forKey:@"Mode"];
+            }
+        }
+        else
+        {
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            UISwitch *switchView = [[UISwitch alloc] initWithFrame:CGRectZero];
+            cell.accessoryView = switchView;
+            
+            BOOL b = NO;
+            if (self->unitsOrOptions == UNITS)
+            {
+                b = ([[self.buttonStates objectAtIndex:indexPath.row] boolValue] == YES);
+            }
+            else
+            {
+                switch (indexPath.row) {
+                    case 0:
+                        b = ([defaults boolForKey:@"Mode"] == YES) ? YES : NO;
+                        break;
+                    case 1:
+                        b = ([defaults boolForKey:@"DisableAnimations"] == YES) ? YES : NO;
+                        break;
+                    case 2:
+                        b = ([defaults boolForKey:@"DisableSound"] == YES) ? YES : NO;
+                        break;
+                    case 3:
+                        b = ([defaults boolForKey:@"WhiteOnBlack"] == YES) ? YES : NO;
+                        break;
+                    case 4:
+                        b = ([defaults boolForKey:@"IncludeDual"] == YES) ? YES : NO;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            
+            //if ( [[self.buttonStates objectAtIndex:indexPath.row] boolValue] == YES)
+            //  [switchView setOn:YES animated:NO];
+            //else
+            [switchView setOn:b animated:NO];
+            [switchView addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
+        }
+    }
+    else
+    {
+        if ( [[self.buttonStates objectAtIndex:indexPath.row] boolValue] == YES)
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        else
+            cell.accessoryType = UITableViewCellAccessoryNone;
+    }
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (!self->useSwitch)
+    {
+        UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+        BOOL b = (cell.accessoryType == UITableViewCellAccessoryCheckmark) ? NO : YES;
+
+        [self.buttonStates setObject:[NSNumber numberWithBool:b] atIndexedSubscript:indexPath.row];
+        [[NSUserDefaults standardUserDefaults] setObject:self.buttonStates forKey:@"Levels"];
+        [tableView reloadData];
+    }
+}
+
+/*  picker data source */
+
+- (void)pickerView:(UIPickerView *)pV didSelectRow:(NSInteger)row inComponent:(NSInteger)component
+{
+    NSLog(@"picker pressed");
+    NSIndexPath *indexPath=[NSIndexPath indexPathForRow:0 inSection:0];
+    UITableViewCell *cell = [self.table cellForRowAtIndexPath:indexPath];
+    UITextField *tf = (UITextField*)cell.accessoryView;
+    tf.text = [self.modePickerLabels objectAtIndex:row];
+    //tf.enabled = NO;
+    [tf resignFirstResponder];
     
-    UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
-    BOOL b = NO;
-    if (cell.accessoryType == UITableViewCellAccessoryCheckmark)
-    {
-        NSLog(@"no");
-        b = NO;
-    }
-    else
-    {
-        NSLog(@"yes");
-        b = YES;
-    }
-    [self.buttonStates setObject:[NSNumber numberWithBool:b] atIndexedSubscript:indexPath.row];
-    [[NSUserDefaults standardUserDefaults] setObject:self.buttonStates forKey:@"Levels"];
-    [tableView reloadData];
+    [[NSUserDefaults standardUserDefaults] setObject:[self.modePickerLabels objectAtIndex:row] forKey:@"Mode"];
+}
+
+- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
+{
+    return 1;
+}
+
+- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
+{
+    return [self.modePickerLabels count];
+}
+
+- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
+{
+    return [self.modePickerLabels objectAtIndex:row];
 }
 
 - (void)orientationChanged:(NSNotification *)notification

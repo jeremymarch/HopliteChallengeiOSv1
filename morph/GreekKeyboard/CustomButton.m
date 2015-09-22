@@ -43,7 +43,11 @@ enum {
         buttonFrame = CGRectMake(self.frame.origin.x + (self.frame.size.width / 2) - ((self.frame.size.width / 4) + (self->hPadding)), self.frame.origin.y + self->buttonDownAddHeight, self->width, self->height);
         
         self.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
-        self.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:22];
+        //@"῾", @"᾿", @"´", @"˜", @"¯", @"ͺ"
+        if ([self.titleLabel.text isEqual:@"῾"] || [self.titleLabel.text isEqual:@"᾿"] || [self.titleLabel.text isEqual:@"´"] || [self.titleLabel.text isEqual:@"˜"] || [self.titleLabel.text isEqual:@"¯"] || [self.titleLabel.text isEqual:@"ͺ"])
+            self.titleLabel.font = [UIFont fontWithName:self.font size:34];
+        else
+            self.titleLabel.font = [UIFont fontWithName:self.font size:22];
         [self setFrame: buttonFrame];
     }
     
@@ -59,7 +63,7 @@ enum {
         buttonFrame = CGRectMake(self.frame.origin.x + (self.frame.size.width / 2) - ((self.frame.size.width / 4) + (self->hPadding)), self.frame.origin.y + self->buttonDownAddHeight, self->width, self->height);
         
         self.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
-        self.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:22];
+        self.titleLabel.font = [UIFont fontWithName:self.font size:22];
         [self setFrame: buttonFrame];
     }
     
@@ -76,17 +80,18 @@ enum {
         //the following order of these three lines make layoutsubviews only be called once,
         //instead of twice on ios 5.0 on iPhone.  Strange.
         self.titleEdgeInsets = UIEdgeInsetsMake(-52.0, 0, 0, 0);
-        self.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:44];
+        self.titleLabel.font = [UIFont fontWithName:self.font size:44];
         [self setFrame: buttonFrame];
     }
 
     [self setNeedsDisplay];
 }
 
-- (id)initWithText:(NSString *)text AndDevice: (int) device
+- (id)initWithText:(NSString *)text AndDevice: (int) device AndFont:(NSString*)font
 {
     if ((self = [super initWithFrame:CGRectZero]))
     {
+        self.font = font;
         self.device = device;
         [self addTarget: self action: @selector(touchUpInside:) forControlEvents: UIControlEventTouchUpInside];
         [self addTarget: self action: @selector(touchUpOutside:) forControlEvents: UIControlEventTouchUpOutside];
@@ -96,7 +101,7 @@ enum {
         if ([text isEqualToString:@"XXX"])
         {
             /*
-            self.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:18];
+            self.titleLabel.font = [UIFont fontWithName:self.font size:18];
             [self setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
             [self setTitle:@"x" forState:UIControlStateNormal];
             self.titleEdgeInsets = UIEdgeInsetsMake(-2.5, 0, 0, -8.0);
@@ -106,9 +111,9 @@ enum {
         else
         {
             if (self.device == IPHONE)
-                self.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:22];
+                self.titleLabel.font = [UIFont fontWithName:self.font size:22];
             else
-                self.titleLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:24];
+                self.titleLabel.font = [UIFont fontWithName:self.font size:24];
             [self setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
             [self setTitle:text forState:UIControlStateNormal];
             //[self setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -166,7 +171,7 @@ enum {
     {
         buttonRadius = 4.0f;
         outerSideMargin = 2.75f;
-        outerTopMargin = 7.0f;
+        outerTopMargin = 5.0f;//7.0f;
     }
     else
     {
@@ -189,11 +194,11 @@ enum {
     CGContextSaveGState(context);
     
     if (self.device == IPHONE && self.selected && !self.deleteButton)
-        CGContextSetShadowWithColor(context, CGSizeMake(0, 0), 3.0, [UIColor blackColor].CGColor);
-    else if (self.device == IPAD)
-        CGContextSetShadowWithColor(context, CGSizeMake(0, 2), 2.0, [UIColor colorWithRed:(35/255.0) green:(35/255.0) blue:(35/255.0) alpha:1.0].CGColor);
-    else
-        CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 1.0, [UIColor blackColor].CGColor);
+        CGContextSetShadowWithColor(context, CGSizeMake(0, 0), 1.0, [UIColor blackColor].CGColor);
+    //else if (self.device == IPAD)
+    //    CGContextSetShadowWithColor(context, CGSizeMake(0, 2), 2.0, [UIColor colorWithRed:(35/255.0) green:(35/255.0) blue:(35/255.0) alpha:1.0].CGColor);
+    //else
+    //    CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 1.0, [UIColor blackColor].CGColor);
     //CGContextSetShadow(context, CGSizeMake (0, 2), 5.0);
     
     CGContextAddPath(context, outerPath);
@@ -242,19 +247,26 @@ enum {
     {
         //Down state
         // Draw gradient for outer path
+        
         CGContextSaveGState(context);
+        
         CGContextAddPath(context, outerPath);
         CGContextClip(context);
-        /*
-        if (self.device == IPAD && self.deleteButton)
-            drawLinearGradient(context, outerRect, delIconColorLight, delIconColor);
-        else if (self.device == IPAD)
-            drawLinearGradient(context, outerRect, buttonDownLight, buttonDownDark);
-        else
-            drawLinearGradient(context, outerRect, buttonLight, buttonDark);
-        */
-        CGContextRestoreGState(context);
         
+        CGContextSaveGState(context);
+        
+        CGContextAddPath(context, outerPath);
+        if (self.device == IPHONE && self.deleteButton)
+            CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+        else if (self.device == IPAD && self.deleteButton)
+            CGContextSetFillColorWithColor(context, delIconColor.CGColor);
+        else if (self.device == IPAD)
+            CGContextSetFillColorWithColor(context, buttonDark.CGColor);
+        else
+            CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+        CGContextFillPath(context);
+
+        CGContextRestoreGState(context);
 	}
     if (self.deleteButton)
     {

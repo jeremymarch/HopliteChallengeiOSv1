@@ -32,7 +32,11 @@
 @property  BOOL selected;
 @property  BOOL toggled;
 @property  BOOL deleteButton;
+@property  BOOL diacriticButton;
+@property  BOOL mfButton;
+@property  BOOL submitButton;
 @property  int device;
+@property (nonatomic, retain) NSString *font;
 
-- (id)initWithText:(NSString *)text AndDevice: (int) device;
+- (id)initWithText:(NSString *)text AndDevice: (int) device AndFont:(NSString*)font;
 @end

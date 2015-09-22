@@ -36,12 +36,15 @@
 		3F8167291B615A9F005B0FAD /* VerbsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */; };
 		3F81672D1B619BC4005B0FAD /* VerbDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F81672B1B616869005B0FAD /* VerbDetailViewController.m */; };
 		3F8167301B674935005B0FAD /* GreekGlobals.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F81672F1B674935005B0FAD /* GreekGlobals.m */; };
+		3F8515E11BAEFD2A009CB2B3 /* SettingsPopup.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F8515E01BAEFD2A009CB2B3 /* SettingsPopup.m */; settings = {ASSET_TAGS = (); }; };
 		3F8621C01B433E28002B5059 /* Ding.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621BF1B433E28002B5059 /* Ding.mp3 */; };
 		3F8621C21B433FAA002B5059 /* Buzz01.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C11B433FAA002B5059 /* Buzz01.wav */; };
 		3F8621C41B433FD7002B5059 /* Buzz02.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C31B433FD7002B5059 /* Buzz02.wav */; };
 		3F8621C61B433FE6002B5059 /* Ding.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C51B433FE6002B5059 /* Ding.wav */; };
 		3FAA4FF71A2A73C300D49487 /* Verbs.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FAA4FF61A2A73C300D49487 /* Verbs.m */; };
 		3FAA55461A2797C0003EFEDA /* PopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FAA55451A2797C0003EFEDA /* PopUp.m */; };
+		3FCCC60E1BA5EB4300B7CCFB /* greencheck.png in Resources */ = {isa = PBXBuildFile; fileRef = 3FCCC60D1BA5EB4300B7CCFB /* greencheck.png */; };
+		3FCCC6101BA5EB5100B7CCFB /* redx.png in Resources */ = {isa = PBXBuildFile; fileRef = 3FCCC60F1BA5EB5100B7CCFB /* redx.png */; };
 		3FCEE6DA1ADE636500C550AD /* libmorph.c in Sources */ = {isa = PBXBuildFile; fileRef = 3FCEE6D81ADE636500C550AD /* libmorph.c */; };
 /* End PBXBuildFile section */
 
@@ -98,6 +101,8 @@
 		3F81672B1B616869005B0FAD /* VerbDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VerbDetailViewController.m; sourceTree = "<group>"; };
 		3F81672E1B674935005B0FAD /* GreekGlobals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GreekGlobals.h; sourceTree = "<group>"; };
 		3F81672F1B674935005B0FAD /* GreekGlobals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GreekGlobals.m; sourceTree = "<group>"; };
+		3F8515DF1BAEFD2A009CB2B3 /* SettingsPopup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsPopup.h; sourceTree = "<group>"; };
+		3F8515E01BAEFD2A009CB2B3 /* SettingsPopup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsPopup.m; sourceTree = "<group>"; };
 		3F8621BF1B433E28002B5059 /* Ding.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Ding.mp3; sourceTree = "<group>"; };
 		3F8621C11B433FAA002B5059 /* Buzz01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Buzz01.wav; sourceTree = "<group>"; };
 		3F8621C31B433FD7002B5059 /* Buzz02.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Buzz02.wav; sourceTree = "<group>"; };
@@ -106,6 +111,8 @@
 		3FAA4FF61A2A73C300D49487 /* Verbs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Verbs.m; sourceTree = "<group>"; };
 		3FAA55441A2797C0003EFEDA /* PopUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopUp.h; sourceTree = "<group>"; };
 		3FAA55451A2797C0003EFEDA /* PopUp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PopUp.m; sourceTree = "<group>"; };
+		3FCCC60D1BA5EB4300B7CCFB /* greencheck.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greencheck.png; sourceTree = "<group>"; };
+		3FCCC60F1BA5EB5100B7CCFB /* redx.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redx.png; sourceTree = "<group>"; };
 		3FCEE6D81ADE636500C550AD /* libmorph.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libmorph.c; sourceTree = "<group>"; };
 		3FCEE6D91ADE636500C550AD /* libmorph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libmorph.h; sourceTree = "<group>"; };
 		3FCEE6DB1ADF571F00C550AD /* GreekUnicode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GreekUnicode.h; sourceTree = "<group>"; };
@@ -197,6 +204,8 @@
 				3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */,
 				3F81672A1B616869005B0FAD /* VerbDetailViewController.h */,
 				3F81672B1B616869005B0FAD /* VerbDetailViewController.m */,
+				3F8515DF1BAEFD2A009CB2B3 /* SettingsPopup.h */,
+				3F8515E01BAEFD2A009CB2B3 /* SettingsPopup.m */,
 				3FAA55441A2797C0003EFEDA /* PopUp.h */,
 				3FAA55451A2797C0003EFEDA /* PopUp.m */,
 				3FAA4FF51A2A73C300D49487 /* Verbs.h */,
@@ -220,6 +229,8 @@
 		3F73EDAE189642DA003638C5 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				3FCCC60F1BA5EB5100B7CCFB /* redx.png */,
+				3FCCC60D1BA5EB4300B7CCFB /* greencheck.png */,
 				3F8621BF1B433E28002B5059 /* Ding.mp3 */,
 				3F8621C51B433FE6002B5059 /* Ding.wav */,
 				3F8621C11B433FAA002B5059 /* Buzz01.wav */,
@@ -333,9 +344,11 @@
 			files = (
 				3F73EDBE189642DA003638C5 /* Main_iPad.storyboard in Resources */,
 				3F296BCC1956A79C00B4CE78 /* newathu405.ttf in Resources */,
+				3FCCC6101BA5EB5100B7CCFB /* redx.png in Resources */,
 				3F8621C21B433FAA002B5059 /* Buzz01.wav in Resources */,
 				3F73EDC9189642DA003638C5 /* Images.xcassets in Resources */,
 				3F296BCA19566A2E00B4CE78 /* morph.sqlite in Resources */,
+				3FCCC60E1BA5EB4300B7CCFB /* greencheck.png in Resources */,
 				3F8621C41B433FD7002B5059 /* Buzz02.wav in Resources */,
 				3F8621C61B433FE6002B5059 /* Ding.wav in Resources */,
 				3F73EDBB189642DA003638C5 /* Main_iPhone.storyboard in Resources */,
@@ -368,6 +381,7 @@
 				3F2FD3001AF0625300B4CE7F /* GreekForms.c in Sources */,
 				3F81672D1B619BC4005B0FAD /* VerbDetailViewController.m in Sources */,
 				3F39F47D1B456DF900A58885 /* keyboard.m in Sources */,
+				3F8515E11BAEFD2A009CB2B3 /* SettingsPopup.m in Sources */,
 				3F73EDC1189642DA003638C5 /* morph.xcdatamodeld in Sources */,
 				3FAA4FF71A2A73C300D49487 /* Verbs.m in Sources */,
 				3F8167301B674935005B0FAD /* GreekGlobals.m in Sources */,
@@ -514,7 +528,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "morph/morph-Prefix.pch";
 				INFOPLIST_FILE = "morph/morph-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -533,7 +547,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "morph/morph-Prefix.pch";
 				INFOPLIST_FILE = "morph/morph-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";

@@ -16,7 +16,10 @@ enum {
 };
 
 @interface DetailViewController : UIViewController <UISplitViewControllerDelegate, vc2delegate>
-
+{
+    int units[20];
+    int numUnits;
+}
 @property (strong, nonatomic) id detailItem;
 
 @property NSMutableArray *seen;
@@ -30,8 +33,12 @@ enum {
 //@property (nonatomic, retain) Keyboard *keyboard;
 @property (retain, nonatomic) IBOutlet UITextField *textfield;
 
+@property (strong, retain) UIImageView *greenCheckView;
+@property (strong, retain) UIImageView *redXView;
+
 @property NSString *greekFont;
 @property NSString *systemFont;
+@property double fontSize;
 @property NSInteger cardType;
 @property NSInteger verbQuestionType;
 @property NSArray *mcButtons;
@@ -39,6 +46,7 @@ enum {
 @property NSMutableArray *mcButtonsOrder;
 @property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
 
+@property (strong, nonatomic) IBOutlet UILabel *changeTo;
 @property (strong, nonatomic) IBOutlet UILabel *vocabFront;
 @property (strong, nonatomic) IBOutlet UILabel *vocabBack;
 @property (weak, nonatomic) IBOutlet UILabel *stemLabel;
@@ -47,6 +55,7 @@ enum {
 
 @property (weak, nonatomic) IBOutlet UIButton *menuButton;
 @property (weak, nonatomic) IBOutlet UIButton *verbModeButton;
+@property (weak, nonatomic) IBOutlet UIButton *continueButton;
 
 @property (weak, nonatomic) IBOutlet UIButton *correctButton;
 @property (weak, nonatomic) IBOutlet UIButton *incorrectButton;

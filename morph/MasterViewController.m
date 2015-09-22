@@ -44,6 +44,7 @@
                          animations:^{
                              popup.frame = CGRectMake(0,[UIScreen mainScreen].bounds.size.height - 10, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
                              self.navigationItem.rightBarButtonItem.title = @"Units";
+                             
                          }
                          completion:nil];
         [self.view bringSubviewToFront:self.popup];
@@ -84,14 +85,15 @@
     
 	// Do any additional setup after loading the view, typically from a nib.
     //self.navigationItem.leftBarButtonItem = self.editButtonItem;
-    popupShown = FALSE;
+    self.popupShown = FALSE;
     self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height - 10, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
-    
     [self.view addSubview:self.popup];
+    
     //[[[UIApplication sharedApplication] keyWindow] addSubview:self.popup];
     
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithTitle:@"Units" style:UIBarButtonItemStyleBordered target:self action:@selector(animatePopUpShow:)];
     self.navigationItem.rightBarButtonItem = addButton;
+    
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
 }
 
@@ -188,8 +190,6 @@
     }
     else if (card > 0 && card < 5)
     {
-        NSLog(@"buttons: %ld", [self.popup.buttonStates count]);
-        [self.detailViewController setLevelArray: self.popup.buttonStates];
         [self performSegueWithIdentifier:@"showDetail"sender:self];
     }
     
