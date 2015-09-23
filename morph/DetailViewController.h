@@ -7,12 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PopUp.h"
 #import "keyboard.h"
 
 enum {
-    PRACTICE = 0,
-    MULTIPLE_CHOICE,
-    TOURNAMENT
+    HOPLITE_CHALLENGE = 0,
+    HOPLITE_PRACTICE,
+    SELF_PRACTICE,
+    MULTIPLE_CHOICE
 };
 
 @interface DetailViewController : UIViewController <UISplitViewControllerDelegate, vc2delegate>
@@ -21,6 +23,9 @@ enum {
     int numUnits;
 }
 @property (strong, nonatomic) id detailItem;
+
+@property BOOL popupShown;
+@property (nonatomic, retain) IBOutlet PopUp *popup;
 
 @property NSMutableArray *seen;
 @property NSMutableArray *buttonStates;

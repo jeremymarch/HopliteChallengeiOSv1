@@ -19,6 +19,7 @@ enum {
     int useSwitch;
 }
 @property (nonatomic, retain) UITableView *table;
+@property (nonatomic, retain) UIButton *closeButton;
 @property (nonatomic, retain) UISegmentedControl *segment;
 @property (nonatomic, retain) NSMutableArray *buttons;
 @property (nonatomic, retain) NSArray *optionLabels;

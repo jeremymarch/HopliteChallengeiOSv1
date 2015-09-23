@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		3F296BCA19566A2E00B4CE78 /* morph.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 3F296BC919566A2E00B4CE78 /* morph.sqlite */; };
 		3F296BCC1956A79C00B4CE78 /* newathu405.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3F296BCB1956A79C00B4CE78 /* newathu405.ttf */; };
-		3F296BCF1961C6EC00B4CE78 /* NotUsedVerbForm.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F296BCE1961C6EC00B4CE78 /* NotUsedVerbForm.m */; };
 		3F2FD3001AF0625300B4CE7F /* GreekForms.c in Sources */ = {isa = PBXBuildFile; fileRef = 3F2FD2FE1AF0625300B4CE7F /* GreekForms.c */; };
 		3F39F47B1B456DF900A58885 /* Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F39F4761B456DF900A58885 /* Common.m */; };
 		3F39F47C1B456DF900A58885 /* CustomButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F39F4781B456DF900A58885 /* CustomButton.m */; };
@@ -36,7 +35,6 @@
 		3F8167291B615A9F005B0FAD /* VerbsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */; };
 		3F81672D1B619BC4005B0FAD /* VerbDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F81672B1B616869005B0FAD /* VerbDetailViewController.m */; };
 		3F8167301B674935005B0FAD /* GreekGlobals.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F81672F1B674935005B0FAD /* GreekGlobals.m */; };
-		3F8515E11BAEFD2A009CB2B3 /* SettingsPopup.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F8515E01BAEFD2A009CB2B3 /* SettingsPopup.m */; settings = {ASSET_TAGS = (); }; };
 		3F8621C01B433E28002B5059 /* Ding.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621BF1B433E28002B5059 /* Ding.mp3 */; };
 		3F8621C21B433FAA002B5059 /* Buzz01.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C11B433FAA002B5059 /* Buzz01.wav */; };
 		3F8621C41B433FD7002B5059 /* Buzz02.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C31B433FD7002B5059 /* Buzz02.wav */; };
@@ -61,8 +59,6 @@
 /* Begin PBXFileReference section */
 		3F296BC919566A2E00B4CE78 /* morph.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = morph.sqlite; sourceTree = "<group>"; };
 		3F296BCB1956A79C00B4CE78 /* newathu405.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = newathu405.ttf; sourceTree = "<group>"; };
-		3F296BCD1961C6EC00B4CE78 /* NotUsedVerbForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotUsedVerbForm.h; sourceTree = "<group>"; };
-		3F296BCE1961C6EC00B4CE78 /* NotUsedVerbForm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotUsedVerbForm.m; sourceTree = "<group>"; };
 		3F2FD2FE1AF0625300B4CE7F /* GreekForms.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = GreekForms.c; sourceTree = "<group>"; };
 		3F2FD2FF1AF0625300B4CE7F /* GreekForms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GreekForms.h; sourceTree = "<group>"; };
 		3F39F4751B456DF900A58885 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Common.h; path = GreekKeyboard/Common.h; sourceTree = "<group>"; };
@@ -101,8 +97,6 @@
 		3F81672B1B616869005B0FAD /* VerbDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VerbDetailViewController.m; sourceTree = "<group>"; };
 		3F81672E1B674935005B0FAD /* GreekGlobals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GreekGlobals.h; sourceTree = "<group>"; };
 		3F81672F1B674935005B0FAD /* GreekGlobals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GreekGlobals.m; sourceTree = "<group>"; };
-		3F8515DF1BAEFD2A009CB2B3 /* SettingsPopup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsPopup.h; sourceTree = "<group>"; };
-		3F8515E01BAEFD2A009CB2B3 /* SettingsPopup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsPopup.m; sourceTree = "<group>"; };
 		3F8621BF1B433E28002B5059 /* Ding.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Ding.mp3; sourceTree = "<group>"; };
 		3F8621C11B433FAA002B5059 /* Buzz01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Buzz01.wav; sourceTree = "<group>"; };
 		3F8621C31B433FD7002B5059 /* Buzz02.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Buzz02.wav; sourceTree = "<group>"; };
@@ -204,14 +198,10 @@
 				3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */,
 				3F81672A1B616869005B0FAD /* VerbDetailViewController.h */,
 				3F81672B1B616869005B0FAD /* VerbDetailViewController.m */,
-				3F8515DF1BAEFD2A009CB2B3 /* SettingsPopup.h */,
-				3F8515E01BAEFD2A009CB2B3 /* SettingsPopup.m */,
 				3FAA55441A2797C0003EFEDA /* PopUp.h */,
 				3FAA55451A2797C0003EFEDA /* PopUp.m */,
 				3FAA4FF51A2A73C300D49487 /* Verbs.h */,
 				3FAA4FF61A2A73C300D49487 /* Verbs.m */,
-				3F296BCD1961C6EC00B4CE78 /* NotUsedVerbForm.h */,
-				3F296BCE1961C6EC00B4CE78 /* NotUsedVerbForm.m */,
 				3FCEE6D91ADE636500C550AD /* libmorph.h */,
 				3FCEE6D81ADE636500C550AD /* libmorph.c */,
 				3F2FD2FF1AF0625300B4CE7F /* GreekForms.h */,
@@ -374,14 +364,12 @@
 			files = (
 				3F39F47C1B456DF900A58885 /* CustomButton.m in Sources */,
 				3F39F47B1B456DF900A58885 /* Common.m in Sources */,
-				3F296BCF1961C6EC00B4CE78 /* NotUsedVerbForm.m in Sources */,
 				3F73EDC7189642DA003638C5 /* DetailViewController.m in Sources */,
 				3F73EDC4189642DA003638C5 /* MasterViewController.m in Sources */,
 				3F73EDB8189642DA003638C5 /* AppDelegate.m in Sources */,
 				3F2FD3001AF0625300B4CE7F /* GreekForms.c in Sources */,
 				3F81672D1B619BC4005B0FAD /* VerbDetailViewController.m in Sources */,
 				3F39F47D1B456DF900A58885 /* keyboard.m in Sources */,
-				3F8515E11BAEFD2A009CB2B3 /* SettingsPopup.m in Sources */,
 				3F73EDC1189642DA003638C5 /* morph.xcdatamodeld in Sources */,
 				3FAA4FF71A2A73C300D49487 /* Verbs.m in Sources */,
 				3F8167301B674935005B0FAD /* GreekGlobals.m in Sources */,

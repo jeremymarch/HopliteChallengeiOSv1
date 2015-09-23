@@ -158,7 +158,7 @@ UIView *backSideTest;
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if (self.verbQuestionType == TOURNAMENT)
+    if (self.verbQuestionType == HOPLITE_CHALLENGE)
         return;
     
     if (self.front) //then show back
@@ -189,7 +189,7 @@ UIView *backSideTest;
             {
                 self.changedForm.hidden = NO;
             }
-            if (self.verbQuestionType == PRACTICE)
+            if (self.verbQuestionType == SELF_PRACTICE)
             {
                 self.correctButton.hidden = NO;
                 self.incorrectButton.hidden = NO;
@@ -211,7 +211,7 @@ UIView *backSideTest;
     }
     else //load new card
     {
-        if (self.cardType == 1 && self.verbQuestionType == PRACTICE)
+        if (self.cardType == 1 && self.verbQuestionType == SELF_PRACTICE)
         {
             return;
         }
@@ -223,6 +223,7 @@ UIView *backSideTest;
 
 -(void) loadNext
 {
+    NSLog(@"loadnext %ld", (long)self.cardType);
     if (self.cardType == 3)
         [self loadEnding];
     else if (self.cardType == 2)
@@ -424,6 +425,7 @@ UIView *backSideTest;
 
 -(void) loadMorphTraining
 {
+    NSLog(@"here");
     VerbFormC vf;
     Verb *v;
     int bufferLen = 1024;
@@ -472,7 +474,7 @@ UIView *backSideTest;
     /*** Set label and button text ***/
     //self.origForm.text = origForm;
 
-    if (self.verbQuestionType == TOURNAMENT)
+    if (self.verbQuestionType == HOPLITE_CHALLENGE)
     {
         self.textfield.hidden = NO;
         [self.textfield becomeFirstResponder];
@@ -483,7 +485,7 @@ UIView *backSideTest;
         self.textfield.hidden = YES;
     }
     
-    if (self.verbQuestionType == PRACTICE || self.verbQuestionType == TOURNAMENT)
+    if (self.verbQuestionType == SELF_PRACTICE || self.verbQuestionType == HOPLITE_CHALLENGE)
     {
         self.changedForm.text = newForm;
     }
@@ -592,7 +594,7 @@ UIView *backSideTest;
     
     if (!self.animate)
     {
-        if (self.verbQuestionType == TOURNAMENT)
+        if (self.verbQuestionType == HOPLITE_CHALLENGE)
         {
             [self.origForm setFrame:CGRectMake(0, 74, self.view.frame.size.width, 60.0)];
             [self.changeTo setFrame:CGRectMake(0, 120, self.view.frame.size.width, 60.0)];
@@ -604,7 +606,7 @@ UIView *backSideTest;
             self.changeTo.text = @"Change to";
             self.stemLabel.text = newDescription;
         }
-        else if (self.verbQuestionType == PRACTICE)
+        else if (self.verbQuestionType == SELF_PRACTICE)
         {
             [self.stemLabel setFrame:CGRectMake(0, 70, self.view.frame.size.width, 240.0)];
             [self.changedForm setFrame:CGRectMake(0, 200, self.view.frame.size.width, 240.0)];
@@ -612,7 +614,7 @@ UIView *backSideTest;
     }
     else if (self.animate)
     {
-        if (self.verbQuestionType == TOURNAMENT)
+        if (self.verbQuestionType == HOPLITE_CHALLENGE)
         {
             self.origForm.text = @"";
             self.changeTo.text = @"";
@@ -702,7 +704,7 @@ UIView *backSideTest;
     self.correctButton.hidden = YES;
     self.incorrectButton.hidden = YES;
     
-    if (self.verbQuestionType == PRACTICE)
+    if (self.verbQuestionType == SELF_PRACTICE)
     {
         [self.correctButton.layer setMasksToBounds:YES];
         self.correctButton.layer.borderWidth = 2.0f;
@@ -868,7 +870,7 @@ UIView *backSideTest;
     
     self.stemLabel.text = [NSString stringWithFormat:@"to\n\n%@", newDescription];
     
-    if (self.verbQuestionType == PRACTICE)
+    if (self.verbQuestionType == SELF_PRACTICE)
     {
         //[self.stemLabel setCenter:self.view.center];
         [self.stemLabel setFrame:CGRectMake(0, 70, self.view.frame.size.width, 240.0)];
@@ -1201,8 +1203,10 @@ UIView *backSideTest;
         [backSideTest removeFromSuperview];
     
     
-    self.cardType = 1;
+    
     self.cardType = [[self.detailItem  valueForKey:@"sort"] integerValue];
+    if (!self.cardType)
+        self.cardType = 1;
     
     if (1)//self.cardType != 1)
     {
@@ -1262,8 +1266,7 @@ UIView *backSideTest;
                                               ,  screenSize.height - 40, 240.0)];
     }
     
-    [self.timeLabel setFrame:CGRectMake(self.view.frame.size.width - 90 - 60 - 6 - 6, 6
-                                          ,  90, 30)];
+    [self.timeLabel setFrame:CGRectMake(6, 6,  90, 30)];
     
     [self loadNext];
 }
@@ -1302,7 +1305,7 @@ UIView *backSideTest;
     }
     else
     {
-        if (self.verbQuestionType == PRACTICE)
+        if (self.verbQuestionType == SELF_PRACTICE)
         {
             AudioServicesPlaySystemSound(BuzzSound);
         }
@@ -1339,7 +1342,7 @@ UIView *backSideTest;
     }
     else
     {
-        if (self.verbQuestionType == PRACTICE)
+        if (self.verbQuestionType == SELF_PRACTICE)
         {
             AudioServicesPlaySystemSound(DingSound);
         }
@@ -1359,20 +1362,20 @@ UIView *backSideTest;
 
 - (void)toggleVerbMode :(UIButton *)sender
 {
-    if (self.verbQuestionType == PRACTICE)
+    if (self.verbQuestionType == SELF_PRACTICE)
     {
         self.verbQuestionType = MULTIPLE_CHOICE;
         [sender setTitle:@"MC" forState:UIControlStateNormal];
     }
     else if (self.verbQuestionType == MULTIPLE_CHOICE)
     {
-        self.verbQuestionType = TOURNAMENT;
+        self.verbQuestionType = HOPLITE_CHALLENGE;
         [sender setTitle:@"HC" forState:UIControlStateNormal];
     }
     
-    else if (self.verbQuestionType == TOURNAMENT)
+    else if (self.verbQuestionType == HOPLITE_CHALLENGE)
     {
-        self.verbQuestionType = PRACTICE;
+        self.verbQuestionType = SELF_PRACTICE;
         [sender setTitle:@"self" forState:UIControlStateNormal];
     }
     
@@ -1391,7 +1394,34 @@ UIView *backSideTest;
     [self.navigationController setNavigationBarHidden:NO animated:YES];
 }
 
-
+- (void) animatePopUpShow:(id)sender
+{
+    [self.textfield resignFirstResponder];
+    
+    if (self.popupShown)
+    {
+        [UIView animateWithDuration:0.3 delay:0.0 options:0
+                         animations:^{
+                             self.popup.frame = CGRectMake(0,[UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+                             self.navigationItem.rightBarButtonItem.title = @"Units";
+                             
+                         }
+                         completion:nil];
+        [self.view bringSubviewToFront:self.popup];
+        self.popupShown = FALSE;
+    }
+    else
+    {
+        [UIView animateWithDuration:0.3 delay:0.0 options:0
+                         animations:^{
+                             self.popup.frame = CGRectMake(0,0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+                             self.navigationItem.rightBarButtonItem.title = @"Close";
+                         }
+                         completion:nil];
+        [self.view bringSubviewToFront:self.popup];
+        self.popupShown = TRUE;
+    }
+}
 
 - (void)viewDidLoad
 {
@@ -1399,10 +1429,18 @@ UIView *backSideTest;
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
     
+    NSLog(@"didload");
+    self.cardType = 1;
+    
     self.animate = true;
     self.systemFont = @"HelveticaNeue";
     self.greekFont = @"NewAthenaUnicode";
     self.fontSize = 26.0;
+    
+    
+    self.popupShown = FALSE;
+    self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
+    [self.view addSubview:self.popup];
     
     /*
      //crashes if here, so put in appdelegate
@@ -1470,7 +1508,8 @@ UIView *backSideTest;
     
 	// Do any additional setup after loading the view, typically from a nib.
     
-    self.verbQuestionType = TOURNAMENT;//PRACTICE;  //MULTIPLE_CHOICE;
+    
+    self.verbQuestionType = HOPLITE_CHALLENGE;//SELF_PRACTICE;  //MULTIPLE_CHOICE;
     [self.verbModeButton setTitle:@"MC" forState:UIControlStateNormal];
 
     self.levels = [NSMutableArray arrayWithObjects: nil];
@@ -1525,13 +1564,13 @@ UIView *backSideTest;
     }
     else
     {
-        [self.menuButton setFrame:CGRectMake(6, 6, 60, 36.0)];
+        [self.menuButton setFrame:CGRectMake(screenSize.width - 60 - 6, 6, 60, 36.0)];
         [self.menuButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         self.menuButton.layer.borderColor = [UIColor grayColor].CGColor;
         self.menuButton.layer.borderWidth = 2.0f;
         self.menuButton.layer.cornerRadius = 8;
         [self.menuButton addTarget:self
-                            action:@selector(returnToRoot:)
+                            action:@selector(animatePopUpShow:)
        forControlEvents:UIControlEventTouchDown];
     }
     

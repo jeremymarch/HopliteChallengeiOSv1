@@ -56,7 +56,19 @@
         self->unitsOrOptions = UNITS;
         self.backgroundColor = [UIColor whiteColor];
         
-        self.modePicker = [[UIPickerView alloc]initWithFrame:CGRectMake(0, 50, 100, 150)];
+        self.closeButton = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width - 66 - 6, 6, 66, 36)];
+        [self.closeButton setTitle:@"Close" forState:UIControlStateNormal];
+        [self.closeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        self.closeButton.layer.borderColor = [UIColor grayColor].CGColor;
+        self.closeButton.layer.borderWidth = 2.0f;
+        self.closeButton.layer.cornerRadius = 8;
+        [self addSubview:self.closeButton];
+        [self.closeButton addTarget:self.superview
+                     action:@selector(animatePopUpShow:)
+           forControlEvents:UIControlEventTouchDown];
+        
+        
+        self.modePicker = [[UIPickerView alloc]initWithFrame:CGRectMake(0, 0, 100, 150)];
         self.modePicker.delegate = self;
         self.modePicker.dataSource = self;
         self.modePicker.showsSelectionIndicator = YES;
@@ -76,7 +88,7 @@
 
         
         self.segment=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"H&Q Units", @"Options", nil]];
-        [self.segment setFrame:CGRectMake(0, 0, self.frame.size.width, 45)];
+        [self.segment setFrame:CGRectMake(0, 45, self.frame.size.width, 45)];
         //[self.segment setSegmentedControlStyle:UISegmentedControlStyleBar];
         self.segment.selectedSegmentIndex = 0;
         [self.segment addTarget:self action:@selector(segmentValueChaged:) forControlEvents:UIControlEventValueChanged];
@@ -95,7 +107,7 @@
 -(UITableView *)makeTableView
 {
     CGFloat x = 0;
-    CGFloat y = 50.0;
+    CGFloat y = 50.0 + 50.0;
     CGFloat width = self.frame.size.width;
     CGFloat height = self.frame.size.height - 64;
     CGRect tableFrame = CGRectMake(x, y, width, height);
@@ -120,7 +132,7 @@
 -(void) layoutSubviews
 {
     CGFloat x = 0;
-    CGFloat y = 45;
+    CGFloat y = 45 + 45;
     CGFloat width = self.frame.size.width;
     CGFloat height = self.frame.size.height - 64 - 50;
     CGRect tableFrame = CGRectMake(x, y, width, height);
@@ -205,14 +217,14 @@
             cell.accessoryView = tf;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
-            if ([defaults objectForKey:@"Mode"] && [[defaults objectForKey:@"Mode"] length] > 0)
+            if ([defaults objectForKey:@"Mode"] && [[defaults objectForKey:@"Mode"] respondsToSelector:@selector(length)])
             {
                 tf.text = [defaults objectForKey:@"Mode"];
             }
             else
             {
-                tf.text = @"Hoplite Challenge";
-                [defaults setObject:@"Hoplite Challenge" forKey:@"Mode"];
+                tf.text = @"Hoplite Practice";
+                [defaults setObject:@"Hoplite Practice" forKey:@"Mode"];
             }
         }
         else

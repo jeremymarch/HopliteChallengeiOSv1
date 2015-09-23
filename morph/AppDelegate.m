@@ -41,9 +41,9 @@
         MasterViewController *controller = (MasterViewController *)masterNavigationController.topViewController;
         controller.managedObjectContext = self.managedObjectContext;
     } else {
-        UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
-        MasterViewController *controller = (MasterViewController *)navigationController.topViewController;
-        controller.managedObjectContext = self.managedObjectContext;
+        //UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
+        //MasterViewController *controller = (MasterViewController *)navigationController.topViewController;
+        //controller.managedObjectContext = self.managedObjectContext;
     }
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
