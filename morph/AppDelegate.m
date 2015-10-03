@@ -30,7 +30,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    NSLog(@"The size of a char is: %d.", sizeof(unsigned long));
+    //NSLog(@"The size of a char is: %d.", sizeof(unsigned long));
     
     // Override point for customization after application launch.
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -49,12 +49,10 @@
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
     {
-            NSLog(@"keyboard: iPhone");
         self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 206.0) lang:1]; //was 320 x 172
     }
     else
     {
-        NSLog(@"keyboard: iPad");
         self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 328.0) lang:1];  //was 1024 x 266
     }
     

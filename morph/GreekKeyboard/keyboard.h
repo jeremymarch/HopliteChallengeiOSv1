@@ -11,7 +11,7 @@
 
 @protocol vc2delegate <NSObject>          //[3] (in vc2.h)
 - (void) loadNext;
-- (void) checkVerb;
+- (void) preCheckVerbSubmit;
 @end
 
 @interface Keyboard : UIView <UIInputViewAudioFeedback>

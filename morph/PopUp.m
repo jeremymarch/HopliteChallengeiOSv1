@@ -67,12 +67,12 @@
                      action:@selector(animatePopUpShow:)
            forControlEvents:UIControlEventTouchDown];
         
-        
+        /*
         self.modePicker = [[UIPickerView alloc]initWithFrame:CGRectMake(0, 0, 100, 150)];
         self.modePicker.delegate = self;
         self.modePicker.dataSource = self;
         self.modePicker.showsSelectionIndicator = YES;
-        
+        */
         self.buttonStates = [[NSMutableArray alloc] initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"Levels"]];
 
         self.buttons = [[NSMutableArray alloc] initWithCapacity:15];
@@ -83,9 +83,8 @@
             //[self.buttonStates insertObject:[NSNumber numberWithBool:NO] atIndex:i];
         }
         
-        self.optionLabels = @[@"Mode", @"Disable Animation", @"Disable Sound", @"White on Black", @"Include Dual"];
-        self.modePickerLabels = @[@"Hoplite Challenge", @"Hoplite Practice", @"Self Practice", @"Multiple Choice"];
-
+        self.optionLabels = @[@"Hoplite Challenge Timeout", @"Disable Animation", @"Disable Sound", @"White on Black", @"Include Dual"];
+        //self.modePickerLabels = @[@"Hoplite Challenge", @"Hoplite Practice", @"Self Practice", @"Multiple Choice"];
         
         self.segment=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"H&Q Units", @"Options", nil]];
         [self.segment setFrame:CGRectMake(0, 45, self.frame.size.width, 45)];
@@ -163,7 +162,7 @@
     {
         switch (indexPath.row) {
             case 0:
-                [defaults setBool:b forKey:@"Mode"];
+                //[defaults setBool:b forKey:@"HCTime"];
                 break;
             case 1:
                 [defaults setBool:b forKey:@"DisableAnimations"];
@@ -182,6 +181,19 @@
         }
     }
     [defaults synchronize];
+}
+
+-(void)cancelNumberPad{
+    [self.HCTimeField resignFirstResponder];
+    self.HCTimeField.text = @"30";
+}
+
+-(void)doneWithNumberPad{
+    NSString *numberFromTheKeyboard = self.HCTimeField.text;
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:numberFromTheKeyboard forKey:@"HCTime"];
+    [defaults synchronize];
+    [self.HCTimeField resignFirstResponder];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -210,21 +222,34 @@
     {
         if (self->unitsOrOptions == OPTIONS && indexPath.row == 0)
         {
-            UITextField *tf = [[UITextField alloc] initWithFrame:CGRectMake(-10, 0, 150, 40)];
-            tf.font = [UIFont fontWithName:@"Helvetica" size:16.0];
-            tf.textAlignment = NSTextAlignmentRight;
-            tf.inputView = self.modePicker;
-            cell.accessoryView = tf;
+            self.HCTimeField = [[UITextField alloc] initWithFrame:CGRectMake(-10, 0, 50, 40)];
+            self.HCTimeField.font = [UIFont fontWithName:@"Helvetica" size:16.0];
+            self.HCTimeField.textAlignment = NSTextAlignmentCenter;
+            //self.HCTimeField.inputView = self.modePicker;
+            self.HCTimeField.keyboardType = UIKeyboardTypeNumberPad;
+            
+            UIToolbar* numberToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, 320, 50)];
+            numberToolbar.barStyle = UIBarStyleBlackTranslucent;
+            numberToolbar.items = @[[[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStyleBordered target:self action:@selector(cancelNumberPad)],
+                                    [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                                    [[UIBarButtonItem alloc]initWithTitle:@"Apply" style:UIBarButtonItemStyleDone target:self action:@selector(doneWithNumberPad)]];
+            [numberToolbar sizeToFit];
+            self.HCTimeField.inputAccessoryView = numberToolbar;
+            
+            
+            cell.accessoryView = self.HCTimeField;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             
-            if ([defaults objectForKey:@"Mode"] && [[defaults objectForKey:@"Mode"] respondsToSelector:@selector(length)])
+            if ([defaults objectForKey:@"HCTime"] && [[defaults objectForKey:@"HCTime"] respondsToSelector:@selector(length)])
             {
-                tf.text = [defaults objectForKey:@"Mode"];
+                self.HCTimeField.text = [defaults objectForKey:@"HCTime"];
             }
             else
             {
-                tf.text = @"Hoplite Practice";
-                [defaults setObject:@"Hoplite Practice" forKey:@"Mode"];
+                //default
+                self.HCTimeField.text = @"30";
+                [defaults setObject:@"30" forKey:@"HCTime"];
+                [defaults synchronize];
             }
         }
         else
@@ -291,7 +316,7 @@
 }
 
 /*  picker data source */
-
+/*
 - (void)pickerView:(UIPickerView *)pV didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
     NSLog(@"picker pressed");
@@ -319,7 +344,7 @@
 {
     return [self.modePickerLabels objectAtIndex:row];
 }
-
+*/
 - (void)orientationChanged:(NSNotification *)notification
 {
     UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;

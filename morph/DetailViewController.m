@@ -158,7 +158,7 @@ UIView *backSideTest;
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if (self.verbQuestionType == HOPLITE_PRACTICE)
+    if (self.verbQuestionType == HOPLITE_PRACTICE || self.verbQuestionType == HOPLITE_CHALLENGE)
         return;
     
     if (self.front) //then show back
@@ -390,6 +390,34 @@ void printUCS22(UCS2 *u, int len)
     [self.navigationController popViewControllerAnimated:NO];
 }
 
+-(void)preCheckVerbTimeout
+{
+    self.timeLabel.text = @"0.00 sec";
+    self.timeLabel.hidden = NO;
+    [self stopTimer];
+    [self checkVerb];
+}
+
+-(void)preCheckVerbSubmit
+{
+    if (self.verbQuestionType == HOPLITE_CHALLENGE)
+    {
+        CFTimeInterval elapsedTime = self.HCTime - (CACurrentMediaTime() - self.startTime);
+        self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
+        //self.timeLabel.text = @"0.00 sec";
+        self.timeLabel.hidden = NO;
+        [self stopTimer];
+    }
+    else
+    {
+        CFTimeInterval elapsedTime = CACurrentMediaTime() - self.startTime;
+        self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
+        self.timeLabel.hidden = NO;
+        [self stopTimer];
+    }
+    [self checkVerb];
+}
+
 -(void)checkVerb
 {
     CGRect screenBound = [[UIScreen mainScreen] bounds];
@@ -432,10 +460,9 @@ void printUCS22(UCS2 *u, int len)
             self.textfield.textColor = [UIColor grayColor];
             isCorrect = NO;
         }
-        CFTimeInterval elapsedTime = CACurrentMediaTime() - self.startTime;
-        self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
-        self.timeLabel.hidden = false;
-        [self stopTimer];
+
+        
+        //
         
         if (!isCorrect || debug)
         {
@@ -489,7 +516,14 @@ void printUCS22(UCS2 *u, int len)
 
 -(void)startTimer
 {
-    self.timeLabel.text = @"0.00 sec";
+    if (self.verbQuestionType == HOPLITE_CHALLENGE)
+    {
+        self.timeLabel.text = [NSString stringWithFormat:@"%ld.00 sec", (long)self.HCTime];
+    }
+    else
+    {
+        self.timeLabel.text = @"0.00 sec";
+    }
     self.startTime = CACurrentMediaTime();
     self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(runTimer)];
     self.displayLink.frameInterval = 4;
@@ -498,15 +532,32 @@ void printUCS22(UCS2 *u, int len)
 
 -(void)runTimer
 {
-    CFTimeInterval elapsedTime = CACurrentMediaTime() - self.startTime;
-    self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
+    CFTimeInterval elapsedTime;
+    if (self.verbQuestionType == HOPLITE_CHALLENGE)
+    {
+        elapsedTime = self.HCTime - (CACurrentMediaTime() - self.startTime);
+        if (elapsedTime < 0)
+        {
+            self.timeLabel.text = @"0.00 sec";
+            [self preCheckVerbTimeout];
+        }
+        else
+        {
+            self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
+        }
+    }
+    else
+    {
+        elapsedTime = CACurrentMediaTime() - self.startTime;
+        self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
+    }
 }
 
 -(void)stopTimer
 {
     //update the timer label once more so it's accurate
-    CFTimeInterval elapsedTime = CACurrentMediaTime() - self.startTime;
-    self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
+    //CFTimeInterval elapsedTime = CACurrentMediaTime() - self.startTime;
+    //self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
     if (self.displayLink)
     {
         [self.displayLink invalidate];
@@ -579,8 +630,8 @@ void printUCS22(UCS2 *u, int len)
 
     if (self.verbQuestionType == HOPLITE_PRACTICE || self.verbQuestionType == HOPLITE_CHALLENGE)
     {
-        self.textfield.hidden = NO;
-        [self.textfield becomeFirstResponder];
+        //self.textfield.hidden = NO;
+        //[self.textfield becomeFirstResponder];
     }
     else
     {
@@ -588,6 +639,7 @@ void printUCS22(UCS2 *u, int len)
         self.textfield.hidden = YES;
     }
     
+    self.textfield.hidden = YES;
     self.MCButtonA.hidden = YES;
     self.MCButtonB.hidden = YES;
     self.MCButtonC.hidden = YES;
@@ -1446,6 +1498,10 @@ void printUCS22(UCS2 *u, int len)
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    if ([[NSUserDefaults standardUserDefaults] integerForKey:@"HCTime"])
+        self.HCTime = [[NSUserDefaults standardUserDefaults] integerForKey:@"HCTime"];
+    else
+        self.HCTime = 30;
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
     
@@ -1493,7 +1549,9 @@ void printUCS22(UCS2 *u, int len)
     self.textfield.adjustsFontSizeToFitWidth = true;
     
     //sets focus and raises keyboard
-    [self.textfield becomeFirstResponder];
+    //[self.textfield becomeFirstResponder];
+    self.textfield.hidden = YES;
+    
     
     [[UIApplication sharedApplication] setStatusBarHidden:YES
                                             withAnimation:NO];
@@ -1555,7 +1613,7 @@ void printUCS22(UCS2 *u, int len)
     }
 
     [self.continueButton addTarget:self
-                             action:@selector(checkVerb)
+                             action:@selector(preCheckVerbSubmit)
                    forControlEvents:UIControlEventTouchDown];
     
     [self.backButton addTarget:self

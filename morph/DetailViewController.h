@@ -23,7 +23,7 @@ enum {
     int numUnits;
 }
 @property (strong, nonatomic) id detailItem;
-
+@property NSInteger HCTime;
 @property BOOL popupShown;
 @property (nonatomic, retain) IBOutlet PopUp *popup;
 @property (nonatomic, retain) CADisplayLink *displayLink;

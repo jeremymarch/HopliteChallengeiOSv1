@@ -491,9 +491,9 @@ void printUtf8(char *u, int len)
             [self.delegate loadNext];
         }
   */
-        if ([self.delegate respondsToSelector:@selector(checkVerb)])
+        if ([self.delegate respondsToSelector:@selector(preCheckVerbSubmit)])
         {
-            [self.delegate checkVerb];
+            [self.delegate preCheckVerbSubmit];
         }
     }
     else if ([numberPressed isEqual: @"῾"])
@@ -540,9 +540,9 @@ void printUtf8(char *u, int len)
      [self.delegate loadNext];
      }
      */
-    if ([self.delegate respondsToSelector:@selector(checkVerb)])
+    if ([self.delegate respondsToSelector:@selector(preCheckVerbSubmit)])
     {
-        [self.delegate checkVerb];
+        [self.delegate preCheckVerbSubmit];
     }
 }
 

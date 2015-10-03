@@ -26,4 +26,5 @@ enum {
 @property (nonatomic, retain) NSArray *modePickerLabels;
 @property (nonatomic, retain) NSMutableArray *buttonStates;
 @property (nonatomic, retain) UIPickerView *modePicker;
+@property (nonatomic, retain) UITextField *HCTimeField;
 @end

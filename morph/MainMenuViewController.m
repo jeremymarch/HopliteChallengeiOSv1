@@ -28,7 +28,15 @@
     else if ([b.titleLabel.text isEqualToString:@"Multiple Choice"])
         self.buttonPressed = MULTIPLE_CHOICE;
     
-    [self performSegueWithIdentifier:@"showDetail"sender:self];
+    //[self performSegueWithIdentifier:@"showDetail"sender:self];
+    //http://stackoverflow.com/questions/16209113/push-segue-in-xcode-with-no-animation
+    //[[self navigationController] pushViewController:[self destinationViewController] animated:NO];
+    
+    //This way doesn't call prepareForSegue
+    DetailViewController *dvc = [self.storyboard instantiateViewControllerWithIdentifier:@"dvc"];
+    dvc.verbQuestionType = self.buttonPressed;
+    [self.navigationController pushViewController:dvc animated:NO];
+
 }
 
 - (void)viewDidLoad {
@@ -77,6 +85,15 @@
     [self.SPButton setFrame:CGRectMake(p, 320, w / 2 - (p*3), h)];
     [self.MCButton setFrame:CGRectMake(w / 2 + (p*2), 320, w / 2 - (p*3), h)];
     
+    
+//[self.correctButton setFrame:CGRectMake(((w/2) - self.correctButton.frame.size.width) / 2, self.view.frame.size.height / 1.3, self.correctButton.frame.size.width, self.correctButton.frame.size.height)];
+
+    
+//[self.incorrectButton setFrame:CGRectMake((((w/2) - self.correctButton.frame.size.width) / 2) + w/2, self.view.frame.size.height / 1.3, self.correctButton.frame.size.width, self.correctButton.frame.size.height)];
+    
+    [self.menuButton setFrame:CGRectMake(w - 70, 18, self.menuButton.frame.size.width, self.menuButton.frame.size.height)];
+    
+    
     // Do any additional setup after loading the view.
 }
 
@@ -100,19 +117,20 @@
     {
         [UIView animateWithDuration:0.3 delay:0.0 options:0
                          animations:^{
-                             self.popup.frame = CGRectMake(0,[UIScreen mainScreen].bounds.size.height - 10, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+                             self.popup.frame = CGRectMake(0,[UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
                              self.navigationItem.rightBarButtonItem.title = @"Units";
                              
                          }
                          completion:nil];
         [self.view bringSubviewToFront:self.popup];
+        [self.popup.HCTimeField resignFirstResponder];
         self.popupShown = FALSE;
     }
     else
     {
         [UIView animateWithDuration:0.3 delay:0.0 options:0
                          animations:^{
-                             self.popup.frame = CGRectMake(0,0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
+                             self.popup.frame = CGRectMake(0,18, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
                              self.navigationItem.rightBarButtonItem.title = @"Close";
                          }
                          completion:nil];
