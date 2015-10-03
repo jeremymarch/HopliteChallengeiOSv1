@@ -1,10 +1,60 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="Ah7-4n-0Wa">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="Dsm-rT-GJJ">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
     </dependencies>
     <scenes>
+        <!--Main Menu View Controller-->
+        <scene sceneID="72m-k7-a5d">
+            <objects>
+                <viewController id="CGH-Uy-URl" customClass="MainMenuViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="OK2-7f-P73">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Sk8-wS-Rda">
+                                <rect key="frame" x="20" y="131" width="151" height="88"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Hoplite Challenge"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="zdh-87-CxB">
+                                <rect key="frame" x="190" y="160" width="110" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Hoplite Practice"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="YGz-fu-YE6">
+                                <rect key="frame" x="52" y="330" width="87" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Self Practice"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="08m-Ub-bFS">
+                                <rect key="frame" x="190" y="330" width="107" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Multiple Choice"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="BmR-Oz-8Ld">
+                                <rect key="frame" x="132" y="502" width="57" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Settings"/>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="wYQ-lP-kqT"/>
+                    <connections>
+                        <outlet property="HCButton" destination="Sk8-wS-Rda" id="MhV-dI-cD7"/>
+                        <outlet property="HPButton" destination="zdh-87-CxB" id="w0N-X1-BfI"/>
+                        <outlet property="MCButton" destination="08m-Ub-bFS" id="68X-3U-I1n"/>
+                        <outlet property="SPButton" destination="YGz-fu-YE6" id="AE1-yP-5HM"/>
+                        <outlet property="menuButton" destination="BmR-Oz-8Ld" id="ezz-ci-ew9"/>
+                        <segue destination="Ah7-4n-0Wa" kind="push" identifier="showDetail" animates="NO" id="6Nq-Ao-Xso"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="V6h-bW-BiZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="776" y="-230"/>
+        </scene>
         <!--Detail-->
         <scene sceneID="Cn3-H9-jdl">
             <objects>
@@ -149,7 +199,10 @@
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="dik-Xj-1pN">
                                 <rect key="frame" x="101" y="447" width="123" height="56"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Continue"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="Continue">
+                                    <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="layer.cornerRadius" value="20"/>
                                     <userDefinedRuntimeAttribute type="string" keyPath="layer.borderWidth" value="4"/>
@@ -157,6 +210,11 @@
                                         <color key="value" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Cjy-M7-06q">
+                                <rect key="frame" x="153" y="511" width="34" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Back"/>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -169,6 +227,7 @@
                         <outlet property="MCButtonB" destination="hQi-uF-dSg" id="WUo-v2-JgX"/>
                         <outlet property="MCButtonC" destination="z9v-Uj-1X2" id="Ox1-O2-xic"/>
                         <outlet property="MCButtonD" destination="kRM-Pd-iXs" id="MXA-UO-9im"/>
+                        <outlet property="backButton" destination="Cjy-M7-06q" id="NUf-qL-9Rs"/>
                         <outlet property="backLabel" destination="P1I-D2-tm3" id="nFM-gD-bla"/>
                         <outlet property="changeTo" destination="M3A-Df-Fch" id="pKC-Lr-kdp"/>
                         <outlet property="changedForm" destination="Rqt-1p-Lvp" id="2Qg-H0-Zg8"/>
@@ -187,7 +246,25 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lrm-kH-fPn" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="954" y="-158"/>
+            <point key="canvasLocation" x="1286" y="-230"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="d2q-J5-GRH">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Dsm-rT-GJJ" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Ogy-bY-59h">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="CGH-Uy-URl" kind="relationship" relationship="rootViewController" id="oSf-CD-MQz"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SiF-FM-Zyh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="338" y="-230"/>
         </scene>
     </scenes>
 </document>

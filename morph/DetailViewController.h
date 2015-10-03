@@ -26,7 +26,7 @@ enum {
 
 @property BOOL popupShown;
 @property (nonatomic, retain) IBOutlet PopUp *popup;
-
+@property (nonatomic, retain) CADisplayLink *displayLink;
 @property NSMutableArray *seen;
 @property NSMutableArray *buttonStates;
 @property NSMutableArray *levels;
@@ -41,8 +41,8 @@ enum {
 @property (strong, retain) UIImageView *greenCheckView;
 @property (strong, retain) UIImageView *redXView;
 
-@property NSString *greekFont;
-@property NSString *systemFont;
+@property (strong, nonatomic) NSString *greekFont;
+@property (strong, nonatomic) NSString *systemFont;
 @property double fontSize;
 @property NSInteger cardType;
 @property NSInteger verbQuestionType;
@@ -61,6 +61,7 @@ enum {
 @property (weak, nonatomic) IBOutlet UIButton *menuButton;
 @property (weak, nonatomic) IBOutlet UIButton *verbModeButton;
 @property (weak, nonatomic) IBOutlet UIButton *continueButton;
+@property (weak, nonatomic) IBOutlet UIButton *backButton;
 
 @property (weak, nonatomic) IBOutlet UIButton *correctButton;
 @property (weak, nonatomic) IBOutlet UIButton *incorrectButton;

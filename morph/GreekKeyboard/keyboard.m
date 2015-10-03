@@ -58,10 +58,11 @@ enum {
         //self.greekFont = @"NewAthenaUnicode";
         //@"Helvetica-Bold
         self.greekFont = @"Helvetica";
-
+        
+         //this is done in layout subviews
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
         {
-            self->windowWidth = 320;
+            self->windowWidth = self.frame.size.width;
             self->width = 32; //includes left and right padding
             self->height = 54; //includes top and bottom padding
             self->hPadding = 3;
@@ -86,6 +87,7 @@ enum {
             self->buttonDownAddHeight = 55;
             self->device = 0;
         }
+        
         //[super setAutoresizingMask: UIViewAutoresizingNone];
         //self.autoresizingMask = UIViewAutoresizingNone; //so that the keyboard can have a custom height; actually not really needed.
         [self setAutoresizingMask: UIViewAutoresizingFlexibleWidth];
@@ -183,11 +185,10 @@ enum {
 {
     //NSLog(@"Layout sub views keyboard width: %f", self.bounds.size.width);
 
-    if ( self.bounds.size.width < 321.0 || self->device == 1)
-        
+    if ( self->device == 1)
     {
-        self->windowWidth = 320;
-        self->width = 34;//32; //includes left and right padding
+        self->windowWidth =  self.frame.size.width;// 320;
+        self->width = self->windowWidth / 9.6;//32; //includes left and right padding
         self->height = 50; //includes top and bottom padding
         self->hPadding = 3;
         self->vPadding = 8;
@@ -197,31 +198,34 @@ enum {
         
         self->deleteWidth = self->height - 16 + 10;
     }
-    else if ( self.bounds.size.width < 769.0 )
+    else if (self->device == 2)
     {
-        self->windowWidth = 768;
-        self->width = 76; //includes left and right padding
-        self->height = 76; //includes top and bottom padding
-        self->hPadding = 5;
-        self->vPadding = 6;
-        self->topMargin = 14;
-        self->spaceWidth = 150;
-        self->buttonDownAddHeight = 55;
-        
-        self->deleteWidth = self->width;
-    }
-    else
-    {
-        self->windowWidth = 1024;
-        self->width = 94; //includes left and right padding
-        self->height = 76; //includes top and bottom padding
-        self->hPadding = 7;
-        self->vPadding = 6;
-        self->topMargin = 4;
-        self->spaceWidth = 150;
-        self->buttonDownAddHeight = 55;
-        
-        self->deleteWidth = self->width;
+        if ( self.bounds.size.width < 769.0 )
+        {
+            self->windowWidth = 768;
+            self->width = 76; //includes left and right padding
+            self->height = 76; //includes top and bottom padding
+            self->hPadding = 5;
+            self->vPadding = 6;
+            self->topMargin = 14;
+            self->spaceWidth = 150;
+            self->buttonDownAddHeight = 55;
+            
+            self->deleteWidth = self->width;
+        }
+        else
+        {
+            self->windowWidth = 1024;
+            self->width = 94; //includes left and right padding
+            self->height = 76; //includes top and bottom padding
+            self->hPadding = 7;
+            self->vPadding = 6;
+            self->topMargin = 4;
+            self->spaceWidth = 150;
+            self->buttonDownAddHeight = 55;
+            
+            self->deleteWidth = self->width;
+        }
     }
     
     NSArray *letterRows;
@@ -241,7 +245,7 @@ enum {
         NSArray *letters = [letterRows objectAtIndex:row];
         int numLetters = [letters count];
         //account for the delete button on iPad
-        if (row == 2 && self->windowWidth > 320)
+        if (row == 2 && device == 2)
             rowStart = (self.bounds.size.width - ((numLetters + 1) * self->width) ) / 2;
         else
             rowStart = (self.bounds.size.width - (numLetters * self->width) ) / 2;
@@ -277,7 +281,7 @@ enum {
                 button.frame = CGRectMake(rowStart + (letter * self->width) + xOffset, self->topMargin + (row * self->height), width1, self->height);
         }
     }
-    if (self->windowWidth < 321)
+    if (device == 1)
     {
         self.deleteButton.frame = CGRectMake(self->windowWidth - self->width - 12, self->topMargin + (1 * self->height), self->deleteWidth, self->height);
         self.submitButton.frame = CGRectMake(self->windowWidth - 70, self->topMargin, 68, self->height);

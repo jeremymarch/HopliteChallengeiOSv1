@@ -17,6 +17,7 @@ bool onlyUseCombiningDiacritics = false;
 
 /*
  TO DO:
+ issue where accents on contracted endings are from basic greek range, but from keyboard are from extended. 03ce vs. 1f7d
  verb prefixes
  aorist passive imperative, 2nd sing not alternate endings.  Fix!
  

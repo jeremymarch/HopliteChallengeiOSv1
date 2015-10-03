@@ -13,6 +13,7 @@
 		3F39F47B1B456DF900A58885 /* Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F39F4761B456DF900A58885 /* Common.m */; };
 		3F39F47C1B456DF900A58885 /* CustomButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F39F4781B456DF900A58885 /* CustomButton.m */; };
 		3F39F47D1B456DF900A58885 /* keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F39F47A1B456DF900A58885 /* keyboard.m */; };
+		3F5617AC1BBC955200816FA1 /* MainMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F5617AB1BBC955200816FA1 /* MainMenuViewController.m */; settings = {ASSET_TAGS = (); }; };
 		3F73EDA6189642DA003638C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDA5189642DA003638C5 /* Foundation.framework */; };
 		3F73EDA8189642DA003638C5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDA7189642DA003638C5 /* CoreGraphics.framework */; };
 		3F73EDAA189642DA003638C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDA9189642DA003638C5 /* UIKit.framework */; };
@@ -67,6 +68,8 @@
 		3F39F4781B456DF900A58885 /* CustomButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomButton.m; path = GreekKeyboard/CustomButton.m; sourceTree = "<group>"; };
 		3F39F4791B456DF900A58885 /* keyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = keyboard.h; path = GreekKeyboard/keyboard.h; sourceTree = "<group>"; };
 		3F39F47A1B456DF900A58885 /* keyboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = keyboard.m; path = GreekKeyboard/keyboard.m; sourceTree = "<group>"; };
+		3F5617AA1BBC955200816FA1 /* MainMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainMenuViewController.h; sourceTree = "<group>"; };
+		3F5617AB1BBC955200816FA1 /* MainMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainMenuViewController.m; sourceTree = "<group>"; };
 		3F73EDA2189642DA003638C5 /* morph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = morph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F73EDA5189642DA003638C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3F73EDA7189642DA003638C5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -212,6 +215,8 @@
 				3F73EDAE189642DA003638C5 /* Supporting Files */,
 				3F81672E1B674935005B0FAD /* GreekGlobals.h */,
 				3F81672F1B674935005B0FAD /* GreekGlobals.m */,
+				3F5617AA1BBC955200816FA1 /* MainMenuViewController.h */,
+				3F5617AB1BBC955200816FA1 /* MainMenuViewController.m */,
 			);
 			path = morph;
 			sourceTree = "<group>";
@@ -374,6 +379,7 @@
 				3FAA4FF71A2A73C300D49487 /* Verbs.m in Sources */,
 				3F8167301B674935005B0FAD /* GreekGlobals.m in Sources */,
 				3F8167291B615A9F005B0FAD /* VerbsTableViewController.m in Sources */,
+				3F5617AC1BBC955200816FA1 /* MainMenuViewController.m in Sources */,
 				3FCEE6DA1ADE636500C550AD /* libmorph.c in Sources */,
 				3F73EDB4189642DA003638C5 /* main.m in Sources */,
 				3FAA55461A2797C0003EFEDA /* PopUp.m in Sources */,

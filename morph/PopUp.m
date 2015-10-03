@@ -238,11 +238,11 @@
             {
                 b = ([[self.buttonStates objectAtIndex:indexPath.row] boolValue] == YES);
             }
-            else
+            else if (self->unitsOrOptions == OPTIONS)
             {
                 switch (indexPath.row) {
                     case 0:
-                        b = ([defaults boolForKey:@"Mode"] == YES) ? YES : NO;
+                        //mode row
                         break;
                     case 1:
                         b = ([defaults boolForKey:@"DisableAnimations"] == YES) ? YES : NO;

@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 
 #import "MasterViewController.h"
+#import "MainMenuViewController.h"
 
 @implementation AppDelegate
 
@@ -29,7 +30,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    //NSLog(@"The size of a char is: %d.", sizeof(unsigned long));
+    NSLog(@"The size of a char is: %d.", sizeof(unsigned long));
     
     // Override point for customization after application launch.
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -42,7 +43,7 @@
         controller.managedObjectContext = self.managedObjectContext;
     } else {
         //UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
-        //MasterViewController *controller = (MasterViewController *)navigationController.topViewController;
+        //MainMenuViewController *controller = (MainMenuViewController *)navigationController.topViewController;
         //controller.managedObjectContext = self.managedObjectContext;
     }
     
