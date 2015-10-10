@@ -11,6 +11,11 @@
 
 @interface MainMenuViewController : UIViewController
 
+@property (strong, nonatomic) UIImageView *logoImgView;
+@property (weak, nonatomic) IBOutlet UILabel *LGILabel;
+@property (weak, nonatomic) IBOutlet UILabel *HCLabel;
+@property (weak, nonatomic) IBOutlet UILabel *EOPLabel;
+
 @property (weak, nonatomic) IBOutlet UIButton *HCButton;
 @property (weak, nonatomic) IBOutlet UIButton *HPButton;
 @property (weak, nonatomic) IBOutlet UIButton *SPButton;

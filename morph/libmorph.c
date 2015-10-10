@@ -17,11 +17,8 @@ bool onlyUseCombiningDiacritics = false;
 
 /*
  TO DO:
- issue where accents on contracted endings are from basic greek range, but from keyboard are from extended. 03ce vs. 1f7d
+mi verbs aorist
  verb prefixes
- aorist passive imperative, 2nd sing not alternate endings.  Fix!
- 
- four modes, hc time up, hc time down, self test, mc
  
  change opening screen to plain view, not a table.
  add settings popup or in settings section?
@@ -34,10 +31,7 @@ bool onlyUseCombiningDiacritics = false;
  ask verb endings
  white on black color scheme
  
- 
- 
  *remember, don't copy and paste unicode files into android studio, copy and paste file in finder
- 
 
  */
 
@@ -46,8 +40,10 @@ void stripAccent(UCS2 *word, int *len);
 char *getEnding(VerbFormC *vf, UCS2 *ending, int endingLen, bool contractedFuture);
 void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, unsigned char voice);
 void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len);
+void augmentStemDecomposed(VerbFormC *vf, UCS2 *ucs2, int *len);
 void stripAugmentFromPrincipalPart(UCS2 *ucs2, int *len, unsigned char tense, unsigned char voice, unsigned char mood, UCS2 presentStemInitial);
 void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen);
+void addEndingDecomposed(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen);
 bool accentRecessive(UCS2 *tempUcs2String, int *len, bool optative);
 bool isContractedVerb(VerbFormC *vf, UCS2 *ucs2, int *len);
 
@@ -312,7 +308,7 @@ void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors
     char tempBuffer[2048];
     int offset = 0;
     
-    getForm(new, tempBuffer, 2048, false); //put the changed form on the buffer so no duplicates
+    getForm(new, tempBuffer, 2048, false, false); //put the changed form on the buffer so no duplicates
     randomAlternative(tempBuffer, &offset);
     strncpy(&buffer[n], &tempBuffer[offset], strlen(&tempBuffer[offset]));
     n += strlen(&tempBuffer[offset]);
@@ -332,7 +328,7 @@ void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors
         
         changeFormByDegrees(&vf, 1);
         
-        getForm(&vf, tempBuffer, 2048, false);
+        getForm(&vf, tempBuffer, 2048, false, false);
         offset = 0;
         randomAlternative(tempBuffer, &offset);
 
@@ -769,7 +765,7 @@ long randWithMax(unsigned int max)
 /**
  * return 1 for success, 0 for failure
  */
-int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAlternateForms)
+int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAlternateForms, bool decompose)
 {
     //clear buffer
     for (int i = 0; i < bufferLen; i++)
@@ -785,6 +781,9 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     UCS2 ucs2Stems[(strlen(utf8Stems) * 3) + 1];
     int ucs2StemsLen = 0;
     utf8_to_ucs2_string((const unsigned char*)utf8Stems, ucs2Stems, &ucs2StemsLen);
+    
+    //convert any tonos into oxia, just in case.
+    tonosToOxia(ucs2Stems, ucs2StemsLen);
     
     //find out how many stems, then how many endings.  loop through stems adding each ending in an inner loop.
     //accent each inside the loop
@@ -850,6 +849,9 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         int ucs2EndingsLen = 0;
         utf8_to_ucs2_string((const unsigned char*)utf8Ending, ucs2Endings, &ucs2EndingsLen);
         
+        //convert any tonos into oxia, just in case.
+        tonosToOxia(ucs2Endings, ucs2EndingsLen);
+        
         int endingStarts[5] = { 0,0,0,0,0 };  //we leave space for up to five alternate endings
         int numEndings = 1;
         for (i = 0; i < ucs2EndingsLen; i++)
@@ -878,32 +880,41 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             int tempStemLen = stemLen;
             
             stripEndingFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, vf->tense, vf->voice);
-            /*
-             not working for some reason
-            //aorist passive imperative second sing
-            if ( vf->mood == IMPERATIVE && vf->tense == AORIST && vf->voice == PASSIVE && vf->person == SECOND && vf->number == SINGULAR)
+            
+            //only use one of the aorist passive imperative endings for second singular
+            if (vf->mood == IMPERATIVE && vf->tense == AORIST && vf->voice == PASSIVE && vf->number == SINGULAR && vf->person == SECOND)
             {
-                if (ucs2StemPlusEndingBuffer[tempStemLen] == GREEK_SMALL_LETTER_CHI || ucs2StemPlusEndingBuffer[tempStemLen] == GREEK_SMALL_LETTER_PHI || ucs2StemPlusEndingBuffer[tempStemLen] == GREEK_SMALL_LETTER_THETA)
+                if (ending > 0)
                 {
-                    if ( ucs2Endings[endingStart + 1] == GREEK_SMALL_LETTER_THETA)
-                    {
-                        ucs2StemPlusEndingBufferLen -= tempStemLen;
-                        continue;
-                    }
+                    //we only add one of these endings and we decide which one in addEnding.
+                    ucs2StemPlusEndingBufferLen -= tempStemLen + 2; //two more for the comma + space
+                    continue;
                 }
                 else
                 {
-                    if ( ucs2Endings[endingStart + 1] == GREEK_SMALL_LETTER_TAU)
+                    //decide which imperative ending
+                    if (ucs2StemPlusEndingBuffer[tempStemLen - 1] == GREEK_SMALL_LETTER_CHI || ucs2StemPlusEndingBuffer[tempStemLen - 1] == GREEK_SMALL_LETTER_PHI || ucs2StemPlusEndingBuffer[tempStemLen - 1] == GREEK_SMALL_LETTER_THETA)
                     {
-                        ucs2StemPlusEndingBufferLen -= tempStemLen;
-                        continue;
+                        ucs2Endings[endingStart + 1] = GREEK_SMALL_LETTER_TAU;
+                    }
+                    else
+                    {
+                        ucs2Endings[endingStart + 1] = GREEK_SMALL_LETTER_THETA;
                     }
                 }
             }
-            */
+
+            
             if (vf->tense == IMPERFECT || vf->tense == PLUPERFECT)
             {
-                augmentStem(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen);
+                if (decompose)
+                {
+                    augmentStemDecomposed(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen);
+                }
+                else
+                {
+                    augmentStem(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen);
+                }
             }
             
             //De-augment
@@ -918,8 +929,14 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
                 stripAugmentFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, vf->tense, vf->voice, vf->mood, presentInitialLetter);
             }
             
-            addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen);
-            
+            if (!decompose)
+            {
+                addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen);
+            }
+            else
+            {
+                addEndingDecomposed(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen);
+            }
             //Labe/ Accent EXCEPTION H&Q page 326
             UCS2 labe[] = { GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_BETA, GREEK_SMALL_LETTER_EPSILON } ;
             if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, labe, 4))
@@ -2729,6 +2746,38 @@ void accentSyllable(UCS2 *ucs2String, int i, int *len, int accent, bool toggleOf
     }
 }
 
+void addEndingDecomposed(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
+{
+    if (vf->tense == FUTURE && vf->voice == PASSIVE) //add future passive infix hs here
+    {
+        ucs2[*len] = SPACE;
+        ++(*len);
+        ucs2[*len] = HYPHEN;
+        ++(*len);
+        ucs2[*len] = SPACE;
+        ++(*len);
+        
+        ucs2[*len] = GREEK_SMALL_LETTER_ETA;
+        ucs2[(*len) + 1] = GREEK_SMALL_LETTER_SIGMA;
+        (*len) += 2; //parens required here fyi
+    }
+    
+    ucs2[*len] = SPACE;
+    ++(*len);
+    ucs2[*len] = HYPHEN;
+    ++(*len);
+    ucs2[*len] = SPACE;
+    ++(*len);
+    
+    int i = 0;
+    int j = 0;
+    for (i = *len; j < elen; i++, j++)
+    {
+        ucs2[i] = ending[j];
+        ++(*len);
+    }
+}
+
 void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
 {
     if ((vf->tense == PRESENT || vf->tense == IMPERFECT) /* && ucs2[*len] == GREEK_SMALL_LETTER_OMEGA */ && ucs2[*len - 1] == GREEK_SMALL_LETTER_ALPHA)
@@ -3419,7 +3468,6 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
                 {
                     leftShift(ending, &elen);
                 }
-                
             }
         }
     }
@@ -3430,6 +3478,27 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
     {
         ucs2[i] = ending[j];
         ++(*len);
+    }
+}
+
+void tonosToOxia(UCS2 *word, int len)
+{
+    for (int i = 0; i < len; i++)
+    {
+        if (word[i] == GREEK_SMALL_LETTER_ALPHA_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_ALPHA_WITH_OXIA;
+        else if (word[i] == GREEK_SMALL_LETTER_EPSILON_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_EPSILON_WITH_OXIA;
+        else if (word[i] == GREEK_SMALL_LETTER_ETA_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_ETA_WITH_OXIA;
+        else if (word[i] == GREEK_SMALL_LETTER_IOTA_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_IOTA_WITH_OXIA;
+        else if (word[i] == GREEK_SMALL_LETTER_OMICRON_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
+        else if (word[i] == GREEK_SMALL_LETTER_UPSILON_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_UPSILON_WITH_OXIA;
+        else if (word[i] == GREEK_SMALL_LETTER_OMEGA_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_OMEGA_WITH_OXIA;
     }
 }
 
@@ -3677,6 +3746,21 @@ void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, uns
         *len -= 3;
     else if (tense == PLUPERFECT)
         *len -= 3;
+}
+
+//we assume accents have been stripped, but not breathings, macrons or iota subscripts
+void augmentStemDecomposed(VerbFormC *vf, UCS2 *ucs2, int *len)
+{
+    rightShiftFromOffset(ucs2, 0, len);
+    rightShiftFromOffset(ucs2, 0, len);
+    rightShiftFromOffset(ucs2, 0, len);
+    rightShiftFromOffset(ucs2, 0, len);
+    ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_PSILI;
+    ucs2[1] = SPACE;
+    ucs2[2] = HYPHEN;
+    ucs2[3] = SPACE;
+    
+    //strip any other psili?
 }
 
 //we assume accents have been stripped, but not breathings, macrons or iota subscripts

@@ -9,6 +9,12 @@
 #import "MainMenuViewController.h"
 #import "DetailViewController.h"
 
+#define UIColorFromRGB(rgbValue) \
+[UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+green:((float)((rgbValue & 0x00FF00) >>  8))/255.0 \
+blue:((float)((rgbValue & 0x0000FF) >>  0))/255.0 \
+alpha:1.0]
+
 @interface MainMenuViewController ()
 
 @end
@@ -43,6 +49,20 @@
     [super viewDidLoad];
     
     [self.navigationController setNavigationBarHidden:YES];
+    //https://en.wikipedia.org/wiki/Wikipedia:Featured_picture_candidates/Gypsy_girl_mosaic_of_Zeugma
+    UIImage *logoImg = [UIImage imageNamed:@"MosaicOfZeugma.jpg"];
+    self.logoImgView = [[UIImageView alloc] initWithImage:logoImg];
+    [self.view addSubview:self.logoImgView];
+
+    double sw = self.view.frame.size.width;
+    double sh = self.view.frame.size.height;
+    double bh = 100;
+    double bw = sw / 2.3;//150;
+    double v1 = sh/2;
+    double v2 = sh/1.7;
+    
+    [self.logoImgView setFrame:CGRectMake((sw - 2547/9) /2,self.view.frame.size.height/4 -46,2547/9,1658/9)];
+
     
     self.popupShown = FALSE;
     self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
@@ -61,37 +81,83 @@
     [self.MCButton addTarget:self action:@selector(showGame:)
             forControlEvents:UIControlEventTouchUpInside];
     
-    double corner = 12.0;
-    double borderW = 2.0;
+    if (0)
+    {
+        double corner = 15.0;
+        double borderW = 2.0;
+        
+        //self.HCButton.titleLabel.numberOfLines = 2;
+        
+        self.HCButton.layer.borderWidth = borderW;
+        self.HCButton.layer.cornerRadius = corner;
+        self.HPButton.layer.borderWidth = borderW;
+        self.HPButton.layer.cornerRadius = corner;
+        self.SPButton.layer.borderWidth = borderW;
+        self.SPButton.layer.cornerRadius = corner;
+        self.MCButton.layer.borderWidth = borderW;
+        self.MCButton.layer.cornerRadius = corner;
+        
+        [self.HCButton setFrame:CGRectMake(((sw/2) - bw) / 2, v1, bw, bh)];
+        [self.HPButton setFrame:CGRectMake((((sw/2) - bw) / 2) + sw/2, v1, bw, bh)];
+        
+        [self.SPButton setFrame:CGRectMake(((sw/2) - bw) / 2, v2, bw, bh)];
+        [self.MCButton setFrame:CGRectMake((((sw/2) - bw) / 2) + sw/2, v2, bw, bh)];
+    }
+    else
+    {
+        double sw = self.view.frame.size.width;
+        double sh = self.view.frame.size.height;
+        
+        double bw = sw * 0.5;//150;
+        double v1 = sh * 0.5;
+        double v2 = sh * 0.75;
+        double bh = sh / 4;
+        
+        [self.HCButton setFrame:CGRectMake(0, v1, bw, bh)];
+        [self.HPButton setFrame:CGRectMake(sw/2, v1, bw, bh)];
+        
+        [self.SPButton setFrame:CGRectMake(0, v2, bw, bh)];
+        [self.MCButton setFrame:CGRectMake(sw/2, v2, bw, bh)];
+        
+        [self.HCButton setBackgroundColor: UIColorFromRGB(0xCC4422)];
+        [self.HPButton setBackgroundColor: UIColorFromRGB(0x22CC55)];
+        [self.SPButton setBackgroundColor: UIColorFromRGB(0x4466CC)];
+        [self.MCButton setBackgroundColor: UIColorFromRGB(0xFFAA00)];
+
+        
+        UIColor *textColor = [UIColor whiteColor];
+        UIFont *textFont = [UIFont fontWithName:@"Helvetica" size:22.0];
+        
+        [self.HCButton setTitleColor:textColor forState:UIControlStateNormal];
+        [self.HPButton setTitleColor:textColor forState:UIControlStateNormal];
+        [self.SPButton setTitleColor:textColor forState:UIControlStateNormal];
+        [self.MCButton setTitleColor:textColor forState:UIControlStateNormal];
+        [self.HCButton.titleLabel setFont:textFont];
+        [self.HPButton.titleLabel setFont:textFont];
+        [self.SPButton.titleLabel setFont:textFont];
+        [self.MCButton.titleLabel setFont:textFont];
+        /*
+        self.HCButton.titleLabel.text = @"Hoplite Challenge";
+        self.HCButton.titleLabel.backgroundColor = [UIColor yellowColor];
+        self.HCButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        self.HCButton.titleLabel.textColor = [UIColor redColor];
+        */
+    }
+
+
     
-    //self.HCButton.titleLabel.numberOfLines = 2;
-    
-    self.HCButton.layer.borderWidth = borderW;
-    self.HCButton.layer.cornerRadius = corner;
-    self.HPButton.layer.borderWidth = borderW;
-    self.HPButton.layer.cornerRadius = corner;
-    self.SPButton.layer.borderWidth = borderW;
-    self.SPButton.layer.cornerRadius = corner;
-    self.MCButton.layer.borderWidth = borderW;
-    self.MCButton.layer.cornerRadius = corner;
-    
-    int w = self.view.frame.size.width;
-    int h = 100;
-    int p = 10;
-    
-    [self.HCButton setFrame:CGRectMake(p, 170, w / 2 - (p*3), h)];
-    [self.HPButton setFrame:CGRectMake(w / 2 + (p*2), 170, w / 2 - (p*3), h)];
-    
-    [self.SPButton setFrame:CGRectMake(p, 320, w / 2 - (p*3), h)];
-    [self.MCButton setFrame:CGRectMake(w / 2 + (p*2), 320, w / 2 - (p*3), h)];
-    
+    [self.LGILabel setFrame:CGRectMake(30, 45, self.LGILabel.frame.size.width, self.LGILabel.frame.size.height)];
+    [self.HCLabel setFrame:CGRectMake(30, 68, self.HCLabel.frame.size.width, self.HCLabel.frame.size.height)];
+    [self.EOPLabel setFrame:CGRectMake(180, (sh /2) - 34, self.EOPLabel.frame.size.width, self.EOPLabel.frame.size.height)];
+    [self.EOPLabel setFont:[UIFont fontWithName:@"NewAthenaUnicode" size:26.0]];
+    [self.view bringSubviewToFront:self.EOPLabel];
     
 //[self.correctButton setFrame:CGRectMake(((w/2) - self.correctButton.frame.size.width) / 2, self.view.frame.size.height / 1.3, self.correctButton.frame.size.width, self.correctButton.frame.size.height)];
 
     
 //[self.incorrectButton setFrame:CGRectMake((((w/2) - self.correctButton.frame.size.width) / 2) + w/2, self.view.frame.size.height / 1.3, self.correctButton.frame.size.width, self.correctButton.frame.size.height)];
     
-    [self.menuButton setFrame:CGRectMake(w - 70, 18, self.menuButton.frame.size.width, self.menuButton.frame.size.height)];
+    [self.menuButton setFrame:CGRectMake(sw - 70, 18, self.menuButton.frame.size.width, self.menuButton.frame.size.height)];
     
     
     // Do any additional setup after loading the view.

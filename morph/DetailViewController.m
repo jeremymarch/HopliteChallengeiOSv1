@@ -390,6 +390,19 @@ void printUCS22(UCS2 *u, int len)
     [self.navigationController popViewControllerAnimated:NO];
 }
 
+-(void)multipleFormsPressed
+{
+    NSLog(@"mf pressed");
+    if (self.verbQuestionType == HOPLITE_CHALLENGE)
+    {
+        
+    }
+    else if (self.verbQuestionType == HOPLITE_PRACTICE)
+    {
+        
+    }
+}
+
 -(void)preCheckVerbTimeout
 {
     self.timeLabel.text = @"0.00 sec";
@@ -580,7 +593,7 @@ void printUCS22(UCS2 *u, int len)
     do
     {
         generateForm(&vf);
-        getForm(&vf, buffer, bufferLen, false);
+        getForm(&vf, buffer, bufferLen, false, false);
     } while (!strncmp(buffer, "—", 1));
     
     NSString *distractors = nil;
@@ -602,12 +615,12 @@ void printUCS22(UCS2 *u, int len)
     vf.tense = IMPERFECT;
     vf.voice = PASSIVE;
     vf.mood = INDICATIVE;
-    getForm(&vf, buffer, bufferLen, true);
+    getForm(&vf, buffer, bufferLen, true, false);
      */
     do
     {
         generateForm(&vf);
-        getForm(&vf, buffer, bufferLen, true);
+        getForm(&vf, buffer, bufferLen, true, false);
     } while (!strncmp(buffer, "—", 1));
     
     newForm = [NSString stringWithUTF8String: (const char*)buffer];
@@ -1091,7 +1104,7 @@ void printUCS22(UCS2 *u, int len)
     vf.verb = v;
     
     generateForm(&vf);
-    getForm(&vf, buffer, bufferLen, false);
+    getForm(&vf, buffer, bufferLen, false, false);
     NSString *frontForm = [NSString stringWithUTF8String: (const char*)buffer];
     frontForm = [self selectRandomFromCSV:frontForm];
     

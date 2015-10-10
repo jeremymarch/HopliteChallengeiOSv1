@@ -7,6 +7,7 @@
 //
 
 #import "PopUp.h"
+#import "VerbDetailViewController.h"
 
 @implementation PopUp
 
@@ -83,7 +84,7 @@
             //[self.buttonStates insertObject:[NSNumber numberWithBool:NO] atIndex:i];
         }
         
-        self.optionLabels = @[@"Hoplite Challenge Timeout", @"Disable Animation", @"Disable Sound", @"White on Black", @"Include Dual"];
+        self.optionLabels = @[@"Hoplite Challenge Timeout", @"Disable Animation", @"Disable Sound", @"White on Black", @"Include Dual", @"Verbs"];
         //self.modePickerLabels = @[@"Hoplite Challenge", @"Hoplite Practice", @"Self Practice", @"Multiple Choice"];
         
         self.segment=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"H&Q Units", @"Options", nil]];
@@ -313,6 +314,16 @@
         [[NSUserDefaults standardUserDefaults] setObject:self.buttonStates forKey:@"Levels"];
         [tableView reloadData];
     }
+    /*
+    else if (1)
+    {
+        if (indexPath.row == 4)
+        {
+            VerbDetailViewController *vdvc = [self.storyboard instantiateViewControllerWithIdentifier:@"vdvc"];
+            [self.navigationController pushViewController:dvc animated:NO];
+        }
+    }
+     */
 }
 
 /*  picker data source */

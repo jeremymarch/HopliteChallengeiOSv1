@@ -34,17 +34,41 @@
                                 <state key="normal" title="Multiple Choice"/>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="BmR-Oz-8Ld">
-                                <rect key="frame" x="132" y="502" width="57" height="30"/>
+                                <rect key="frame" x="256" y="70" width="57" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Settings"/>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hoplite Challenge" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="D9W-qs-sMC">
+                                <rect key="frame" x="41" y="103" width="239" height="44"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="30"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="εἰς ὄνυχα πάντα" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ZAt-Rc-7xD">
+                                <rect key="frame" x="61" y="485" width="199" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Latin/Greek Institute" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Cia-cC-DKB">
+                                <rect key="frame" x="41" y="74" width="214" height="26"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <navigationItem key="navigationItem" id="wYQ-lP-kqT"/>
                     <connections>
+                        <outlet property="EOPLabel" destination="ZAt-Rc-7xD" id="jDD-3D-OxQ"/>
                         <outlet property="HCButton" destination="Sk8-wS-Rda" id="MhV-dI-cD7"/>
+                        <outlet property="HCLabel" destination="D9W-qs-sMC" id="A4K-xb-pyf"/>
                         <outlet property="HPButton" destination="zdh-87-CxB" id="w0N-X1-BfI"/>
+                        <outlet property="LGILabel" destination="Cia-cC-DKB" id="GEZ-mv-UkH"/>
                         <outlet property="MCButton" destination="08m-Ub-bFS" id="68X-3U-I1n"/>
                         <outlet property="SPButton" destination="YGz-fu-YE6" id="AE1-yP-5HM"/>
                         <outlet property="menuButton" destination="BmR-Oz-8Ld" id="ezz-ci-ew9"/>

@@ -173,7 +173,7 @@ enum {
         
         self.multipleFormsButton = [[CustomButton alloc] initWithText:@"MF" AndDevice:self->device AndFont:self.greekFont];
         [self addSubview:self.multipleFormsButton];
-        [self.multipleFormsButton addTarget:self action:@selector(multipleFormsPressed:) forControlEvents:UIControlEventTouchDown];
+        [self.multipleFormsButton addTarget:self action:@selector(multipleFormsButtonPressed:) forControlEvents:UIControlEventTouchDown];
         
         [self setButtons:theLang];
     }
@@ -546,12 +546,15 @@ void printUtf8(char *u, int len)
     }
 }
 
-- (IBAction)multipleFormsPressed:(UIButton *)sender {
+- (IBAction)multipleFormsButtonPressed:(UIButton *)sender {
 
     if (!self.targetTextInput) {
         return;
     }
-
+    if ([self.delegate respondsToSelector:@selector(multipleFormsPressed)])
+    {
+        [self.delegate multipleFormsPressed];
+    }
 }
 
 /**

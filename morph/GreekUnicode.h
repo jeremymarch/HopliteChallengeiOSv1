@@ -20,7 +20,9 @@
 #define EM_DASH                         0x2014
 #define LEFT_PARENTHESIS                0x0028
 #define RIGHT_PARENTHESIS               0x0029
-
+#define SPACE                           0x0020
+#define EN_DASH                         0x2013
+#define HYPHEN                          0x2010
 /* BASIC GREEK 0370-03FF */
 
 #define GREEK_CAPITAL_LETTER_HETA  					0x0370 // Ͱ → 2C75 Ⱶ latin capital letter half h

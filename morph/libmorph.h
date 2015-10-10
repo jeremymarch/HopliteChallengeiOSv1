@@ -220,7 +220,7 @@ enum {
     NUM_ENDINGS
 };
 
-int getForm(VerbFormC *vf, char *buffer, int bufferLen, bool includeAlternateForms);
+int getForm(VerbFormC *vf, char *buffer, int bufferLen, bool includeAlternateForms, bool decompose);
 
 Verb *getRandomVerb(int *units, int numUnits);
 Ending *getRandomEnding(int *units, int numUnits);
@@ -261,5 +261,7 @@ bool hasSuffix(UCS2 *stem, int len, UCS2 *suffix, int sufflen);
 long randWithMax(unsigned int max);
 
 int incrementValue(int theArrayCount, int start);
+
+void tonosToOxia(UCS2 *word, int len);
 
 #endif /* defined(__morph__libmorph__) */

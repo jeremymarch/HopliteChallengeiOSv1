@@ -46,6 +46,8 @@ int main(int argc, char **argv)
     int rowCount = 0;
     int bufferLen = 2048;
     char buffer[bufferLen];
+    int bufferLen2 = 2048;
+    char buffer2[bufferLen2];
 
     for (int verbi = 0; verbi < numVerbs; verbi++)
     {
@@ -69,7 +71,7 @@ int main(int argc, char **argv)
                             vf.number = h;
                             vf.person = i;
                             vf.mood = m;
-                            if (getForm(&vf, buffer, bufferLen, true))
+                            if (getForm(&vf, buffer, bufferLen, true, false) && getForm(&vf, buffer2, bufferLen2, true, true))
                             {
                                 if (countPerSection == 0)
                                 {
@@ -95,7 +97,7 @@ int main(int argc, char **argv)
                                     }
                                 }
 
-                                printf("%s\n", buffer);
+                                printf("%s ; %s\n", buffer, buffer2);
                                 countPerSection++;
                                 rowCount++;
                             }
