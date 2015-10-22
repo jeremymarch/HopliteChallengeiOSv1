@@ -207,6 +207,13 @@ Ending endings[NUM_ENDINGS] = {
     { 0, 11, 0, 0, 0, "", "ου", "ούτω",   "", "οῦτε", "ούντων", "Present Active Imperative" }, //pres. active imper o
     { 0, 11, 0, 0, 0, "", "οῦ", "ούσθω", "", "οῦσθε", "ούσθων", "Present Middle/Passive Imperative" }, //pres. mid/pass imper o
     
-    { 0, 10, 0, 0, 0, "μι", "ς", "σι(ν)", "μεν", "τε", "ᾱσι(ν)", "" }   //mi
+    { 0, 10, 0, 0, 0, "μι", "ς", "σι(ν)", "μεν", "τε", "ᾱσι(ν)", "" },   //mi
+    
+    { 0, 10, 0, 0, 0, "οιμι, οιην", "οις, οιης", "οι, οιη", "οιμεν, οιημεν", "οιτε, οιητε", "οιεν, οιησαν", "" },//pres act opt o
+    { 0, 10, 0, 0, 0, "", "ς", "τω", "", "τε", "ντων", "" },//mi aorist active imperatives
+    { 0, 10, 0, 0, 0, "", "θι", "τω", "", "τε", "ντων", "" },//mi root aorist active imperatives
+    
+    { 0, 10, 0, 0, 0, "", "ο", "σθω", "", "σθε", "σθων", "" },//mi root aorist middle imperatives
+    { 0, 10, 0, 0, 0, "ν", "ς", "", "μεν", "τε", "σαν", "" }//mi root aorist indicative
 };
 

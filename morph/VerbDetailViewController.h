@@ -8,9 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface VerbDetailViewController : UIViewController
+@interface VerbDetailViewController : UIViewController <UIGestureRecognizerDelegate>
 @property (strong, nonatomic) UIScrollView *view;
 @property NSInteger verbIndex;
+@property BOOL expanded;
 
 -(void)setVerbIndex2:(NSInteger)verbIndex;
 -(NSInteger)verbIndex2;

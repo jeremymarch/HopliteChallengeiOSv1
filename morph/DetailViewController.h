@@ -17,7 +17,7 @@ enum {
     MULTIPLE_CHOICE
 };
 
-@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, vc2delegate>
+@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, vc2delegate, UIGestureRecognizerDelegate>
 {
     int units[20];
     int numUnits;

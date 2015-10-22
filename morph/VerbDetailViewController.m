@@ -30,9 +30,50 @@
     self.view.contentSize = CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height);
 }
 
+- (void)handlePinch:(UIPinchGestureRecognizer *)pinchGestureRecognizer
+{
+    //handle pinch...
+    if (pinchGestureRecognizer.scale > 1)
+    {
+        if (!self.expanded)
+        {
+            self.expanded = YES;
+            [self printVerbs];
+        }
+        //NSLog(@"pinch out2");
+    }
+    else
+    {
+        if (self.expanded)
+        {
+            self.expanded = NO;
+            [self printVerbs];
+        }
+        //NSLog(@"pinch in2");
+    }
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    [self.navigationController setNavigationBarHidden:NO];
+    
+    self.view.userInteractionEnabled = YES;
+    UIPinchGestureRecognizer *pinch = [[UIPinchGestureRecognizer alloc]
+                                       initWithTarget:self action:@selector(handlePinch:)];
+    pinch.delegate = self;
+    //pinch.tag = self;
+    [self.view addGestureRecognizer:pinch];
+    
+    self.expanded = false;
+
+    [self printVerbs];
+}
+
+-(void) printVerbs
+{
+    [[self.view subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    
     VerbFormC vf;
     vf.mood = INDICATIVE;
     int rowCount = 0;
@@ -89,12 +130,12 @@
                 for (int h = 0; h < NUM_NUMBERS; h++)
                 {
                     for (int i = 0; i < NUM_PERSONS; i++)
-                    {                        
+                    {
                         vf.number = h;
                         vf.person = i;
                         vf.mood = m;
                         
-                        if (getForm(&vf, buffer, bufferLen, true, false))
+                        if (getForm(&vf, buffer, bufferLen, true, self.expanded))
                         {
                             UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(leftPadding, rowCount * (labelHeight + verticalPadding), self.view.frame.size.width, labelHeight)];
                             l.text = [NSString stringWithUTF8String: buffer];

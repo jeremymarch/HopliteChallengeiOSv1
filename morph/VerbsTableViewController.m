@@ -19,6 +19,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self.navigationController setNavigationBarHidden:NO];
     self.title = @"Verbs";
     self.navigationItem.titleView = [[UIView alloc] init]; //HIDES title from display
     //self.navigationItem.titleView.hidden = YES; //doesn't work, use above

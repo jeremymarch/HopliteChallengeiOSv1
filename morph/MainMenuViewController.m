@@ -8,6 +8,7 @@
 
 #import "MainMenuViewController.h"
 #import "DetailViewController.h"
+#import "VerbDetailViewController.h"
 
 #define UIColorFromRGB(rgbValue) \
 [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
@@ -44,6 +45,18 @@ alpha:1.0]
     [self.navigationController pushViewController:dvc animated:NO];
 
 }
+- (void) showVerbs:(id)sender
+{
+    //UIButton *b = (UIButton*) sender;
+    /*
+    VerbDetailViewController *vtvc = [self.storyboard instantiateViewControllerWithIdentifier:@"vtvc"];
+    [self.navigationController pushViewController:vtvc animated:YES];
+    */
+    
+    [self performSegueWithIdentifier:@"SegueToVerbsTable"sender:self];
+    //http://stackoverflow.com/questions/16209113/push-segue-in-xcode-with-no-animation
+    //[[self navigationController] pushViewController:[self destinationViewController] animated:NO];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -78,9 +91,13 @@ alpha:1.0]
             forControlEvents:UIControlEventTouchUpInside];
     [self.SPButton addTarget:self action:@selector(showGame:)
             forControlEvents:UIControlEventTouchUpInside];
+    
     [self.MCButton addTarget:self action:@selector(showGame:)
             forControlEvents:UIControlEventTouchUpInside];
-    
+    /*
+    [self.MCButton addTarget:self action:@selector(showVerbs:)
+            forControlEvents:UIControlEventTouchUpInside];
+    */
     if (0)
     {
         double corner = 15.0;
@@ -136,6 +153,11 @@ alpha:1.0]
         [self.HPButton.titleLabel setFont:textFont];
         [self.SPButton.titleLabel setFont:textFont];
         [self.MCButton.titleLabel setFont:textFont];
+        
+        self.HCButton.titleLabel.numberOfLines = 2;
+        self.HPButton.titleLabel.numberOfLines = 2;
+        self.SPButton.titleLabel.numberOfLines = 2;
+        self.MCButton.titleLabel.numberOfLines = 2;
         /*
         self.HCButton.titleLabel.text = @"Hoplite Challenge";
         self.HCButton.titleLabel.backgroundColor = [UIColor yellowColor];
@@ -175,6 +197,18 @@ alpha:1.0]
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
 - (void) animatePopUpShow:(id)sender

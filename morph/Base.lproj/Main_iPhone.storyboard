@@ -73,6 +73,7 @@
                         <outlet property="SPButton" destination="YGz-fu-YE6" id="AE1-yP-5HM"/>
                         <outlet property="menuButton" destination="BmR-Oz-8Ld" id="ezz-ci-ew9"/>
                         <segue destination="Ah7-4n-0Wa" kind="push" identifier="showDetail" animates="NO" id="6Nq-Ao-Xso"/>
+                        <segue destination="Cpp-Ki-VGm" kind="push" identifier="SegueToVerbsTable" id="aFi-UR-cgh"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="V6h-bW-BiZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -289,6 +290,53 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SiF-FM-Zyh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="338" y="-230"/>
+        </scene>
+        <!--Verbs Table View Controller-->
+        <scene sceneID="lgx-Ea-8gV">
+            <objects>
+                <tableViewController storyboardIdentifier="vtvc" id="Cpp-Ki-VGm" customClass="VerbsTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Yge-Uj-NUT">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="VerbTableCell" id="wYm-0h-iaC">
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wYm-0h-iaC" id="dOp-UP-rZC">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="Cpp-Ki-VGm" id="nnw-q2-AyR"/>
+                            <outlet property="delegate" destination="Cpp-Ki-VGm" id="FKD-h4-ssp"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="4aV-I1-noa"/>
+                    <connections>
+                        <segue destination="jFp-ea-Dv1" kind="push" identifier="SegueToVerbDetail" id="luS-1c-vhJ"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dxA-GR-SU7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="954" y="482"/>
+        </scene>
+        <!--Verb Detail View Controller-->
+        <scene sceneID="Czp-Zv-Mox">
+            <objects>
+                <viewController id="jFp-ea-Dv1" customClass="VerbDetailViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="XDS-MF-TQ0" customClass="UIScrollView">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="28B-Qf-ToN"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="r0Y-dV-Crt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1499" y="524"/>
         </scene>
     </scenes>
 </document>

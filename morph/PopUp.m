@@ -7,7 +7,6 @@
 //
 
 #import "PopUp.h"
-#import "VerbDetailViewController.h"
 
 @implementation PopUp
 
@@ -313,6 +312,17 @@
         [self.buttonStates setObject:[NSNumber numberWithBool:b] atIndexedSubscript:indexPath.row];
         [[NSUserDefaults standardUserDefaults] setObject:self.buttonStates forKey:@"Levels"];
         [tableView reloadData];
+    }
+    if (self->unitsOrOptions == OPTIONS)
+    {
+        if (indexPath.row == 5)
+        {
+            //VerbDetailViewController *vdvc = [self.storyboard instantiateViewControllerWithIdentifier:@"vdvc"];
+            //[self.navigationController pushViewController:dvc animated:NO];
+            
+            UINavigationController *nvc = (UINavigationController *)self.window.rootViewController;
+            [[nvc.childViewControllers objectAtIndex:0] performSegueWithIdentifier:@"SegueToVerbsTable"sender:self];
+        }
     }
     /*
     else if (1)

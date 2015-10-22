@@ -1508,15 +1508,37 @@ void printUCS22(UCS2 *u, int len)
         self.animate = YES;
 }
 
+- (void)handlePinch:(UIPinchGestureRecognizer *)pinchGestureRecognizer
+{
+    //handle pinch...
+    if (pinchGestureRecognizer.scale > 1)
+    {
+        NSLog(@"pinch out");
+    }
+    else
+    {
+        NSLog(@"pinch in");
+    }
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     if ([[NSUserDefaults standardUserDefaults] integerForKey:@"HCTime"])
         self.HCTime = [[NSUserDefaults standardUserDefaults] integerForKey:@"HCTime"];
     else
         self.HCTime = 30;
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
+    
+    
+    self.view.userInteractionEnabled = YES;
+    UIPinchGestureRecognizer *pinch = [[UIPinchGestureRecognizer alloc]
+                                       initWithTarget:self action:@selector(handlePinch:)];
+    pinch.delegate = self;
+    //pinch.tag = self;
+    [self.view addGestureRecognizer:pinch];
     
     self.cardType = 1;
     
