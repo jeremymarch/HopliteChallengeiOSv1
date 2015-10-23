@@ -911,6 +911,16 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         
         stripAccent(&ucs2Stems[stemStart], &stemLen);
         
+        //weed out active forms if aorist deponent
+        UCS2 aorDeponent[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
+        if (vf->tense == AORIST && vf->voice == ACTIVE && hasSuffix(&ucs2Stems[stemStart], stemLen, aorDeponent, 4))
+        {
+            if (numStems < 2)
+                return 0;
+            else
+                continue;
+        }
+        
         //eliminate FUTURE PASSIVE blaphthhsomai here
         //NB: accent is already stripped by now
         UCS2 blaph[8] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_BETA, GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_PHI, GREEK_SMALL_LETTER_THETA, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };

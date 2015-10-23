@@ -167,7 +167,7 @@ enum {
         [self addSubview:self.deleteButton];
         [self.deleteButton addTarget:self action:@selector(keyboardDeletePressed:) forControlEvents:UIControlEventTouchDown];
     
-        self.submitButton = [[CustomButton alloc] initWithText:@"S" AndDevice:self->device AndFont:self.greekFont];
+        self.submitButton = [[CustomButton alloc] initWithText:@"Done" AndDevice:self->device AndFont:self.greekFont];
         [self addSubview:self.submitButton];
         [self.submitButton addTarget:self action:@selector(submitPressed:) forControlEvents:UIControlEventTouchDown];
         
