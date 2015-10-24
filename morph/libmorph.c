@@ -42,7 +42,7 @@ void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, uns
 void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len);
 void augmentStemDecomposed(VerbFormC *vf, UCS2 *ucs2, int *len);
 void stripAugmentFromPrincipalPart(UCS2 *ucs2, int *len, unsigned char tense, unsigned char voice, unsigned char mood, UCS2 presentStemInitial);
-void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen);
+void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool decompose);
 void addEndingDecomposed(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen);
 bool accentRecessive(UCS2 *tempUcs2String, int *len, bool optative);
 bool isContractedVerb(VerbFormC *vf, UCS2 *ucs2, int *len);
@@ -1025,7 +1025,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             
             if (!decompose)
             {
-                addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen);
+                addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen, decompose);
             }
             else
             {
@@ -1041,7 +1041,8 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
                     ucs2StemPlusEndingBuffer[stemStartInBuffer + 3] = SPACE;
                     
                 }
-                addEndingDecomposed(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen);
+                //addEndingDecomposed(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen);
+                addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen, decompose);
             }
             //Labe/ Accent EXCEPTION H&Q page 326
             UCS2 labe[] = { GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_BETA, GREEK_SMALL_LETTER_EPSILON } ;
@@ -2884,17 +2885,17 @@ void addEndingDecomposed(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int 
     }
 }
 
-void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
+void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool decompose)
 {
-    if ((vf->tense == PRESENT || vf->tense == IMPERFECT) /* && ucs2[*len] == GREEK_SMALL_LETTER_OMEGA */ && ucs2[*len - 1] == GREEK_SMALL_LETTER_ALPHA)
+    if (!decompose && (vf->tense == PRESENT || vf->tense == IMPERFECT) /* && ucs2[*len] == GREEK_SMALL_LETTER_OMEGA */ && ucs2[*len - 1] == GREEK_SMALL_LETTER_ALPHA)
     {
         --(*len);
     }
-    else if ((vf->tense == PRESENT || vf->tense == IMPERFECT) /* && ucs2[*len] == GREEK_SMALL_LETTER_OMEGA */ && ucs2[*len - 1] == GREEK_SMALL_LETTER_EPSILON)
+    else if (!decompose && (vf->tense == PRESENT || vf->tense == IMPERFECT) /* && ucs2[*len] == GREEK_SMALL_LETTER_OMEGA */ && ucs2[*len - 1] == GREEK_SMALL_LETTER_EPSILON)
     {
         --(*len);
     }
-    else if ((vf->tense == PRESENT || vf->tense == IMPERFECT) /* && ucs2[*len] == GREEK_SMALL_LETTER_OMEGA */ && ucs2[*len - 1] == GREEK_SMALL_LETTER_OMICRON)
+    else if (!decompose && (vf->tense == PRESENT || vf->tense == IMPERFECT) /* && ucs2[*len] == GREEK_SMALL_LETTER_OMEGA */ && ucs2[*len - 1] == GREEK_SMALL_LETTER_OMICRON)
     {
         --(*len);
     }
@@ -3338,6 +3339,16 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
     }
     else if (vf->tense == FUTURE && vf->voice == PASSIVE) //add future passive infix hs here
     {
+        if (decompose)
+        {
+            ucs2[*len] = SPACE;
+            ++(*len);
+            ucs2[*len] = HYPHEN;
+            ++(*len);
+            ucs2[*len] = SPACE;
+            ++(*len);
+        }
+        
         ucs2[*len] = GREEK_SMALL_LETTER_ETA;
         ucs2[(*len) + 1] = GREEK_SMALL_LETTER_SIGMA;
         (*len) += 2; //parens required here fyi
@@ -3718,6 +3729,16 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
         }
     }
     
+    if (decompose)
+    {
+        ucs2[*len] = SPACE;
+        ++(*len);
+        ucs2[*len] = HYPHEN;
+        ++(*len);
+        ucs2[*len] = SPACE;
+        ++(*len);
+    }
+    
     int i = 0;
     int j = 0;
     for (i = *len; j < elen; i++, j++)
@@ -4085,7 +4106,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len)
     else if (ucs2[0] == GREEK_SMALL_LETTER_EPSILON_WITH_DASIA)
     {
         //for histhmi pluperfect singular.  H&Q PAGE 378.
-        if (vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "ἵστημι") )
+        if (vf->tense == PLUPERFECT && vf->number == SINGULAR && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "ἵστημι") )
         {
             rightShiftFromOffset(ucs2, 0, len);
             ucs2[0] = GREEK_SMALL_LETTER_EPSILON;
