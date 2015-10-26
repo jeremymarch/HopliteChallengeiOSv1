@@ -1011,7 +1011,6 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
                     }
                 }
             }
-
             
             if (vf->tense == IMPERFECT || vf->tense == PLUPERFECT)
             {
@@ -1053,12 +1052,12 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
                     ucs2StemPlusEndingBuffer[stemStartInBuffer + 1] = SPACE;
                     ucs2StemPlusEndingBuffer[stemStartInBuffer + 2] = HYPHEN;
                     ucs2StemPlusEndingBuffer[stemStartInBuffer + 3] = SPACE;
-                    
                 }
                 //addEndingDecomposed(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen);
                 addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen, decompose);
             }
             //Labe/ Accent EXCEPTION H&Q page 326
+            //need to add elthe/ here too  FIX ME
             UCS2 labe[] = { GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_BETA, GREEK_SMALL_LETTER_EPSILON } ;
             if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, labe, 4))
             {
@@ -1268,7 +1267,7 @@ bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent)
 //makes a space at offset
 void rightShiftFromOffset(UCS2 *ucs2, int offset, int *len)
 {
-    int j = *len - 1;
+    int j = offset + *len - 1;
     for ( ; j >= offset; j--)
     {
         ucs2[j + 1] = ucs2[j];
@@ -2866,39 +2865,6 @@ void accentSyllable(UCS2 *ucs2String, int i, int *len, int accent, bool toggleOf
         }
     }
 }
-/*
-void addEndingDecomposed(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen)
-{
-    if (vf->tense == FUTURE && vf->voice == PASSIVE) //add future passive infix hs here
-    {
-        ucs2[*len] = SPACE;
-        ++(*len);
-        ucs2[*len] = HYPHEN;
-        ++(*len);
-        ucs2[*len] = SPACE;
-        ++(*len);
-        
-        ucs2[*len] = GREEK_SMALL_LETTER_ETA;
-        ucs2[(*len) + 1] = GREEK_SMALL_LETTER_SIGMA;
-        (*len) += 2; //parens required here fyi
-    }
-    
-    ucs2[*len] = SPACE;
-    ++(*len);
-    ucs2[*len] = HYPHEN;
-    ++(*len);
-    ucs2[*len] = SPACE;
-    ++(*len);
-    
-    int i = 0;
-    int j = 0;
-    for (i = *len; j < elen; i++, j++)
-    {
-        ucs2[i] = ending[j];
-        ++(*len);
-    }
-}
-*/
 
 void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool decompose)
 {
@@ -2920,45 +2886,56 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 3;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PHI;
+                }
             }
             else if (vf->person == SECOND && vf->number == SINGULAR)
             {
-                ucs2[*len - 1] = GREEK_SMALL_LETTER_PSI;
-                ucs2[(*len)] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 2;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PHI;
+                }
+                else
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PSI;
+                    leftShiftFromOffset(ending, 0, &elen);
+                }
             }
             else if (vf->person == THIRD && vf->number == SINGULAR)
             {
-                ucs2[*len - 1] = GREEK_SMALL_LETTER_PI;
-                ucs2[*len] = GREEK_SMALL_LETTER_TAU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 3;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PHI;
+                }
+                else
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PI;
+                }
             }
             else if (vf->person == FIRST && vf->number == PLURAL)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+3] = GREEK_SMALL_LETTER_ALPHA;
-                (*len) += 4;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PHI;
+                }
+                else
+                {
+                    //no changes
+                }
             }
             else if (vf->person == SECOND && vf->number == PLURAL)
             {
-                ucs2[*len-1] = GREEK_SMALL_LETTER_PHI;
-                ucs2[(*len)] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                (*len) += 2;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PHI;
+                }
+                else
+                {
+                    --(*len);
+                    ending[0] = GREEK_SMALL_LETTER_PHI;
+                }
             }
             else if (vf->person == THIRD && vf->number == PLURAL)
             {
@@ -2971,45 +2948,60 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 3;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
+                    ++(*len);
+                }
             }
             else if (vf->person == SECOND && vf->number == SINGULAR)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_PSI;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 3;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
+                    ++(*len);
+                }
+                else
+                {
+                    ending[0] = GREEK_SMALL_LETTER_PSI;
+                }
             }
             else if (vf->person == THIRD && vf->number == SINGULAR)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_PI;
-                ucs2[*len+1] = GREEK_SMALL_LETTER_TAU;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+3] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 4;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
+                    ++(*len);
+                }
+                else
+                {
+                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
+                    ++(*len);
+                }
             }
             else if (vf->person == FIRST && vf->number == PLURAL)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+3] = GREEK_SMALL_LETTER_ALPHA;
-                (*len) += 4;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
+                    ++(*len);
+                }
+                else
+                {
+                    //no changes
+                }
             }
             else if (vf->person == SECOND && vf->number == PLURAL)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_PHI;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_EPSILON;
-                (*len) += 3;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
+                    ++(*len);
+                }
+                else
+                {
+                    ending[0] = GREEK_SMALL_LETTER_PHI;
+                }
             }
             else if (vf->person == THIRD && vf->number == PLURAL)
             {
@@ -3022,45 +3014,45 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 3;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_KAPPA;
+                }
             }
             else if (vf->person == SECOND && vf->number == SINGULAR)
             {
-                ucs2[*len - 1] = GREEK_SMALL_LETTER_XI;
-                ucs2[(*len)] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 2;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_KAPPA;
+                }
+                else
+                {
+                    --(*len);
+                    ending[0] = GREEK_SMALL_LETTER_XI;
+                }
             }
             else if (vf->person == THIRD && vf->number == SINGULAR)
             {
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_KAPPA;
-                ucs2[*len] = GREEK_SMALL_LETTER_TAU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 3;
-                return;
             }
             else if (vf->person == FIRST && vf->number == PLURAL)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+3] = GREEK_SMALL_LETTER_ALPHA;
-                (*len) += 4;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_KAPPA;
+                }
             }
             else if (vf->person == SECOND && vf->number == PLURAL)
             {
-                ucs2[*len-1] = GREEK_SMALL_LETTER_CHI;
-                ucs2[(*len)] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                (*len) += 2;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_KAPPA;
+                }
+                else
+                {
+                    --(*len);
+                    ending[0] = GREEK_SMALL_LETTER_CHI;
+                }
             }
             else if (vf->person == THIRD && vf->number == PLURAL)
             {
@@ -3071,44 +3063,19 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         }
         else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_4) == CONSONANT_STEM_PERFECT_4 || ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_5) == CONSONANT_STEM_PERFECT_5 &&  ucs2[(*len)-1] == GREEK_SMALL_LETTER_SIGMA)) //κεκέλευσμαι or σῴζω which is both consonant stem and not.
         {
-            if (vf->person == FIRST && vf->number == SINGULAR)
+            if (vf->person == SECOND && vf->number == SINGULAR)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 3;
-                return;
-            }
-            else if (vf->person == SECOND && vf->number == SINGULAR)
-            {
-                ucs2[(*len)] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 2;
-                return;
-            }
-            else if (vf->person == THIRD && vf->number == SINGULAR)
-            {
-                ucs2[*len] = GREEK_SMALL_LETTER_TAU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_ALPHA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_IOTA;
-                (*len) += 3;
-                return;
-            }
-            else if (vf->person == FIRST && vf->number == PLURAL)
-            {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+3] = GREEK_SMALL_LETTER_ALPHA;
-                (*len) += 4;
-                return;
+                if (!decompose)
+                {
+                    leftShiftFromOffset(ending, 0, &elen);
+                }
             }
             else if (vf->person == SECOND && vf->number == PLURAL)
             {
-                ucs2[(*len)] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                (*len) += 2;
-                return;
+                if (!decompose)
+                {
+                    leftShiftFromOffset(ending, 0, &elen);
+                }
             }
             else if (vf->person == THIRD && vf->number == PLURAL)
             {
@@ -3122,10 +3089,10 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             //H&Q page 273, only different in 2nd and 3rd person plural
             if (vf->person == SECOND && vf->number == PLURAL)
             {
-                ucs2[(*len)] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                (*len) += 2;
-                return;
+                if (!decompose)
+                {
+                    leftShiftFromOffset(ending, 0, &elen);
+                }
             }
             else if (vf->person == THIRD && vf->number == PLURAL)
             {
@@ -3141,43 +3108,56 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_ETA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_NU;
-                (*len) += 3;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PHI;
+                }
             }
             else if (vf->person == SECOND && vf->number == SINGULAR)
             {
-                ucs2[*len - 1] = GREEK_SMALL_LETTER_PSI;
-                ucs2[(*len)] = GREEK_SMALL_LETTER_OMICRON;
-                (*len) += 1;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PHI;
+                }
+                else
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PSI;
+                    leftShiftFromOffset(ending, 0, &elen);
+                }
             }
             else if (vf->person == THIRD && vf->number == SINGULAR)
             {
-                ucs2[*len - 1] = GREEK_SMALL_LETTER_PI;
-                ucs2[*len] = GREEK_SMALL_LETTER_TAU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_OMICRON;
-                (*len) += 2;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PHI;
+                }
+                else
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PI;
+                }
             }
             else if (vf->person == FIRST && vf->number == PLURAL)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+3] = GREEK_SMALL_LETTER_ALPHA;
-                (*len) += 4;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PHI;
+                }
+                else
+                {
+                    //no changes
+                }
             }
             else if (vf->person == SECOND && vf->number == PLURAL)
             {
-                ucs2[*len-1] = GREEK_SMALL_LETTER_PHI;
-                ucs2[(*len)] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                (*len) += 2;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PHI;
+                }
+                else
+                {
+                    --(*len);
+                    ending[0] = GREEK_SMALL_LETTER_PHI;
+                }
             }
             else if (vf->person == THIRD && vf->number == PLURAL)
             {
@@ -3190,43 +3170,60 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_ETA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_NU;
-                (*len) += 3;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
+                    ++(*len);
+                }
             }
             else if (vf->person == SECOND && vf->number == SINGULAR)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_PSI;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_OMICRON;
-                (*len) += 2;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
+                    ++(*len);
+                }
+                else
+                {
+                    ending[0] = GREEK_SMALL_LETTER_PSI;
+                }
             }
             else if (vf->person == THIRD && vf->number == SINGULAR)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_PI;
-                ucs2[*len+1] = GREEK_SMALL_LETTER_TAU;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_OMICRON;
-                (*len) += 3;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
+                    ++(*len);
+                }
+                else
+                {
+                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
+                    ++(*len);
+                }
             }
             else if (vf->person == FIRST && vf->number == PLURAL)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+3] = GREEK_SMALL_LETTER_ALPHA;
-                (*len) += 4;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
+                    ++(*len);
+                }
+                else
+                {
+                    //no changes
+                }
             }
             else if (vf->person == SECOND && vf->number == PLURAL)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_PHI;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_EPSILON;
-                (*len) += 3;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
+                    ++(*len);
+                }
+                else
+                {
+                    ending[0] = GREEK_SMALL_LETTER_PHI;
+                }
             }
             else if (vf->person == THIRD && vf->number == PLURAL)
             {
@@ -3239,43 +3236,45 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         {
             if (vf->person == FIRST && vf->number == SINGULAR)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_ETA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_NU;
-                (*len) += 3;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_KAPPA;
+                }
             }
             else if (vf->person == SECOND && vf->number == SINGULAR)
             {
-                ucs2[*len - 1] = GREEK_SMALL_LETTER_XI;
-                ucs2[(*len)] = GREEK_SMALL_LETTER_OMICRON;
-                (*len) += 1;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_KAPPA;
+                }
+                else
+                {
+                    --(*len);
+                    ending[0] = GREEK_SMALL_LETTER_XI;
+                }
             }
             else if (vf->person == THIRD && vf->number == SINGULAR)
             {
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_KAPPA;
-                ucs2[*len] = GREEK_SMALL_LETTER_TAU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_OMICRON;
-                (*len) += 2;
-                return;
             }
             else if (vf->person == FIRST && vf->number == PLURAL)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+3] = GREEK_SMALL_LETTER_ALPHA;
-                (*len) += 4;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_KAPPA;
+                }
             }
             else if (vf->person == SECOND && vf->number == PLURAL)
             {
-                ucs2[*len-1] = GREEK_SMALL_LETTER_CHI;
-                ucs2[(*len)] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                (*len) += 2;
-                return;
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_KAPPA;
+                }
+                else
+                {
+                    --(*len);
+                    ending[0] = GREEK_SMALL_LETTER_CHI;
+                }
             }
             else if (vf->person == THIRD && vf->number == PLURAL)
             {
@@ -3286,42 +3285,19 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         }
         else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_4) == CONSONANT_STEM_PERFECT_4 || ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_5) == CONSONANT_STEM_PERFECT_5 &&  ucs2[(*len)-1] == GREEK_SMALL_LETTER_SIGMA)) //κεκέλευσμαι or σῴζω which is both consonant stem and not.
         {
-            if (vf->person == FIRST && vf->number == SINGULAR)
+            if (vf->person == SECOND && vf->number == SINGULAR)
             {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_ETA;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_NU;
-                (*len) += 3;
-                return;
-            }
-            else if (vf->person == SECOND && vf->number == SINGULAR)
-            {
-                ucs2[(*len)] = GREEK_SMALL_LETTER_OMICRON;
-                (*len) += 1;
-                return;
-            }
-            else if (vf->person == THIRD && vf->number == SINGULAR)
-            {
-                ucs2[*len] = GREEK_SMALL_LETTER_TAU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_OMICRON;
-                (*len) += 2;
-                return;
-            }
-            else if (vf->person == FIRST && vf->number == PLURAL)
-            {
-                ucs2[*len] = GREEK_SMALL_LETTER_MU;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                ucs2[(*len)+2] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+3] = GREEK_SMALL_LETTER_ALPHA;
-                (*len) += 4;
-                return;
+                if (!decompose)
+                {
+                    leftShiftFromOffset(ending, 0, &elen);
+                }
             }
             else if (vf->person == SECOND && vf->number == PLURAL)
             {
-                ucs2[(*len)] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                (*len) += 2;
-                return;
+                if (!decompose)
+                {
+                    leftShiftFromOffset(ending, 0, &elen);
+                }
             }
             else if (vf->person == THIRD && vf->number == PLURAL)
             {
@@ -3335,10 +3311,10 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             //H&Q page 273, only different in 2nd and 3rd person plural
             if (vf->person == SECOND && vf->number == PLURAL)
             {
-                ucs2[(*len)] = GREEK_SMALL_LETTER_THETA;
-                ucs2[(*len)+1] = GREEK_SMALL_LETTER_EPSILON;
-                (*len) += 2;
-                return;
+                if (!decompose)
+                {
+                    leftShiftFromOffset(ending, 0, &elen);
+                }
             }
             else if (vf->person == THIRD && vf->number == PLURAL)
             {
@@ -3347,10 +3323,6 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 return;
             }
         }
-    }
-    else if ((vf->tense == PRESENT || vf->tense == IMPERFECT) && isContractedVerb(vf, ucs2, len)) //CONTRACTED
-    {
-        //if ();
     }
     else if (vf->tense == FUTURE && vf->voice == PASSIVE) //add future passive infix hs here
     {
@@ -3832,17 +3804,14 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             if (vf->person == FIRST)
             {
                 leftShiftFromOffset(ending, 0, &elen);
-                //ending[0] = GREEK_SMALL_LETTER_ALPHA;
             }
             else if (vf->person == SECOND)
             {
                 leftShiftFromOffset(ending, 0, &elen);
-                //ending[0] = GREEK_SMALL_LETTER_ALPHA;
             }
             else if (vf->person == THIRD)
             {
                 leftShiftFromOffset(ending, 0, &elen);
-                //ending[0] = GREEK_SMALL_LETTER_ALPHA;
                 ending[0] = GREEK_SMALL_LETTER_SIGMA;
                 ending[1] = GREEK_SMALL_LETTER_ALPHA;
                 ending[2] = GREEK_SMALL_LETTER_NU;
@@ -4104,6 +4073,8 @@ void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, uns
     
     UCS2 secondAoristDeponent[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
     UCS2 secondAorist[2] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_NU };
+    
+    UCS2 isthmiRootAorist[2] = { GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
 
     if ((tense == PRESENT || tense == IMPERFECT) && hasSuffix(stem, *len, presMi, 2)) //μι
         *len -= 2;
@@ -4119,6 +4090,8 @@ void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, uns
         *len -= 2;
     else if (tense == AORIST && voice != PASSIVE  && hasSuffix(stem, *len, aoristDeponent, 4)) //άμην
         *len -= 4;
+    else if (tense == AORIST && voice == ACTIVE && hasSuffix(stem, *len, isthmiRootAorist, 2)) //ην
+        *len -= 1;
     else if (tense == AORIST && voice != PASSIVE && hasSuffix(stem, *len, secondAorist, 2))
         *len -= 2;
     else if (tense == AORIST && voice != PASSIVE && hasSuffix(stem, *len, secondAoristDeponent, 4))
