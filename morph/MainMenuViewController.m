@@ -66,6 +66,7 @@ alpha:1.0]
     UIImage *logoImg = [UIImage imageNamed:@"MosaicOfZeugma.jpg"];
     self.logoImgView = [[UIImageView alloc] initWithImage:logoImg];
     [self.view addSubview:self.logoImgView];
+    self.logoImgView.hidden = YES;
 
     double sw = self.view.frame.size.width;
     double sh = self.view.frame.size.height;
@@ -130,19 +131,24 @@ alpha:1.0]
         double v2 = sh * 0.75;
         double bh = sh / 4;
         
-        [self.HCButton setFrame:CGRectMake(0, v1, bw, bh)];
-        [self.HPButton setFrame:CGRectMake(sw/2, v1, bw, bh)];
+        [self.HCButton setFrame:CGRectMake(0 - 2, v1 + 2, bw + 2, bh)];
+        [self.HPButton setFrame:CGRectMake(sw/2 - 2, v1 + 2, bw + 4, bh)];
         
-        [self.SPButton setFrame:CGRectMake(0, v2, bw, bh)];
-        [self.MCButton setFrame:CGRectMake(sw/2, v2, bw, bh)];
+        [self.SPButton setFrame:CGRectMake(0 - 2, v2, bw + 2, bh)];
+        [self.MCButton setFrame:CGRectMake(sw/2 - 2, v2, bw + 4, bh)];
         
+        /*
         [self.HCButton setBackgroundColor: UIColorFromRGB(0xCC4422)];
         [self.HPButton setBackgroundColor: UIColorFromRGB(0x22CC55)];
         [self.SPButton setBackgroundColor: UIColorFromRGB(0x4466CC)];
         [self.MCButton setBackgroundColor: UIColorFromRGB(0xFFAA00)];
-
+         */
+        self.HCButton.layer.borderWidth = 2.0;
+        self.HPButton.layer.borderWidth = 2.0;
+        self.SPButton.layer.borderWidth = 2.0;
+        self.MCButton.layer.borderWidth = 2.0;
         
-        UIColor *textColor = [UIColor whiteColor];
+        UIColor *textColor = [UIColor blackColor];//[UIColor whiteColor];
         UIFont *textFont = [UIFont fontWithName:@"Helvetica" size:22.0];
         
         [self.HCButton setTitleColor:textColor forState:UIControlStateNormal];
@@ -165,22 +171,26 @@ alpha:1.0]
         self.HCButton.titleLabel.textColor = [UIColor redColor];
         */
     }
-
-
     
     [self.LGILabel setFrame:CGRectMake(30, 45, self.LGILabel.frame.size.width, self.LGILabel.frame.size.height)];
+    self.LGILabel.hidden = YES;
     [self.HCLabel setFrame:CGRectMake(30, 68, self.HCLabel.frame.size.width, self.HCLabel.frame.size.height)];
     [self.EOPLabel setFrame:CGRectMake(180, (sh /2) - 34, self.EOPLabel.frame.size.width, self.EOPLabel.frame.size.height)];
     [self.EOPLabel setFont:[UIFont fontWithName:@"NewAthenaUnicode" size:26.0]];
     [self.view bringSubviewToFront:self.EOPLabel];
-    
+    self.EOPLabel.hidden = YES;
 //[self.correctButton setFrame:CGRectMake(((w/2) - self.correctButton.frame.size.width) / 2, self.view.frame.size.height / 1.3, self.correctButton.frame.size.width, self.correctButton.frame.size.height)];
 
     
 //[self.incorrectButton setFrame:CGRectMake((((w/2) - self.correctButton.frame.size.width) / 2) + w/2, self.view.frame.size.height / 1.3, self.correctButton.frame.size.width, self.correctButton.frame.size.height)];
     
-    [self.menuButton setFrame:CGRectMake(sw - 70, 18, self.menuButton.frame.size.width, self.menuButton.frame.size.height)];
-    
+    [self.menuButton setFrame:CGRectMake(sw - 84, 26, self.menuButton.frame.size.width + 20, self.menuButton.frame.size.height + 4)];
+    self.menuButton.layer.borderWidth = 2.0;
+    [self.menuButton setTitle:@"Settings" forState:UIControlStateNormal];
+    [self.menuButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+    self.menuButton.layer.borderColor = [UIColor grayColor].CGColor;
+    self.menuButton.layer.borderWidth = 2.0f;
+    self.menuButton.layer.cornerRadius = 8;
     
     // Do any additional setup after loading the view.
 }

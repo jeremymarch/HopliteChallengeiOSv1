@@ -87,6 +87,8 @@
         //self.modePickerLabels = @[@"Hoplite Challenge", @"Hoplite Practice", @"Self Practice", @"Multiple Choice"];
         
         self.segment=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"H&Q Units", @"Options", nil]];
+        self.segment.tintColor = [UIColor grayColor];
+
         [self.segment setFrame:CGRectMake(0, 45, self.frame.size.width, 45)];
         //[self.segment setSegmentedControlStyle:UISegmentedControlStyleBar];
         self.segment.selectedSegmentIndex = 0;

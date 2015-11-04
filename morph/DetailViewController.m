@@ -493,6 +493,7 @@ void printUCS22(UCS2 *u, int len)
                     dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC));
                     dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
                         self.continueButton.hidden = NO;
+                        self.backButton.hidden = NO;
                     });
                 });
             }
@@ -502,6 +503,7 @@ void printUCS22(UCS2 *u, int len)
                 dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC));
                 dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
                     self.continueButton.hidden = NO;
+                    self.backButton.hidden = NO;
                 });
             }
         }
@@ -510,6 +512,7 @@ void printUCS22(UCS2 *u, int len)
             dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC));
             dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
                 self.continueButton.hidden = NO;
+                self.backButton.hidden = NO;
             });
         }
         
@@ -539,7 +542,7 @@ void printUCS22(UCS2 *u, int len)
     }
     self.startTime = CACurrentMediaTime();
     self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(runTimer)];
-    self.displayLink.frameInterval = 4;
+    self.displayLink.frameInterval = 5;
     [self.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 }
 
@@ -688,6 +691,7 @@ void printUCS22(UCS2 *u, int len)
     self.textfield.text = @"";
     self.textfield.textColor = [UIColor blackColor];
     self.continueButton.hidden = YES;
+    self.backButton.hidden = YES;
     self.redXView.hidden = YES;
     self.greenCheckView.hidden = YES;
     
@@ -796,7 +800,11 @@ void printUCS22(UCS2 *u, int len)
             [self.stemLabel setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, sizeS.height + 10)];
             [self.textfield setFrame:CGRectMake(10, f/2.1, self.view.frame.size.width - 20, size.height + 10)];
             [self.changedForm setFrame:CGRectMake(10, f/1.7, self.view.frame.size.width - 20, size.height + 10)];
-            [self.continueButton setFrame:CGRectMake((screenSize.width - self.continueButton.frame.size.width) / 2, f/1.3, self.continueButton.frame.size.width, self.continueButton.frame.size.height)];
+            
+            //[self.continueButton setFrame:CGRectMake((screenSize.width - self.continueButton.frame.size.width) / 2, f/1.3, self.continueButton.frame.size.width, self.continueButton.frame.size.height)];
+            [self.continueButton setFrame:CGRectMake((screenSize.width / 2) - 2, screenSize.height - 90, (screenSize.width / 2) + 4, 90)];
+            [self.backButton setFrame:CGRectMake(-2, screenSize.height - 90, (screenSize.width / 2) + 2, 90)];
+            
             
             //self.textfield.layer.borderWidth = 1.0;
             //self.changedForm.layer.borderWidth = 1.0;
@@ -811,8 +819,9 @@ void printUCS22(UCS2 *u, int len)
             self.stemLabel.textAlignment = NSTextAlignmentLeft;
             
             //http://stackoverflow.com/questions/15335649/adding-delay-between-execution-of-two-following-lines
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC));
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.2 * NSEC_PER_SEC));
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+            {
                 if (self.animate)
                 {
                     [self typeLabel:self.origForm withString:origForm withInterval:0.03];
@@ -822,7 +831,8 @@ void printUCS22(UCS2 *u, int len)
                     self.origForm.hidden = NO;
                 }
                 dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC));
-                dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
+                dispatch_after(popTime2, dispatch_get_main_queue(), ^(void)
+                {
                     if (self.animate)
                     {
                         [self typeLabel:self.changeTo withString:@"Change to:" withInterval:0.03];
@@ -835,7 +845,8 @@ void printUCS22(UCS2 *u, int len)
                     //self.changeTo.textAlignment = NSTextAlignmentCenter;
 
                     dispatch_time_t popTime3 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
-                    dispatch_after(popTime3, dispatch_get_main_queue(), ^(void){
+                    dispatch_after(popTime3, dispatch_get_main_queue(), ^(void)
+                    {
                         if (self.animate)
                         {
                             [self typeLabel:self.stemLabel withString:newDescription withInterval:0.02];
@@ -849,7 +860,8 @@ void printUCS22(UCS2 *u, int len)
                        
                         
                         dispatch_time_t popTime4 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.7 * NSEC_PER_SEC));
-                        dispatch_after(popTime4, dispatch_get_main_queue(), ^(void){
+                        dispatch_after(popTime4, dispatch_get_main_queue(), ^(void)
+                        {
                             if (self.verbQuestionType == HOPLITE_PRACTICE || self.verbQuestionType == HOPLITE_CHALLENGE )
                             {
                                 self.textfield.enabled = YES;
@@ -862,10 +874,14 @@ void printUCS22(UCS2 *u, int len)
                                 self.MCButtonC.hidden = NO;
                                 self.MCButtonD.hidden = NO;
                             }
-                            self.timeLabel.hidden = NO;
-                            //self.timeLabel.font = [UIFont fontWithName:@"Menlo" size:22.0];
-                            self.timeLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:24.0];
-                            [self startTimer];
+                            dispatch_time_t popTime5 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC));
+                            dispatch_after(popTime5, dispatch_get_main_queue(), ^(void)
+                            {
+                                self.timeLabel.hidden = NO;
+                                //self.timeLabel.font = [UIFont fontWithName:@"Menlo" size:22.0];
+                                self.timeLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:24.0];
+                                [self startTimer];
+                            });
                         });
                         
                     });
@@ -1551,7 +1567,7 @@ void printUCS22(UCS2 *u, int len)
     self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
     [self.view addSubview:self.popup];
     
-    [self.backButton setFrame:CGRectMake(10, self.view.frame.size.height - 40, 50, 30)];
+    //[self.backButton setFrame:CGRectMake(10, self.view.frame.size.height - 40, 50, 30)];
     
     /*
      //crashes if here, so put in appdelegate
@@ -1586,6 +1602,7 @@ void printUCS22(UCS2 *u, int len)
     //sets focus and raises keyboard
     //[self.textfield becomeFirstResponder];
     self.textfield.hidden = YES;
+    self.backButton.hidden = YES;
     
     
     [[UIApplication sharedApplication] setStatusBarHidden:YES
@@ -1679,6 +1696,9 @@ void printUCS22(UCS2 *u, int len)
     [self.continueButton.layer setMasksToBounds:YES];
     self.continueButton.layer.borderWidth = 2.0f;
     self.continueButton.layer.borderColor = [UIColor blackColor].CGColor;
+    [self.backButton.layer setMasksToBounds:YES];
+    self.backButton.layer.borderWidth = 2.0f;
+    self.backButton.layer.borderColor = [UIColor blackColor].CGColor;
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {
