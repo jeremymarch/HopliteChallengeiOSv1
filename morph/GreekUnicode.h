@@ -23,6 +23,7 @@
 #define SPACE                           0x0020
 #define EN_DASH                         0x2013
 #define HYPHEN                          0x2010
+#define COMMA                           0x002C
 /* BASIC GREEK 0370-03FF */
 
 #define GREEK_CAPITAL_LETTER_HETA  					0x0370 // Ͱ → 2C75 Ⱶ latin capital letter half h

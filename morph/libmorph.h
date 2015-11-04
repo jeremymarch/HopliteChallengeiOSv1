@@ -23,15 +23,19 @@ typedef unsigned short UCS2;
 //verb classes
 enum {
     REGULAR = 0,
-    CONSONANT_STEM_PERFECT_1 = 1, // γέγραμμαι
-    CONSONANT_STEM_PERFECT_2 = 2, // πέπεμμαι
-    CONSONANT_STEM_PERFECT_3 = 4, // πεφύλαγμαι
-    CONSONANT_STEM_PERFECT_4 = 8, // κεκέλευσμαι
-    CONSONANT_STEM_PERFECT_5 = 16, // σῴζω one part is consonant stem, the other not, so check.
-    CONSONANT_STEM_PERFECT_6 = 32, // ἤγγελμαι
-    PREFIXED = 64,
-    CONTRACTED_FUTURE = 128,
-    MI_VERB = 256
+    CONSONANT_STEM_PERFECT_PHI = 1, // γέγραμμαι
+    CONSONANT_STEM_PERFECT_MU_PI = 2, // πέπεμμαι
+    CONSONANT_STEM_PERFECT_KAPPA = 4, // πεφύλαγμαι
+    CONSONANT_STEM_PERFECT_SIGMA = 8, // κεκέλευσμαι
+    CONSONANT_STEM_PERFECT_SIGMA_2 = 16, // σῴζω one part is consonant stem, the other not, so check.
+    CONSONANT_STEM_PERFECT_LAMBDA = 32, // ἤγγελμαι
+    CONSONANT_STEM_PERFECT_PI = 64,
+    CONSONANT_STEM_PERFECT_BETA = 128,
+    CONSONANT_STEM_PERFECT_GAMMA = 256,
+    CONSONANT_STEM_PERFECT_CHI = 512,
+    PREFIXED = 1024,
+    CONTRACTED_FUTURE = 2048,
+    MI_VERB = 4096
 };
 
 enum {
