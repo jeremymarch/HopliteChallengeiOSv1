@@ -22,6 +22,7 @@ enum {
     int units[20];
     int numUnits;
 }
+@property BOOL expanded;
 @property (strong, nonatomic) id detailItem;
 @property NSInteger HCTime;
 @property BOOL popupShown;
@@ -40,6 +41,11 @@ enum {
 
 @property (strong, retain) UIImageView *greenCheckView;
 @property (strong, retain) UIImageView *redXView;
+
+@property (strong, nonatomic) NSString *origStr;
+@property (strong, nonatomic) NSString *changedStr;
+@property (strong, nonatomic) NSString *origStrDecomposed;
+@property (strong, nonatomic) NSString *changedStrDecomposed;
 
 @property (strong, nonatomic) NSString *greekFont;
 @property (strong, nonatomic) NSString *systemFont;

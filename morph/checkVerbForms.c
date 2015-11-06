@@ -11,7 +11,7 @@ extern char *tenses[];
 extern char *moods[];
 extern char *voices[];
 
-int numVerbs = 50;
+int numVerbs = 58;//58 includes unit 13
 
 void printCurrentTime()
 {

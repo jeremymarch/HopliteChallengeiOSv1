@@ -340,6 +340,19 @@ UIView *backSideTest;
     }
 }
 
+-(void)centerLabel:(UILabel*)l withString:(NSString*)string
+{
+    CGRect screenBound = [[UIScreen mainScreen] bounds];
+    CGSize screenSize = screenBound.size;
+    
+    CGSize size = [string sizeWithAttributes:@{NSFontAttributeName: l.font}];
+    
+    // Values are fractional -- you should take the ceilf to get equivalent values
+    CGSize adjustedSize = CGSizeMake(ceilf(size.width), ceilf(size.height));
+    
+    [l setFrame: CGRectMake((screenSize.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, adjustedSize.height)];
+}
+
 //http://stackoverflow.com/questions/11686642/letter-by-letter-animation-for-uilabel
 -(void)typeLabel:(UILabel*)l withString:(NSString*)string withInterval:(double)interval
 {
@@ -347,7 +360,7 @@ UIView *backSideTest;
     
     if ([string length] < 1)
         return;
-    
+    /*
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
 
@@ -357,6 +370,8 @@ UIView *backSideTest;
     CGSize adjustedSize = CGSizeMake(ceilf(size.width), ceilf(size.height));
     
     [l setFrame: CGRectMake((screenSize.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, adjustedSize.height)];
+    */
+    [self centerLabel:l withString:string];
     
     //l.textAlignment = NSTextAlignmentLeft;
     
@@ -607,6 +622,11 @@ void printUCS22(UCS2 *u, int len)
     
     origForm = [NSString stringWithUTF8String: (const char*)buffer];
     origForm = [self selectRandomFromCSV:origForm];
+    self.origStr = origForm;
+    
+    getForm(&vf, buffer, bufferLen, false, true);
+    self.origStrDecomposed = [NSString stringWithUTF8String: (const char*)buffer];
+    self.origStrDecomposed = [self selectRandomFromCSV:self.origStrDecomposed]; //FIXME, What if not same as orig form
     
     //getAbbrevDescription(&vf, buffer, bufferLen);
     //NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
@@ -627,6 +647,10 @@ void printUCS22(UCS2 *u, int len)
     } while (!strncmp(buffer, "—", 1));
     
     newForm = [NSString stringWithUTF8String: (const char*)buffer];
+    self.changedStr = newForm;
+    
+    getForm(&vf, buffer, bufferLen, true, true);
+    self.changedStrDecomposed = [NSString stringWithUTF8String: (const char*)buffer];
     
     getAbbrevDescription(&vf, buffer, bufferLen);
     newDescription = [NSString stringWithUTF8String: (const char*)buffer];
@@ -687,7 +711,7 @@ void printUCS22(UCS2 *u, int len)
     
     /******* NOW SETUP THE VIEW: static layout which should be done elsewhere ******/
     
-    
+    self.expanded = NO;
     self.textfield.text = @"";
     self.textfield.textColor = [UIColor blackColor];
     self.continueButton.hidden = YES;
@@ -1526,14 +1550,47 @@ void printUCS22(UCS2 *u, int len)
 
 - (void)handlePinch:(UIPinchGestureRecognizer *)pinchGestureRecognizer
 {
-    //handle pinch...
+    if (self.front)
+        return;
+    
     if (pinchGestureRecognizer.scale > 1)
     {
-        NSLog(@"pinch out");
+        if (!self.expanded)
+        {
+            if (self.changedForm.hidden == YES)
+            {
+                //self.changedForm.frame = self.textfield.frame;
+                //self.changedForm.hidden = NO;
+                //self.textfield.hidden = YES;
+                self.textfield.text = self.changedStrDecomposed;
+            }
+            else
+            {
+                self.changedForm.text = self.changedStrDecomposed;
+                [self centerLabel:self.changedForm withString:self.changedStrDecomposed];
+            }
+            self.expanded = YES;
+            self.origForm.text = self.origStrDecomposed;
+            [self centerLabel:self.origForm withString:self.origStrDecomposed];
+        }
     }
     else
     {
-        NSLog(@"pinch in");
+        if (self.expanded)
+        {
+            if (self.changedForm.hidden == YES)
+            {
+                self.textfield.text = self.changedStr;
+            }
+            else
+            {
+                self.changedForm.text = self.changedStr;
+                [self centerLabel:self.changedForm withString:self.changedStr];
+            }
+            self.expanded = NO;
+            self.origForm.text = self.origStr;
+            [self centerLabel:self.origForm withString:self.origStr];
+        }
     }
 }
 
@@ -1548,7 +1605,7 @@ void printUCS22(UCS2 *u, int len)
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
     
-    
+    self.expanded = NO;
     self.view.userInteractionEnabled = YES;
     UIPinchGestureRecognizer *pinch = [[UIPinchGestureRecognizer alloc]
                                        initWithTarget:self action:@selector(handlePinch:)];
