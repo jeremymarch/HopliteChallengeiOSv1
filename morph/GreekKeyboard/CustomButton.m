@@ -97,30 +97,26 @@ enum {
         [self addTarget: self action: @selector(touchUpOutside:) forControlEvents: UIControlEventTouchUpOutside];
         [self addTarget: self action: @selector(touchDown:) forControlEvents: UIControlEventTouchDown];
         
-        //delete
-        if ([text isEqualToString:@"XXX"])
+        if ([self.titleLabel.text isEqual:@"῾"] || [self.titleLabel.text isEqual:@"᾿"] || [self.titleLabel.text isEqual:@"´"] || [self.titleLabel.text isEqual:@"˜"] || [self.titleLabel.text isEqual:@"¯"] || [self.titleLabel.text isEqual:@"ͺ"])
         {
-            /*
-            self.titleLabel.font = [UIFont fontWithName:self.font size:18];
-            [self setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
-            [self setTitle:@"x" forState:UIControlStateNormal];
-            self.titleEdgeInsets = UIEdgeInsetsMake(-2.5, 0, 0, -8.0);
-             */
-			self.deleteButton = YES;
-		}
+            self.diacriticButton = YES;
+        }
         else
         {
-            if (self.device == IPHONE)
-                self.titleLabel.font = [UIFont fontWithName:self.font size:22];
-            else
-                self.titleLabel.font = [UIFont fontWithName:self.font size:24];
-            [self setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
-            [self setTitle:text forState:UIControlStateNormal];
-            //[self setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
-            //self.titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
-            
-            self.deleteButton = NO;
+            self.diacriticButton = NO;
         }
+        
+        if (self.diacriticButton)
+            self.titleLabel.font = [UIFont fontWithName:self.font size:34];
+        else if (self.device == IPHONE)
+            self.titleLabel.font = [UIFont fontWithName:self.font size:22];
+        else
+            self.titleLabel.font = [UIFont fontWithName:self.font size:24];
+        [self setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
+        [self setTitle:text forState:UIControlStateNormal];
+        //[self setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        //self.titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
+        
         self->width = 32; //includes left and right padding
         self->height = 54; //includes top and bottom padding
         self->hPadding = 3;
@@ -132,15 +128,16 @@ enum {
     
 }
 
-
 - (void)drawRect:(CGRect)rect
 {
     //NSLog(@"Draw");
     CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    UIColor *highlightStart = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.8];
-    //CGColorRef highlightStop = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0].CGColor;
-    
+    UIColor *diacriticBackground = [UIColor colorWithRed:(160/255.0) green:(180/255.0) blue:(190/255.0) alpha:1.0];
+
+    if (self.diacriticButton)
+    {
+        self.titleLabel.textColor = [UIColor whiteColor];
+    }
     
     UIColor *buttonLight;
     UIColor *buttonDark;
@@ -154,15 +151,6 @@ enum {
         buttonLight = [UIColor colorWithRed:(240/255.0) green:(240/255.0) blue:(243/255.0) alpha:1.0];
         buttonDark = [UIColor colorWithRed:(209/255.0) green:(209/255.0) blue:(215/255.0) alpha:1.0];
     }
-    
-    UIColor *buttonDownLight = [UIColor colorWithRed:(145/255.0) green:(145/255.0) blue:(160/255.0) alpha:1.0];
-    UIColor *buttonDownDark = [UIColor colorWithRed:(130/255.0) green:(130/255.0) blue:(147/255.0) alpha:1.0];
-    //UIColor *buttonDownLight = [UIColor colorWithRed:(120/255.0) green:(120/255.0) blue:(138/255.0) alpha:1.0];
-    //UIColor *buttonDownDark = [UIColor colorWithRed:(110/255.0) green:(110/255.0) blue:(128/255.0) alpha:1.0];
-    
-    UIColor *delIconColorLight = [UIColor colorWithRed:(120/255.0) green:(120/255.0) blue:(138/255.0) alpha:1.0];
-    UIColor *delIconColor = [UIColor colorWithRed:(110/255.0) green:(110/255.0) blue:(128/255.0) alpha:1.0];
-    UIColor *xColor = [UIColor darkGrayColor];
     
     CGFloat buttonRadius;
     CGFloat outerSideMargin;
@@ -193,8 +181,10 @@ enum {
     
     CGContextSaveGState(context);
     
-    if (self.device == IPHONE && self.selected && !self.deleteButton)
+    if (self.device == IPHONE && self.selected)
+    {
         CGContextSetShadowWithColor(context, CGSizeMake(0, 0), 1.0, [UIColor blackColor].CGColor);
+    }
     //else if (self.device == IPAD)
     //    CGContextSetShadowWithColor(context, CGSizeMake(0, 2), 2.0, [UIColor colorWithRed:(35/255.0) green:(35/255.0) blue:(35/255.0) alpha:1.0].CGColor);
     //else
@@ -202,8 +192,10 @@ enum {
     //CGContextSetShadow(context, CGSizeMake (0, 2), 5.0);
     
     CGContextAddPath(context, outerPath);
-    if (self.device == IPHONE && self.deleteButton)
-        CGContextSetFillColorWithColor(context, delIconColor.CGColor);
+    
+    //set background color for up state
+    if (self.diacriticButton)
+        CGContextSetFillColorWithColor(context, diacriticBackground.CGColor);
     else
         CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
     CGContextFillPath(context);
@@ -256,101 +248,34 @@ enum {
         CGContextSaveGState(context);
         
         CGContextAddPath(context, outerPath);
-        if (self.device == IPHONE && self.deleteButton)
-            CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
-        else if (self.device == IPAD && self.deleteButton)
-            CGContextSetFillColorWithColor(context, delIconColor.CGColor);
-        else if (self.device == IPAD)
+
+        //set background color for downstate
+        if (self.device == IPAD)
+        {
             CGContextSetFillColorWithColor(context, buttonDark.CGColor);
+        }
         else
-            CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+        {
+            if (self.device == IPAD)
+            {
+                if (self.diacriticButton)
+                    CGContextSetFillColorWithColor(context, diacriticBackground.CGColor);
+                else
+                    CGContextSetFillColorWithColor(context, buttonDark.CGColor);
+            }
+            else
+            {
+                if (self.diacriticButton)
+                    CGContextSetFillColorWithColor(context, diacriticBackground.CGColor);
+                else
+                    CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+            }
+        }
+        
         CGContextFillPath(context);
 
         CGContextRestoreGState(context);
 	}
-    if (self.deleteButton)
-    {
-        //Draw delete button icon
-        CGContextSaveGState(context);
-        //if (self.device == IPAD)
-        //    CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 1.0, [UIColor whiteColor].CGColor);
-        CGFloat delHeight = self.bounds.size.height;
-        CGFloat delWidth = self.bounds.size.width;
-        CGFloat topPadding;
-        CGFloat sidePadding;
-        CGFloat xIconPadding;
-        if (self.device == IPAD)
-        {
-            topPadding = self.bounds.size.height / 2.8f;
-            sidePadding = self.bounds.size.width / 3.0f;
-            xIconPadding = self.bounds.size.width / 15.5f;//6.0f;
-        }
-        else
-        {
-            topPadding = self.bounds.size.height / 3.2f;
-            sidePadding = self.bounds.size.width / 4.0f;
-            xIconPadding = 4.0f;
-        }
-        //NSLog(@"H: %f, W: %f", self.bounds.size.height, self.bounds.size.width);
-
-        CGFloat delRadius = 2.0f;
-        CGFloat startX = ((delWidth + (1 * sidePadding)) * 1 / 3) - 1;
-        
-        CGMutablePathRef path = CGPathCreateMutable();
-        
-        CGPathMoveToPoint(path, NULL, startX, topPadding);
-        //CGPathAddLineToPoint(path, NULL, delWidth - sidePadding, topPadding);
-        CGPathAddArcToPoint(path, NULL, delWidth - sidePadding, topPadding, delWidth - sidePadding, delHeight - topPadding, delRadius);
-        //CGPathAddLineToPoint(path, NULL, delWidth - sidePadding, delHeight - topPadding);
-        CGPathAddArcToPoint(path, NULL, delWidth - sidePadding, delHeight - topPadding, startX, delHeight - topPadding
-                            , delRadius);
-        
-        CGPathAddLineToPoint(path, NULL, startX, delHeight - topPadding);
-        CGPathAddLineToPoint(path, NULL, sidePadding - 2, delHeight / 2.0f);
-        
-        CGPathCloseSubpath(path);
-        
-        CGContextAddPath(context, path);
-        UIColor *iconColor;
-        if (self.device == IPAD)
-        {
-            if (self.selected)
-            {
-                iconColor = buttonLight;
-                xColor = delIconColor;
-            }
-            else
-            {
-                iconColor = delIconColor;
-                xColor = buttonLight;
-                
-            }
-        }
-        else
-        {
-            if (self.selected)
-            {
-                iconColor = delIconColor;
-                xColor = buttonLight;
-            }
-            else
-            {
-                iconColor = buttonLight;
-                xColor = delIconColor;
-            }
-        }
-        CGContextSetFillColorWithColor(context, iconColor.CGColor);
-        CGContextFillPath(context);
-        CGContextRestoreGState(context);
-        CFRelease(path);
-        
-        CGContextSaveGState(context);
-        CGRect xFrame = CGRectMake(startX, topPadding, delWidth - (sidePadding * 2) - (startX - sidePadding), delHeight - (topPadding * 2));
- 
-        drawX(context, xFrame, xIconPadding, xColor);
-        
-        CGContextRestoreGState(context);
-    }
     
     // Draw border around button for ipad
     if (self.device == IPAD)

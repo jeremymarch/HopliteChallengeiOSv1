@@ -13,7 +13,7 @@
 		3F39F47B1B456DF900A58885 /* Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F39F4761B456DF900A58885 /* Common.m */; };
 		3F39F47C1B456DF900A58885 /* CustomButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F39F4781B456DF900A58885 /* CustomButton.m */; };
 		3F39F47D1B456DF900A58885 /* keyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F39F47A1B456DF900A58885 /* keyboard.m */; };
-		3F5617AC1BBC955200816FA1 /* MainMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F5617AB1BBC955200816FA1 /* MainMenuViewController.m */; settings = {ASSET_TAGS = (); }; };
+		3F5617AC1BBC955200816FA1 /* MainMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F5617AB1BBC955200816FA1 /* MainMenuViewController.m */; };
 		3F73EDA6189642DA003638C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDA5189642DA003638C5 /* Foundation.framework */; };
 		3F73EDA8189642DA003638C5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDA7189642DA003638C5 /* CoreGraphics.framework */; };
 		3F73EDAA189642DA003638C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDA9189642DA003638C5 /* UIKit.framework */; };
@@ -33,6 +33,8 @@
 		3F73EDD3189642DA003638C5 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F73EDAB189642DA003638C5 /* CoreData.framework */; };
 		3F73EDDB189642DA003638C5 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3F73EDD9189642DA003638C5 /* InfoPlist.strings */; };
 		3F73EDDD189642DA003638C5 /* morphTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F73EDDC189642DA003638C5 /* morphTests.m */; };
+		3F76F24B1BEE4C7D008772D2 /* DeleteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F76F24A1BEE4C7D008772D2 /* DeleteButton.m */; };
+		3F76F24E1BEE508A008772D2 /* OtherButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F76F24D1BEE508A008772D2 /* OtherButton.m */; };
 		3F8167291B615A9F005B0FAD /* VerbsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */; };
 		3F81672D1B619BC4005B0FAD /* VerbDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F81672B1B616869005B0FAD /* VerbDetailViewController.m */; };
 		3F8167301B674935005B0FAD /* GreekGlobals.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F81672F1B674935005B0FAD /* GreekGlobals.m */; };
@@ -40,7 +42,7 @@
 		3F8621C21B433FAA002B5059 /* Buzz01.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C11B433FAA002B5059 /* Buzz01.wav */; };
 		3F8621C41B433FD7002B5059 /* Buzz02.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C31B433FD7002B5059 /* Buzz02.wav */; };
 		3F8621C61B433FE6002B5059 /* Ding.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3F8621C51B433FE6002B5059 /* Ding.wav */; };
-		3F92DCD41BC0C7AC008CB04E /* MosaicOfZeugma.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3F92DCD31BC0C7AC008CB04E /* MosaicOfZeugma.jpg */; settings = {ASSET_TAGS = (); }; };
+		3F92DCD41BC0C7AC008CB04E /* MosaicOfZeugma.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 3F92DCD31BC0C7AC008CB04E /* MosaicOfZeugma.jpg */; };
 		3FAA4FF71A2A73C300D49487 /* Verbs.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FAA4FF61A2A73C300D49487 /* Verbs.m */; };
 		3FAA55461A2797C0003EFEDA /* PopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FAA55451A2797C0003EFEDA /* PopUp.m */; };
 		3FCCC60E1BA5EB4300B7CCFB /* greencheck.png in Resources */ = {isa = PBXBuildFile; fileRef = 3FCCC60D1BA5EB4300B7CCFB /* greencheck.png */; };
@@ -95,6 +97,10 @@
 		3F73EDD8189642DA003638C5 /* morphTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "morphTests-Info.plist"; sourceTree = "<group>"; };
 		3F73EDDA189642DA003638C5 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		3F73EDDC189642DA003638C5 /* morphTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = morphTests.m; sourceTree = "<group>"; };
+		3F76F2491BEE4C7D008772D2 /* DeleteButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DeleteButton.h; path = GreekKeyboard/DeleteButton.h; sourceTree = "<group>"; };
+		3F76F24A1BEE4C7D008772D2 /* DeleteButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DeleteButton.m; path = GreekKeyboard/DeleteButton.m; sourceTree = "<group>"; };
+		3F76F24C1BEE508A008772D2 /* OtherButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OtherButton.h; path = GreekKeyboard/OtherButton.h; sourceTree = "<group>"; };
+		3F76F24D1BEE508A008772D2 /* OtherButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OtherButton.m; path = GreekKeyboard/OtherButton.m; sourceTree = "<group>"; };
 		3F8167271B615A9F005B0FAD /* VerbsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerbsTableViewController.h; sourceTree = "<group>"; };
 		3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VerbsTableViewController.m; sourceTree = "<group>"; };
 		3F81672A1B616869005B0FAD /* VerbDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerbDetailViewController.h; sourceTree = "<group>"; };
@@ -152,6 +158,10 @@
 				3F39F4781B456DF900A58885 /* CustomButton.m */,
 				3F39F4791B456DF900A58885 /* keyboard.h */,
 				3F39F47A1B456DF900A58885 /* keyboard.m */,
+				3F76F2491BEE4C7D008772D2 /* DeleteButton.h */,
+				3F76F24A1BEE4C7D008772D2 /* DeleteButton.m */,
+				3F76F24C1BEE508A008772D2 /* OtherButton.h */,
+				3F76F24D1BEE508A008772D2 /* OtherButton.m */,
 			);
 			name = Keyboard;
 			sourceTree = "<group>";
@@ -375,6 +385,7 @@
 				3F39F47B1B456DF900A58885 /* Common.m in Sources */,
 				3F73EDC7189642DA003638C5 /* DetailViewController.m in Sources */,
 				3F73EDC4189642DA003638C5 /* MasterViewController.m in Sources */,
+				3F76F24E1BEE508A008772D2 /* OtherButton.m in Sources */,
 				3F73EDB8189642DA003638C5 /* AppDelegate.m in Sources */,
 				3F2FD3001AF0625300B4CE7F /* GreekForms.c in Sources */,
 				3F81672D1B619BC4005B0FAD /* VerbDetailViewController.m in Sources */,
@@ -385,6 +396,7 @@
 				3F8167291B615A9F005B0FAD /* VerbsTableViewController.m in Sources */,
 				3F5617AC1BBC955200816FA1 /* MainMenuViewController.m in Sources */,
 				3FCEE6DA1ADE636500C550AD /* libmorph.c in Sources */,
+				3F76F24B1BEE4C7D008772D2 /* DeleteButton.m in Sources */,
 				3F73EDB4189642DA003638C5 /* main.m in Sources */,
 				3FAA55461A2797C0003EFEDA /* PopUp.m in Sources */,
 			);

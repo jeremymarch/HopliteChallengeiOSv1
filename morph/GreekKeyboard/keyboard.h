@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "CustomButton.h"
+#import "DeleteButton.h"
+#import "OtherButton.h"
 
 @protocol vc2delegate <NSObject>          //[3] (in vc2.h)
 - (void) loadNext;
@@ -39,9 +41,9 @@
 @property (nonatomic, retain) NSMutableArray *keys;
 @property (nonatomic, retain) NSArray *greekLetters;
 @property (nonatomic, retain) NSArray *latinLetters;
-@property (nonatomic, retain) CustomButton *deleteButton;
-@property (nonatomic, retain) CustomButton *submitButton;
-@property (nonatomic, retain) CustomButton *multipleFormsButton;
+@property (nonatomic, retain) DeleteButton *deleteButton;
+@property (nonatomic, retain) OtherButton *submitButton;
+@property (nonatomic, retain) OtherButton *multipleFormsButton;
 @property (nonatomic, retain) NSString *greekFont;
 
 - (id)initWithFrame:(CGRect)frame lang:(int)lang;

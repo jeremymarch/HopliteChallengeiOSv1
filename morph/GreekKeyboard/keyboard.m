@@ -163,15 +163,15 @@ enum {
             [button addTarget:self action:@selector(keyboardLetterDown:) forControlEvents:UIControlEventTouchDown];
             //[button release];
         }
-        self.deleteButton = [[CustomButton alloc] initWithText:@"XXX" AndDevice:self->device AndFont:self.greekFont];
+        self.deleteButton = [[DeleteButton alloc] initWithText:@"XXX" AndDevice:self->device AndFont:self.greekFont];
         [self addSubview:self.deleteButton];
         [self.deleteButton addTarget:self action:@selector(keyboardDeletePressed:) forControlEvents:UIControlEventTouchDown];
     
-        self.submitButton = [[CustomButton alloc] initWithText:@"Done" AndDevice:self->device AndFont:self.greekFont];
+        self.submitButton = [[OtherButton alloc] initWithText:@"Done" AndDevice:self->device AndFont:self.greekFont];
         [self addSubview:self.submitButton];
         [self.submitButton addTarget:self action:@selector(submitPressed:) forControlEvents:UIControlEventTouchDown];
         
-        self.multipleFormsButton = [[CustomButton alloc] initWithText:@"MF" AndDevice:self->device AndFont:self.greekFont];
+        self.multipleFormsButton = [[OtherButton alloc] initWithText:@"MF" AndDevice:self->device AndFont:self.greekFont];
         [self addSubview:self.multipleFormsButton];
         [self.multipleFormsButton addTarget:self action:@selector(multipleFormsButtonPressed:) forControlEvents:UIControlEventTouchDown];
         
@@ -266,7 +266,7 @@ enum {
             if (row == 0)
             {
                 xOffset = -12;
-                button.diacriticButton = true;
+                button.diacriticButton = YES;
             }
             else if (row == 1)
                 xOffset = -21;
