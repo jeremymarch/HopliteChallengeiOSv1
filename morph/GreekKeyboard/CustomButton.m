@@ -42,12 +42,25 @@ enum {
         CGRect buttonFrame = self.frame;
         buttonFrame = CGRectMake(self.frame.origin.x + (self.frame.size.width / 2) - ((self.frame.size.width / 4) + (self->hPadding)), self.frame.origin.y + self->buttonDownAddHeight, self->width, self->height);
         
-        self.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
         //@"῾", @"᾿", @"´", @"˜", @"¯", @"ͺ"
-        if ([self.titleLabel.text isEqual:@"῾"] || [self.titleLabel.text isEqual:@"᾿"] || [self.titleLabel.text isEqual:@"´"] || [self.titleLabel.text isEqual:@"˜"] || [self.titleLabel.text isEqual:@"¯"] || [self.titleLabel.text isEqual:@"ͺ"])
-            self.titleLabel.font = [UIFont fontWithName:self.font size:34];
+        NSString *l = self.titleLabel.text;
+        if ([l isEqual:@"῾"] || [l isEqual:@"᾿"] || [l isEqual:@"´"] || [l isEqual:@"˜"] || [l isEqual:@"¯"] || [l isEqual:@"ͺ"])
+        {
+            self.titleLabel.font = [UIFont fontWithName:self.font size:50];
+            if ([l isEqual: @"ͺ"])
+            {
+                self.titleEdgeInsets = UIEdgeInsetsMake(-42, 0, 0, 0);
+            }
+            else
+            {
+                self.titleEdgeInsets = UIEdgeInsetsMake(20, 0, 0, 0);
+            }
+        }
         else
-            self.titleLabel.font = [UIFont fontWithName:self.font size:22];
+        {
+            self.titleLabel.font = [UIFont fontWithName:self.font size:24];
+            self.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+        }
         [self setFrame: buttonFrame];
     }
     
@@ -79,8 +92,24 @@ enum {
         
         //the following order of these three lines make layoutsubviews only be called once,
         //instead of twice on ios 5.0 on iPhone.  Strange.
-        self.titleEdgeInsets = UIEdgeInsetsMake(-52.0, 0, 0, 0);
-        self.titleLabel.font = [UIFont fontWithName:self.font size:44];
+        NSString *l = self.titleLabel.text;
+        if ([l isEqual:@"῾"] || [l isEqual:@"᾿"] || [l isEqual:@"´"] || [l isEqual:@"˜"] || [l isEqual:@"¯"] || [l isEqual:@"ͺ"])
+        {
+            self.titleLabel.font = [UIFont fontWithName:self.font size:60];
+            if ([l isEqual: @"ͺ"])
+            {
+                self.titleEdgeInsets = UIEdgeInsetsMake(-95, 0, 0, 0);
+            }
+            else
+            {
+                self.titleEdgeInsets = UIEdgeInsetsMake(-25, 0, 0, 0);
+            }
+        }
+        else
+        {
+            self.titleEdgeInsets = UIEdgeInsetsMake(-52.0, 0, 0, 0);
+            self.titleLabel.font = [UIFont fontWithName:self.font size:44];
+        }
         [self setFrame: buttonFrame];
     }
 
@@ -125,14 +154,12 @@ enum {
         self->buttonDownAddHeight = 62;
     }
     return self;
-    
 }
 
 - (void)drawRect:(CGRect)rect
 {
-    //NSLog(@"Draw");
     CGContextRef context = UIGraphicsGetCurrentContext();
-    UIColor *diacriticBackground = [UIColor colorWithRed:(160/255.0) green:(180/255.0) blue:(190/255.0) alpha:1.0];
+    UIColor *diacriticBackground = [UIColor colorWithRed:(170/255.0) green:(170/255.0) blue:(180/255.0) alpha:1.0];
 
     if (self.diacriticButton)
     {
@@ -185,11 +212,6 @@ enum {
     {
         CGContextSetShadowWithColor(context, CGSizeMake(0, 0), 1.0, [UIColor blackColor].CGColor);
     }
-    //else if (self.device == IPAD)
-    //    CGContextSetShadowWithColor(context, CGSizeMake(0, 2), 2.0, [UIColor colorWithRed:(35/255.0) green:(35/255.0) blue:(35/255.0) alpha:1.0].CGColor);
-    //else
-    //    CGContextSetShadowWithColor(context, CGSizeMake(0, 1), 1.0, [UIColor blackColor].CGColor);
-    //CGContextSetShadow(context, CGSizeMake (0, 2), 5.0);
     
     CGContextAddPath(context, outerPath);
     
@@ -208,12 +230,7 @@ enum {
         CGContextSaveGState(context);
         CGContextAddPath(context, outerPath);
         CGContextClip(context);
-        /*
-        if (self.device == IPHONE && self.deleteButton)
-            drawLinearGradient(context, outerRect, delIconColorLight, delIconColor);
-        else
-            drawLinearGradient(context, outerRect, buttonLight, buttonDark);
-         */
+
         CGContextRestoreGState(context);
         
         if (self.device == IPAD)
@@ -229,7 +246,6 @@ enum {
             CGContextAddPath(context, outerPath);
             CGContextAddPath(context, highlightPath);
             CGContextEOClip(context);
-            //drawLinearGradient(context, CGRectMake(outerRect.origin.x, outerRect.origin.y, outerRect.size.width, outerRect.size.height/6), highlightStart, buttonLight);
             
             CGContextRestoreGState(context);
             CFRelease(highlightPath);
@@ -238,8 +254,6 @@ enum {
 	else
     {
         //Down state
-        // Draw gradient for outer path
-        
         CGContextSaveGState(context);
         
         CGContextAddPath(context, outerPath);
@@ -289,10 +303,5 @@ enum {
     }
     CFRelease(outerPath);
 }
-/*
-- (void)dealloc
-{
-    [super dealloc];
-}
-*/
+
 @end

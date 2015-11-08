@@ -532,7 +532,7 @@ void printUCS22(UCS2 *u, int len)
         }
         
         self.front = false;
-        self.textfield.enabled = false;
+        //self.textfield.enabled = false;
     }
     else
     {

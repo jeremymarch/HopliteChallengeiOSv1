@@ -76,7 +76,7 @@ enum {
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
-    UIColor *redColor = [UIColor colorWithRed:(255/255.0) green:(0/255.0) blue:(0/255.0) alpha:1.0];
+    UIColor *redColor = [UIColor colorWithRed:(255/255.0) green:(54/255.0) blue:(0/255.0) alpha:1.0];
     
     UIColor *delIconColor = [UIColor colorWithRed:(110/255.0) green:(110/255.0) blue:(128/255.0) alpha:1.0];
     
@@ -108,7 +108,7 @@ enum {
     CGContextSaveGState(context);
     
     CGContextAddPath(context, outerPath);
-    if ([self.titleLabel.text isEqual:@"Done"])
+    if ([self.titleLabel.text isEqual:@"Enter"])
         CGContextSetFillColorWithColor(context, blueColor.CGColor);
     else
         CGContextSetFillColorWithColor(context, redColor.CGColor);
@@ -165,7 +165,7 @@ enum {
         CGContextRestoreGState(context);
         
         
-        if ([self.titleLabel.text isEqual:@"Done"])
+        if ([self.titleLabel.text isEqual:@"Enter"])
         {
             self.titleLabel.textColor = blueColor;
         }

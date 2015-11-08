@@ -167,7 +167,7 @@ enum {
         [self addSubview:self.deleteButton];
         [self.deleteButton addTarget:self action:@selector(keyboardDeletePressed:) forControlEvents:UIControlEventTouchDown];
     
-        self.submitButton = [[OtherButton alloc] initWithText:@"Done" AndDevice:self->device AndFont:self.greekFont];
+        self.submitButton = [[OtherButton alloc] initWithText:@"Enter" AndDevice:self->device AndFont:self.greekFont];
         [self addSubview:self.submitButton];
         [self.submitButton addTarget:self action:@selector(submitPressed:) forControlEvents:UIControlEventTouchDown];
         
@@ -196,7 +196,7 @@ enum {
         self->spaceWidth = 150;
         self->buttonDownAddHeight = 55;
         
-        self->deleteWidth = self->height - 16 + 10;
+        self->deleteWidth = self->height - 16 + 12;
     }
     else if (self->device == 2)
     {
@@ -271,9 +271,9 @@ enum {
             else if (row == 1)
                 xOffset = -21;
             else if (row == 2)
-                xOffset = -4;
+                xOffset = -1;
             else
-                xOffset = 0;
+                xOffset = -1;
             
             
             
@@ -284,8 +284,8 @@ enum {
     if (device == 1)
     {
         self.deleteButton.frame = CGRectMake(self->windowWidth - self->width - 12, self->topMargin + (1 * self->height), self->deleteWidth, self->height);
-        self.submitButton.frame = CGRectMake(self->windowWidth - 70, self->topMargin, 68, self->height);
-        self.multipleFormsButton.frame = CGRectMake(3, self->topMargin, self->deleteWidth, self->height);
+        self.submitButton.frame = CGRectMake(self->windowWidth - 82, self->topMargin, 78, self->height);
+        self.multipleFormsButton.frame = CGRectMake(5, self->topMargin, self->deleteWidth + 7, self->height);
     }
     else
     {
@@ -294,7 +294,7 @@ enum {
         [self.deleteButton setNeedsDisplay];
         
         self.submitButton.frame = CGRectMake(self->windowWidth - self->width - 15, self->topMargin, self->deleteWidth, self->height);
-        self.multipleFormsButton.frame = CGRectMake(5, self->topMargin, self->deleteWidth, self->height);
+        self.multipleFormsButton.frame = CGRectMake(10, self->topMargin, self->deleteWidth + 8, self->height);
     }
     if (self->lang == GREEK1)
     {
@@ -343,9 +343,28 @@ enum {
         
         for (letter = 0; letter < numLetters; letter++)
         {
+            NSString *l = [letters objectAtIndex:letter];
             CustomButton *button = [self.keys objectAtIndex:key++];
-            [button setTitle:[letters objectAtIndex:letter] forState:UIControlStateNormal];
-            button.titleLabel.font = [UIFont fontWithName:self.greekFont size:24.0];
+            [button setTitle:l forState:UIControlStateNormal];
+            
+            if ([l isEqual: @"῾"] || [l isEqual: @"᾿"] || [l isEqual: @"´"] || [l isEqual: @"˜"] || [l isEqual: @"¯"] || [l isEqual: @"ͺ"])
+            {
+                button.titleLabel.font = [UIFont fontWithName:self.greekFont size:50.0];
+                button.titleLabel.textColor = [UIColor whiteColor];
+                
+                if ([l isEqual: @"ͺ"])
+                {
+                    button.titleEdgeInsets = UIEdgeInsetsMake(-42, 0, 0, 0);
+                }
+                else
+                {
+                    button.titleEdgeInsets = UIEdgeInsetsMake(20, 0, 0, 0);
+                }
+            }
+            else
+            {
+                button.titleLabel.font = [UIFont fontWithName:self.greekFont size:24.0];
+            }
         }
     }
     [self setNeedsLayout]; //def need this
