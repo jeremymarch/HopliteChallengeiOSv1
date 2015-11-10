@@ -350,7 +350,7 @@ enum {
             if ([l isEqual: @"῾"] || [l isEqual: @"᾿"] || [l isEqual: @"´"] || [l isEqual: @"˜"] || [l isEqual: @"¯"] || [l isEqual: @"ͺ"])
             {
                 button.titleLabel.font = [UIFont fontWithName:self.greekFont size:50.0];
-                button.titleLabel.textColor = [UIColor whiteColor];
+                [button setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
                 
                 if ([l isEqual: @"ͺ"])
                 {

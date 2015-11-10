@@ -193,7 +193,7 @@ UIView *backSideTest;
                 {
                     //NSLog(@"type: %@", self.changedForm.text);
                     self.changedForm.textAlignment = NSTextAlignmentLeft;
-                    [self typeLabel:self.changedForm withString:self.changedForm.text withInterval:0.03];
+                    [self typeLabel:self.changedForm withString:self.changedForm.text withInterval:self.typeInterval];
                 }
 
                 self.changedForm.hidden = NO;
@@ -382,7 +382,7 @@ UIView *backSideTest;
                            [self asyncTypingLabel:string characterDelay:interval label:l];
                        });
     }
-    else
+    /* else
     {
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         [dict setObject:string forKey:@"string"];
@@ -390,6 +390,17 @@ UIView *backSideTest;
         [dict setObject:l forKey:@"label"];
         NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:interval target:self selector:@selector(typingLabel:) userInfo:dict repeats:YES];
         [timer fire];
+    } */
+    else
+    {
+        for (int i = 0; i < [string length]; i++)
+        {
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * i * NSEC_PER_SEC));
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+            {
+                [l setText:[string substringToIndex:i+1]];
+            });
+        }
     }
 }
 
@@ -503,7 +514,7 @@ void printUCS22(UCS2 *u, int len)
                 
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC));
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                    [self typeLabel:self.changedForm withString:temp withInterval:0.03];
+                    [self typeLabel:self.changedForm withString:temp withInterval:self.typeInterval];
                     
                     dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC));
                     dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
@@ -532,7 +543,7 @@ void printUCS22(UCS2 *u, int len)
         }
         
         self.front = false;
-        //self.textfield.enabled = false;
+        self.textfield.enabled = false;
     }
     else
     {
@@ -842,13 +853,15 @@ void printUCS22(UCS2 *u, int len)
             self.changeTo.textAlignment = NSTextAlignmentLeft;
             self.stemLabel.textAlignment = NSTextAlignmentLeft;
             
+            
+            
             //http://stackoverflow.com/questions/15335649/adding-delay-between-execution-of-two-following-lines
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.2 * NSEC_PER_SEC));
             dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
             {
                 if (self.animate)
                 {
-                    [self typeLabel:self.origForm withString:origForm withInterval:0.03];
+                    [self typeLabel:self.origForm withString:origForm withInterval:self.typeInterval];
                 }
                 else
                 {
@@ -859,7 +872,7 @@ void printUCS22(UCS2 *u, int len)
                 {
                     if (self.animate)
                     {
-                        [self typeLabel:self.changeTo withString:@"Change to:" withInterval:0.03];
+                        [self typeLabel:self.changeTo withString:@"Change to:" withInterval:self.typeInterval];
                     }
                     else
                     {
@@ -873,7 +886,7 @@ void printUCS22(UCS2 *u, int len)
                     {
                         if (self.animate)
                         {
-                            [self typeLabel:self.stemLabel withString:newDescription withInterval:0.02];
+                            [self typeLabel:self.stemLabel withString:newDescription withInterval:self.typeInterval];
                         }
                         else
                         {
@@ -1597,6 +1610,8 @@ void printUCS22(UCS2 *u, int len)
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.typeInterval = 0.016;
     
     if ([[NSUserDefaults standardUserDefaults] integerForKey:@"HCTime"])
         self.HCTime = [[NSUserDefaults standardUserDefaults] integerForKey:@"HCTime"];

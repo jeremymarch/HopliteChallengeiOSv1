@@ -65,7 +65,7 @@ enum {
         
         [self setTitle:text forState:UIControlStateNormal];
         self.titleLabel.font = [UIFont fontWithName:self.font size:24.0];
-        self.titleLabel.textColor = [UIColor whiteColor];
+        [self setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
     }
     return self;
 }
@@ -143,7 +143,7 @@ enum {
             CFRelease(highlightPath);
         }
 
-        self.titleLabel.textColor = [UIColor whiteColor];
+        [self setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
     }
     else
     {
@@ -167,11 +167,11 @@ enum {
         
         if ([self.titleLabel.text isEqual:@"Enter"])
         {
-            self.titleLabel.textColor = blueColor;
+            [self setTitleColor:blueColor forState:(UIControlStateNormal)];
         }
         else
         {
-            self.titleLabel.textColor = redColor;
+            [self setTitleColor:redColor forState:(UIControlStateNormal)];
         }
     }
     

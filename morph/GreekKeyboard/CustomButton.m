@@ -96,6 +96,7 @@ enum {
         if ([l isEqual:@"῾"] || [l isEqual:@"᾿"] || [l isEqual:@"´"] || [l isEqual:@"˜"] || [l isEqual:@"¯"] || [l isEqual:@"ͺ"])
         {
             self.titleLabel.font = [UIFont fontWithName:self.font size:60];
+            [self setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
             if ([l isEqual: @"ͺ"])
             {
                 self.titleEdgeInsets = UIEdgeInsetsMake(-95, 0, 0, 0);
@@ -126,13 +127,15 @@ enum {
         [self addTarget: self action: @selector(touchUpOutside:) forControlEvents: UIControlEventTouchUpOutside];
         [self addTarget: self action: @selector(touchDown:) forControlEvents: UIControlEventTouchDown];
         
-        if ([self.titleLabel.text isEqual:@"῾"] || [self.titleLabel.text isEqual:@"᾿"] || [self.titleLabel.text isEqual:@"´"] || [self.titleLabel.text isEqual:@"˜"] || [self.titleLabel.text isEqual:@"¯"] || [self.titleLabel.text isEqual:@"ͺ"])
+        if ([text isEqual:@"῾"] || [text isEqual:@"᾿"] || [text isEqual:@"´"] || [text isEqual:@"˜"] || [text isEqual:@"¯"] || [text isEqual:@"ͺ"])
         {
             self.diacriticButton = YES;
+            [self setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
         }
         else
         {
             self.diacriticButton = NO;
+            [self setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
         }
         
         if (self.diacriticButton)
@@ -141,7 +144,7 @@ enum {
             self.titleLabel.font = [UIFont fontWithName:self.font size:22];
         else
             self.titleLabel.font = [UIFont fontWithName:self.font size:24];
-        [self setTitleColor:[UIColor blackColor] forState:(UIControlStateNormal)];
+
         [self setTitle:text forState:UIControlStateNormal];
         //[self setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
         //self.titleLabel.shadowOffset = CGSizeMake(0.0, 1.0);
@@ -163,7 +166,7 @@ enum {
 
     if (self.diacriticButton)
     {
-        self.titleLabel.textColor = [UIColor whiteColor];
+        [self setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
     }
     
     UIColor *buttonLight;

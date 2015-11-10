@@ -22,6 +22,7 @@ enum {
     int units[20];
     int numUnits;
 }
+@property double typeInterval;
 @property BOOL expanded;
 @property (strong, nonatomic) id detailItem;
 @property NSInteger HCTime;
