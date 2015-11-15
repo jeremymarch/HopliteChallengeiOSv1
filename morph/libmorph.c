@@ -18,8 +18,6 @@ bool onlyUseCombiningDiacritics = false; //not used yet
 /*
  TO DO:
  partial deponent future - contracted future of deponents
- verb prefixes
-    metanaistamai - everything
  
  change opening screen to plain view, not a table.
  add settings popup or in settings section?
@@ -91,7 +89,8 @@ bool compareForms(UCS2 *w1, int w1len, UCS2 *w2, int w2len)
     int starts[5];
     int lens[5];
     int start = 0;
-    for (int i = 0; i < w1len; i++) {
+    for (int i = 0; i < w1len; i++)
+    {
         if (w1[i] == COMMA || w1[i] == SPACE)
         {
             starts[start] = i;
@@ -492,14 +491,20 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
         ending = PRESENT_ACTIVE_INDIC_A_CONTRACTED;
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "άομαι")) && preContactedEndings)
         ending = PRESENT_MIDPASS_INDIC_A_CONTRACTED;
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "έομαι")) && preContactedEndings)
+        ending = PRESENT_MIDPASS_INDIC_E_CONTRACTED;
     else if (vf->tense == IMPERFECT && vf->voice == ACTIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_ALPHA && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA && preContactedEndings)
         ending = IMPERFECT_ACTIVE_INDIC_A_CONTRACTED;
     else if (vf->tense == IMPERFECT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "άομαι")) && preContactedEndings)
         ending = IMPERFECT_MIDPASS_INDIC_A_CONTRACTED;
+    else if (vf->tense == IMPERFECT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "έομαι")) && preContactedEndings)
+        ending = IMPERFECT_MIDPASS_INDIC_E_CONTRACTED;
     else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == SUBJUNCTIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_ALPHA && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA && preContactedEndings)
         ending = PRESENT_ACTIVE_SUBJ_A_CONTRACTED;
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == SUBJUNCTIVE && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "άομαι")) && preContactedEndings)
         ending = PRESENT_MIDPASS_SUBJ_A_CONTRACTED;
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == SUBJUNCTIVE && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "έομαι")) && preContactedEndings)
+        ending = PRESENT_MIDPASS_SUBJ_E_CONTRACTED;
     else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == OPTATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_ALPHA && preContactedEndings)
         ending = PRESENT_ACTIVE_OPT_A_CONTRACTED;
     else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == OPTATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_ALPHA && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA && !preContactedEndings)
@@ -507,6 +512,8 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == OPTATIVE && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "άομαι")) && preContactedEndings)
         ending = PRESENT_MIDPASS_OPT_A_CONTRACTED;
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == OPTATIVE && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "έομαι")) && preContactedEndings)
+        ending = PRESENT_MIDPASS_OPT_E_CONTRACTED;
     else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == INDICATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_EPSILON && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA && preContactedEndings)
         ending = PRESENT_ACTIVE_INDIC_E_CONTRACTED;
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_EPSILON && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA && preContactedEndings)
@@ -552,6 +559,8 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
         ending = PRESENT_ACTIVE_IMPERATIVE_A_CONTRACTED;
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == IMPERATIVE && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "άομαι")) && preContactedEndings)
         ending = PRESENT_MIDPASS_IMPERATIVE_A_CONTRACTED;
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == IMPERATIVE && (utf8HasSuffix(vf->verb->present, "έω") || utf8HasSuffix(vf->verb->present, "έομαι")) && preContactedEndings)
+        ending = PRESENT_MIDPASS_IMPERATIVE_E_CONTRACTED;
     else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == IMPERATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_EPSILON && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA && preContactedEndings)
         ending = PRESENT_ACTIVE_IMPERATIVE_E_CONTRACTED;
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == IMPERATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_EPSILON && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA && preContactedEndings)
@@ -605,8 +614,10 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
         ending = AORIST_PASSIVE_IND;
     else if (vf->tense == AORIST && vf->voice == MIDDLE && vf->mood == INDICATIVE)
         ending = AORIST_MID_IND;
-    else if (vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == SUBJUNCTIVE)
+    else if (vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == SUBJUNCTIVE && (preContactedEndings || !ADD_EPSILON_TO_AORIST_PASSIVE_SUBJUNCTIVE_STEM))
         ending = AORIST_PASSIVE_SUBJ;
+    else if (vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == SUBJUNCTIVE && !preContactedEndings)
+        ending = PRESENT_ACTIVE_SUBJ;
     else if (vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == OPTATIVE)
         ending = AORIST_PASSIVE_OPT;
     else if (vf->tense == AORIST && vf->voice == MIDDLE && vf->mood == SUBJUNCTIVE)
@@ -2875,6 +2886,11 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
     else if (!decompose && (vf->tense == PRESENT || vf->tense == IMPERFECT) && (utf8HasSuffix(vf->verb->present, "όω") || utf8HasSuffix(vf->verb->present, "όομαι")))
     {
         --(*len);
+    }
+    else if(decompose && ADD_EPSILON_TO_AORIST_PASSIVE_SUBJUNCTIVE_STEM && vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == SUBJUNCTIVE)
+    {
+        ucs2[*len] = GREEK_SMALL_LETTER_EPSILON;
+        ++(*len);
     }
     else if (vf->tense == PERFECT && (vf->voice == MIDDLE || vf->voice == PASSIVE))
     {

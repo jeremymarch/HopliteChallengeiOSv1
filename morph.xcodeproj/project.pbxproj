@@ -35,6 +35,7 @@
 		3F73EDDD189642DA003638C5 /* morphTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F73EDDC189642DA003638C5 /* morphTests.m */; };
 		3F76F24B1BEE4C7D008772D2 /* DeleteButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F76F24A1BEE4C7D008772D2 /* DeleteButton.m */; };
 		3F76F24E1BEE508A008772D2 /* OtherButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F76F24D1BEE508A008772D2 /* OtherButton.m */; };
+		3F7710691BF1C115007FF95A /* CustomTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F7710681BF1C115007FF95A /* CustomTextField.m */; };
 		3F8167291B615A9F005B0FAD /* VerbsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */; };
 		3F81672D1B619BC4005B0FAD /* VerbDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F81672B1B616869005B0FAD /* VerbDetailViewController.m */; };
 		3F8167301B674935005B0FAD /* GreekGlobals.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F81672F1B674935005B0FAD /* GreekGlobals.m */; };
@@ -101,6 +102,8 @@
 		3F76F24A1BEE4C7D008772D2 /* DeleteButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DeleteButton.m; path = GreekKeyboard/DeleteButton.m; sourceTree = "<group>"; };
 		3F76F24C1BEE508A008772D2 /* OtherButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OtherButton.h; path = GreekKeyboard/OtherButton.h; sourceTree = "<group>"; };
 		3F76F24D1BEE508A008772D2 /* OtherButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OtherButton.m; path = GreekKeyboard/OtherButton.m; sourceTree = "<group>"; };
+		3F7710671BF1C115007FF95A /* CustomTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomTextField.h; sourceTree = "<group>"; };
+		3F7710681BF1C115007FF95A /* CustomTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomTextField.m; sourceTree = "<group>"; };
 		3F8167271B615A9F005B0FAD /* VerbsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerbsTableViewController.h; sourceTree = "<group>"; };
 		3F8167281B615A9F005B0FAD /* VerbsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VerbsTableViewController.m; sourceTree = "<group>"; };
 		3F81672A1B616869005B0FAD /* VerbDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerbDetailViewController.h; sourceTree = "<group>"; };
@@ -229,6 +232,8 @@
 				3F73EDAE189642DA003638C5 /* Supporting Files */,
 				3F81672E1B674935005B0FAD /* GreekGlobals.h */,
 				3F81672F1B674935005B0FAD /* GreekGlobals.m */,
+				3F7710671BF1C115007FF95A /* CustomTextField.h */,
+				3F7710681BF1C115007FF95A /* CustomTextField.m */,
 			);
 			path = morph;
 			sourceTree = "<group>";
@@ -383,6 +388,7 @@
 			files = (
 				3F39F47C1B456DF900A58885 /* CustomButton.m in Sources */,
 				3F39F47B1B456DF900A58885 /* Common.m in Sources */,
+				3F7710691BF1C115007FF95A /* CustomTextField.m in Sources */,
 				3F73EDC7189642DA003638C5 /* DetailViewController.m in Sources */,
 				3F73EDC4189642DA003638C5 /* MasterViewController.m in Sources */,
 				3F76F24E1BEE508A008772D2 /* OtherButton.m in Sources */,

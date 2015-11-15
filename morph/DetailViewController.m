@@ -305,7 +305,7 @@ UIView *backSideTest;
     
     return [myArr objectAtIndex:randomIndex];
 }
-
+/*
 -(void)typingLabel:(NSTimer*)theTimer
 {
     NSString *theString = [theTimer.userInfo objectForKey:@"string"];
@@ -339,7 +339,7 @@ UIView *backSideTest;
         [NSThread sleepForTimeInterval:delay];
     }
 }
-
+*/
 -(void)centerLabel:(UILabel*)l withString:(NSString*)string
 {
     CGRect screenBound = [[UIScreen mainScreen] bounds];
@@ -356,7 +356,7 @@ UIView *backSideTest;
 //http://stackoverflow.com/questions/11686642/letter-by-letter-animation-for-uilabel
 -(void)typeLabel:(UILabel*)l withString:(NSString*)string withInterval:(double)interval
 {
-    BOOL async = NO;
+    //BOOL async = NO;
     
     if ([string length] < 1)
         return;
@@ -374,7 +374,7 @@ UIView *backSideTest;
     [self centerLabel:l withString:string];
     
     //l.textAlignment = NSTextAlignmentLeft;
-    
+    /*
     if (async)
     {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
@@ -382,7 +382,7 @@ UIView *backSideTest;
                            [self asyncTypingLabel:string characterDelay:interval label:l];
                        });
     }
-    /* else
+    else
     {
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         [dict setObject:string forKey:@"string"];
@@ -390,9 +390,9 @@ UIView *backSideTest;
         [dict setObject:l forKey:@"label"];
         NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:interval target:self selector:@selector(typingLabel:) userInfo:dict repeats:YES];
         [timer fire];
-    } */
+    }
     else
-    {
+    { */
         for (int i = 0; i < [string length]; i++)
         {
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * i * NSEC_PER_SEC));
@@ -401,7 +401,7 @@ UIView *backSideTest;
                 [l setText:[string substringToIndex:i+1]];
             });
         }
-    }
+    //}
 }
 
 void printUCS22(UCS2 *u, int len)
@@ -622,8 +622,8 @@ void printUCS22(UCS2 *u, int len)
     do
     {
         generateForm(&vf);
-        getForm(&vf, buffer, bufferLen, false, false);
-    } while (!strncmp(buffer, "—", 1));
+        
+    } while (!getForm(&vf, buffer, bufferLen, false, false) || !strncmp(buffer, "—", 1));
     
     NSString *distractors = nil;
     NSArray *distractorArr = nil;
@@ -642,7 +642,7 @@ void printUCS22(UCS2 *u, int len)
     //getAbbrevDescription(&vf, buffer, bufferLen);
     //NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
-    changeFormByDegrees(&vf, 2);
+    //changeFormByDegrees(&vf, 2);
     /*
     vf.person = FIRST;
     vf.number = SINGULAR;
@@ -653,9 +653,9 @@ void printUCS22(UCS2 *u, int len)
      */
     do
     {
-        generateForm(&vf);
-        getForm(&vf, buffer, bufferLen, true, false);
-    } while (!strncmp(buffer, "—", 1));
+        changeFormByDegrees(&vf, 2);
+        //generateForm(&vf);
+    } while (!getForm(&vf, buffer, bufferLen, true, false) || !strncmp(buffer, "—", 1));
     
     newForm = [NSString stringWithUTF8String: (const char*)buffer];
     self.changedStr = newForm;
@@ -837,8 +837,8 @@ void printUCS22(UCS2 *u, int len)
             [self.changedForm setFrame:CGRectMake(10, f/1.7, self.view.frame.size.width - 20, size.height + 10)];
             
             //[self.continueButton setFrame:CGRectMake((screenSize.width - self.continueButton.frame.size.width) / 2, f/1.3, self.continueButton.frame.size.width, self.continueButton.frame.size.height)];
-            [self.continueButton setFrame:CGRectMake((screenSize.width / 2) - 2, screenSize.height - 90, (screenSize.width / 2) + 4, 90)];
-            [self.backButton setFrame:CGRectMake(-2, screenSize.height - 90, (screenSize.width / 2) + 2, 90)];
+            [self.continueButton setFrame:CGRectMake((screenSize.width / 2) - 2, screenSize.height - 70, (screenSize.width / 2) + 4, 70)];
+            [self.backButton setFrame:CGRectMake(-2, screenSize.height - 70, (screenSize.width / 2) + 2, 70)];
             
             
             //self.textfield.layer.borderWidth = 1.0;
@@ -856,7 +856,7 @@ void printUCS22(UCS2 *u, int len)
             
             
             //http://stackoverflow.com/questions/15335649/adding-delay-between-execution-of-two-following-lines
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.2 * NSEC_PER_SEC));
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.9 * NSEC_PER_SEC));
             dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
             {
                 if (self.animate)
@@ -1611,7 +1611,7 @@ void printUCS22(UCS2 *u, int len)
 {
     [super viewDidLoad];
     
-    self.typeInterval = 0.016;
+    self.typeInterval = 0.023;
     
     if ([[NSUserDefaults standardUserDefaults] integerForKey:@"HCTime"])
         self.HCTime = [[NSUserDefaults standardUserDefaults] integerForKey:@"HCTime"];

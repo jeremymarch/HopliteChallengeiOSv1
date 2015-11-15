@@ -254,6 +254,12 @@
                 [defaults synchronize];
             }
         }
+        else if (self->unitsOrOptions == OPTIONS && indexPath.row == 5)
+        {
+            //for Verbs, just show an arrow.
+            cell.accessoryView = nil;
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        }
         else
         {
             cell.selectionStyle = UITableViewCellSelectionStyleNone;

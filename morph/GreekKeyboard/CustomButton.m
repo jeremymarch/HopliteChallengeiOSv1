@@ -37,7 +37,7 @@ enum {
 -(void) touchUpInside:sender
 {
     self.selected = NO;
-    if (self.device == IPHONE && !self.deleteButton)
+    if (self.device == IPHONE)
     {
         CGRect buttonFrame = self.frame;
         buttonFrame = CGRectMake(self.frame.origin.x + (self.frame.size.width / 2) - ((self.frame.size.width / 4) + (self->hPadding)), self.frame.origin.y + self->buttonDownAddHeight, self->width, self->height);
@@ -70,7 +70,7 @@ enum {
 -(void) touchUpOutside:sender
 {
     self.selected = NO;
-    if (self.device == IPHONE && !self.deleteButton)
+    if (self.device == IPHONE)
     {
         CGRect buttonFrame = self.frame;
         buttonFrame = CGRectMake(self.frame.origin.x + (self.frame.size.width / 2) - ((self.frame.size.width / 4) + (self->hPadding)), self.frame.origin.y + self->buttonDownAddHeight, self->width, self->height);
@@ -86,7 +86,7 @@ enum {
 -(void) touchDown:sender
 {
     self.selected = YES;
-    if (self.device == IPHONE && !self.deleteButton)
+    if (self.device == IPHONE)
     {
         CGRect buttonFrame = CGRectMake(self.frame.origin.x + (self.frame.size.width / 2) - (self.frame.size.width - (2 * self->hPadding)), self.frame.origin.y - self->buttonDownAddHeight, (self.frame.size.width - (self->hPadding * 2)) * 2, self.frame.size.height + self->buttonDownAddHeight + 4);
         
@@ -201,7 +201,7 @@ enum {
     CGRect outerRect = CGRectInset(self.bounds, outerSideMargin, outerTopMargin);
     
     CGMutablePathRef outerPath;
-    if (self.device == IPHONE && self.selected && !self.deleteButton)
+    if (self.device == IPHONE && self.selected)
         outerPath = createDepressedButtonForRect(outerRect, buttonRadius + 2);
     else if (self.device == IPAD)
         outerPath = createRoundedRectForRect(outerRect, buttonRadius + 2);

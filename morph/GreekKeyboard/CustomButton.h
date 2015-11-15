@@ -31,7 +31,6 @@
 
 @property  BOOL selected;
 @property  BOOL toggled;
-@property  BOOL deleteButton;
 @property  BOOL diacriticButton;
 @property  BOOL mfButton;
 @property  BOOL submitButton;

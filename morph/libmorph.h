@@ -19,6 +19,8 @@ typedef unsigned short UCS2;
 
 #define NUM_VERBS 113//34//25 //
 
+//whether to show uncontracted form of aorist passive subjunctive when decomposed
+#define ADD_EPSILON_TO_AORIST_PASSIVE_SUBJUNCTIVE_STEM true
 
 //verb classes
 enum {

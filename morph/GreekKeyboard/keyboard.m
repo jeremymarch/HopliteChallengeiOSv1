@@ -11,6 +11,8 @@
 #import "GreekUnicode.h"
 #import "libmorph.h"
 
+//https://developer.apple.com/library/ios/documentation/General/Conceptual/ExtensibilityPG/Keyboard.html
+
 enum {
     GREEK1 = 1,
     LATIN = 2
@@ -464,8 +466,8 @@ void printUtf8(char *u, int len)
     //l2 = [s length];
     //l = strlen(s2);
     //printUtf8(s2, l);
-    NSLog(@"before");
-    printUCS2(ucs2, ucs2Len);
+    //NSLog(@"before");
+    //printUCS2(ucs2, ucs2Len);
     
     //NSLog(@"text1: %@, lenutf8: %d, lenucs2: %d, First char: %0x", s, l, ucs2Len, ucs2[0]);
     //NSLog(@"Before: NS: %lu, c: %ld, i: %d", l2, l, i);
@@ -473,9 +475,8 @@ void printUtf8(char *u, int len)
     {
         accentSyllable(ucs2, 0, &ucs2Len, accent, true);
     
-        NSLog(@"after");
-        
-        printUCS2(ucs2, ucs2Len);
+        //NSLog(@"after");
+        //printUCS2(ucs2, ucs2Len);
         
         ucs2_to_utf8_string(ucs2, ucs2Len, buffer);
         s = [NSString stringWithUTF8String: (const char*)buffer];
@@ -582,7 +583,7 @@ void printUtf8(char *u, int len)
 - (IBAction)keyboardDeletePressed:(UIButton *)sender
 {
     /*
-     add this in to delete combining characters too
+     //add this in to delete combining characters too
      
      UITextRange *textRange;
      NSString *s;
