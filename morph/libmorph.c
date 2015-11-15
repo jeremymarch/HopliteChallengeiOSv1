@@ -4515,6 +4515,16 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
 {
     if (decompose && (vf->verb->verbclass & PREFIXED) != PREFIXED)
     {
+        /*
+         Don't add an augment on these decomposed forms which start with e, ei, or h
+        
+         H&Q page 326.  "In most verbs when principal part iv or v begins with e) or ei), the pluperfect is unaugmented."
+         */
+        if (vf->tense == PLUPERFECT && (ucs2[0] == GREEK_SMALL_LETTER_EPSILON_WITH_PSILI || (ucs2[0] == GREEK_SMALL_LETTER_EPSILON && ucs2[1] == GREEK_SMALL_LETTER_IOTA_WITH_PSILI) || ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_PSILI ))
+        {
+            return;
+        }
+        
         if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "στημι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "στημι")) || !utf8HasSuffix(vf->verb->present, "στημι"))
         {
             rightShiftFromOffset(ucs2, 0, len);
