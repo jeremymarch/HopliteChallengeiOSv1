@@ -466,27 +466,16 @@ void printUCS22(UCS2 *u, int len)
     
     if (self.front)
     {
-        /*
-        NSLog(@"1: %@, 2: %@", self.textfield.text, self.changedForm.text);
-        
-        UCS2 ucs2Str1[100];
-        UCS2 ucs2Str2[100];
-        int len1;
-        int len2;
-        utf8_to_ucs2_string([self.textfield.text UTF8String], ucs2Str1, &len1);
-        utf8_to_ucs2_string([self.changedForm.text UTF8String], ucs2Str2, &len2);
-
-        printUCS22(ucs2Str1, len1);
-        NSLog(@"next");
-        printUCS22(ucs2Str2, len2);
-        */
         if ([self.textfield.text isEqual:self.changedForm.text])
         {
             CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
             [self.greenCheckView setFrame:CGRectMake((self.view.frame.size.width + size.width) / 2 + 15, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
             self.greenCheckView.hidden = NO;
             
-            AudioServicesPlaySystemSound(DingSound);
+            if (!self.soundDisabled)
+            {
+                AudioServicesPlaySystemSound(DingSound);
+            }
             isCorrect = YES;
         }
         else
@@ -495,13 +484,13 @@ void printUCS22(UCS2 *u, int len)
             [self.redXView setFrame:CGRectMake((self.view.frame.size.width + size.width) / 2 + 15, self.redXView.frame.origin.y, self.redXView.frame.size.width,self.redXView.frame.size.height)];
             self.redXView.hidden = NO;
             
-            AudioServicesPlaySystemSound(BuzzSound);
+            if (!self.soundDisabled)
+            {
+                AudioServicesPlaySystemSound(BuzzSound);
+            }
             self.textfield.textColor = [UIColor grayColor];
             isCorrect = NO;
         }
-
-        
-        //
         
         if (!isCorrect || debug)
         {
@@ -511,6 +500,12 @@ void printUCS22(UCS2 *u, int len)
                 self.changedForm.text = @"";
                 self.changedForm.hidden = NO;
                 self.changedForm.textAlignment = NSTextAlignmentLeft;
+                self.continueButton.hidden = NO;
+                self.backButton.hidden = NO;
+                self.continueButton.enabled = NO;
+                self.backButton.enabled = NO;
+                [self.continueButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+                [self.backButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
                 
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC));
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
@@ -518,8 +513,10 @@ void printUCS22(UCS2 *u, int len)
                     
                     dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC));
                     dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
-                        self.continueButton.hidden = NO;
-                        self.backButton.hidden = NO;
+                        self.continueButton.enabled = YES;
+                        self.backButton.enabled = YES;
+                        [self.continueButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+                        [self.backButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
                     });
                 });
             }
@@ -1631,6 +1628,8 @@ void printUCS22(UCS2 *u, int len)
     self.cardType = 1;
     
     self.animate = true;
+    self.soundDisabled = false;
+    
     self.systemFont = @"HelveticaNeue-Light";
     self.greekFont = @"NewAthenaUnicode";
     self.fontSize = 26.0;
@@ -1675,7 +1674,7 @@ void printUCS22(UCS2 *u, int len)
     //[self.textfield becomeFirstResponder];
     self.textfield.hidden = YES;
     self.backButton.hidden = YES;
-    
+    [self.backButton setTitle:@"Menu" forState:UIControlStateNormal];
     
     [[UIApplication sharedApplication] setStatusBarHidden:YES
                                             withAnimation:NO];
@@ -1698,15 +1697,18 @@ void printUCS22(UCS2 *u, int len)
     [self.redXView setFrame:CGRectMake(screenBound.size.width - 34,self.view.frame.size.height/2.1 + 9,22,22)];
     self.redXView.hidden = YES;
     
-    NSString *dingPath = [[NSBundle mainBundle]
-                            pathForResource:@"Ding" ofType:@"wav"];
-    NSURL *dingURL = [NSURL fileURLWithPath:dingPath];
-    AudioServicesCreateSystemSoundID((__bridge CFURLRef)dingURL, &DingSound);
-    
-    NSString *buzzPath = [[NSBundle mainBundle]
-                          pathForResource:@"Buzz02" ofType:@"wav"];
-    NSURL *buzzURL = [NSURL fileURLWithPath:buzzPath];
-    AudioServicesCreateSystemSoundID((__bridge CFURLRef)buzzURL, &BuzzSound);
+    if (!self.soundDisabled)
+    {
+        NSString *dingPath = [[NSBundle mainBundle]
+                              pathForResource:@"Ding" ofType:@"wav"];
+        NSURL *dingURL = [NSURL fileURLWithPath:dingPath];
+        AudioServicesCreateSystemSoundID((__bridge CFURLRef)dingURL, &DingSound);
+        
+        NSString *buzzPath = [[NSBundle mainBundle]
+                              pathForResource:@"Buzz02" ofType:@"wav"];
+        NSURL *buzzURL = [NSURL fileURLWithPath:buzzPath];
+        AudioServicesCreateSystemSoundID((__bridge CFURLRef)buzzURL, &BuzzSound);
+    }
     
 	// Do any additional setup after loading the view, typically from a nib.
     

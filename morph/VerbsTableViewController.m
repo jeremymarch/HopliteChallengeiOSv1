@@ -10,6 +10,8 @@
 #import "VerbDetailViewController.h"
 #import "GreekForms.h"
 
+#define NUM_LEVELS 13
+
 @interface VerbsTableViewController ()
 
 @end
@@ -64,7 +66,7 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 #warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 20;
+    return NUM_LEVELS;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

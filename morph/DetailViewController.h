@@ -24,6 +24,10 @@ enum {
 }
 @property double typeInterval;
 @property BOOL expanded;
+@property BOOL soundDisabled;
+@property BOOL animationDisabled;
+@property bool animate;
+
 @property (strong, nonatomic) id detailItem;
 @property NSInteger HCTime;
 @property BOOL popupShown;
@@ -33,7 +37,7 @@ enum {
 @property NSMutableArray *buttonStates;
 @property NSMutableArray *levels;
 @property bool front;
-@property bool animate;
+
 @property NSString *backCard;
 @property CFTimeInterval startTime;
 @property NSInteger menuItem;

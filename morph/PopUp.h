@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#define NUM_LEVELS 13
+
 enum {
     UNITS = 0,
     OPTIONS

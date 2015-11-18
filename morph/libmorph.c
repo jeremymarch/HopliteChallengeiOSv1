@@ -17,10 +17,11 @@ bool onlyUseCombiningDiacritics = false; //not used yet
 
 /*
  TO DO:
- partial deponent future - contracted future of deponents
+ roll back word when erasing them instead of just hiding
+ show buttons before keyboard disappears
+ click to show principal parts or endings from decompose form.
+ add definition and principal parts to top of verb detail view
  
- change opening screen to plain view, not a table.
- add settings popup or in settings section?
  Settings:
  disable animation (or select from different animation modes)
  disable sound

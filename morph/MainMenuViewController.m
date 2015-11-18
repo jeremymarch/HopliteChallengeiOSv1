@@ -184,7 +184,7 @@ alpha:1.0]
     
 //[self.incorrectButton setFrame:CGRectMake((((w/2) - self.correctButton.frame.size.width) / 2) + w/2, self.view.frame.size.height / 1.3, self.correctButton.frame.size.width, self.correctButton.frame.size.height)];
     
-    [self.menuButton setFrame:CGRectMake(sw - 84, 26, self.menuButton.frame.size.width + 20, self.menuButton.frame.size.height + 4)];
+    [self.menuButton setFrame:CGRectMake(sw - 70 - 6, 24, 70, 36)];
     self.menuButton.layer.borderWidth = 2.0;
     [self.menuButton setTitle:@"Settings" forState:UIControlStateNormal];
     [self.menuButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];

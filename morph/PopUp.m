@@ -56,7 +56,7 @@
         self->unitsOrOptions = UNITS;
         self.backgroundColor = [UIColor whiteColor];
         
-        self.closeButton = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width - 66 - 6, 6, 66, 36)];
+        self.closeButton = [[UIButton alloc] initWithFrame:CGRectMake(self.frame.size.width - 70 - 6, 6, 70, 36)];
         [self.closeButton setTitle:@"Close" forState:UIControlStateNormal];
         [self.closeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         self.closeButton.layer.borderColor = [UIColor grayColor].CGColor;
@@ -75,9 +75,9 @@
         */
         self.buttonStates = [[NSMutableArray alloc] initWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:@"Levels"]];
 
-        self.buttons = [[NSMutableArray alloc] initWithCapacity:15];
+        self.buttons = [[NSMutableArray alloc] initWithCapacity:NUM_LEVELS];
         
-        for (int i = 0; i < 15; i++)
+        for (int i = 0; i < NUM_LEVELS; i++)
         {
             [self.buttons insertObject:[NSString stringWithFormat:@"Unit %i", (i + 1)] atIndex:i];
             //[self.buttonStates insertObject:[NSNumber numberWithBool:NO] atIndex:i];
