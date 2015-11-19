@@ -345,9 +345,17 @@ UIView *backSideTest;
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
     
+    string = [string stringByReplacingOccurrencesOfString:@", " withString:@",\n"];
+    
     CGSize size = [string sizeWithAttributes:@{NSFontAttributeName: l.font}];
     
     // Values are fractional -- you should take the ceilf to get equivalent values
+    if (size.width > screenSize.width)
+    {
+        size.width = screenSize.width;
+        //size.height = size.height * 3;
+    }
+    
     CGSize adjustedSize = CGSizeMake(ceilf(size.width), ceilf(size.height));
     
     [l setFrame: CGRectMake((screenSize.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, adjustedSize.height)];
@@ -641,17 +649,16 @@ void printUCS22(UCS2 *u, int len)
     
     //changeFormByDegrees(&vf, 2);
     /*
-    vf.person = FIRST;
-    vf.number = SINGULAR;
-    vf.tense = IMPERFECT;
+    vf.person = THIRD;
+    vf.number = PLURAL;
+    vf.tense = AORIST;
     vf.voice = PASSIVE;
-    vf.mood = INDICATIVE;
+    vf.mood = OPTATIVE;
     getForm(&vf, buffer, bufferLen, true, false);
      */
     do
     {
         changeFormByDegrees(&vf, 2);
-        //generateForm(&vf);
     } while (!getForm(&vf, buffer, bufferLen, true, false) || !strncmp(buffer, "—", 1));
     
     newForm = [NSString stringWithUTF8String: (const char*)buffer];
@@ -1558,12 +1565,15 @@ void printUCS22(UCS2 *u, int len)
         self.animate = YES;
 }
 
-- (void)handlePinch:(UIPinchGestureRecognizer *)pinchGestureRecognizer
+- (void)handlePinch:(UIPinchGestureRecognizer *)pinch
 {
+    //NSLog(@"Scale: %.2f | Velocity: %.2f",pinch.scale, pinch.velocity);
+    CGFloat thresholdVelocity = 4.0;
+    
     if (self.front)
         return;
     
-    if (pinchGestureRecognizer.scale > 1)
+    if (pinch.scale > 1 && pinch.velocity > thresholdVelocity)
     {
         if (!self.expanded)
         {
@@ -1584,7 +1594,7 @@ void printUCS22(UCS2 *u, int len)
             [self centerLabel:self.origForm withString:self.origStrDecomposed];
         }
     }
-    else
+    else if (pinch.velocity < -thresholdVelocity)
     {
         if (self.expanded)
         {
@@ -1616,6 +1626,9 @@ void printUCS22(UCS2 *u, int len)
         self.HCTime = 30;
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
+    
+    //self.changedForm.layer.borderColor = [UIColor blackColor];
+    self.changedForm.lineBreakMode = NSLineBreakByWordWrapping;
     
     self.expanded = NO;
     self.view.userInteractionEnabled = YES;
