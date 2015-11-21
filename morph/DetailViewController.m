@@ -647,7 +647,6 @@ void printUCS22(UCS2 *u, int len)
     //getAbbrevDescription(&vf, buffer, bufferLen);
     //NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
-    //changeFormByDegrees(&vf, 2);
     /*
     vf.person = THIRD;
     vf.number = PLURAL;
@@ -1620,10 +1619,25 @@ void printUCS22(UCS2 *u, int len)
     
     self.typeInterval = 0.023;
     
-    if ([[NSUserDefaults standardUserDefaults] integerForKey:@"HCTime"])
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    if ([defaults boolForKey:@"DisableSound"] == YES)
+        self.soundDisabled = YES;
+    else
+        self.soundDisabled = NO;
+    
+    if (1)//[defaults boolForKey:@"DisableAnimation"] == YES)
+        self.animate = YES;
+    else
+        self.animate = NO;
+    
+    if ([defaults integerForKey:@"HCTime"])
         self.HCTime = [[NSUserDefaults standardUserDefaults] integerForKey:@"HCTime"];
     else
         self.HCTime = 30;
+    
+    
+    
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
     
@@ -1640,8 +1654,7 @@ void printUCS22(UCS2 *u, int len)
     
     self.cardType = 1;
     
-    self.animate = true;
-    self.soundDisabled = false;
+
     
     self.systemFont = @"HelveticaNeue-Light";
     self.greekFont = @"NewAthenaUnicode";
