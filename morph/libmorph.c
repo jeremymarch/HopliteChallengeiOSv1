@@ -13,6 +13,8 @@
 #include "GreekForms.h"
 #include "GreekUnicode.h"
 
+#define DECOMPOSED_AUGMENT_CHAR GREEK_SMALL_LETTER_EPSILON
+
 bool onlyUseCombiningDiacritics = false; //not used yet
 
 /*
@@ -83,26 +85,77 @@ void shortToVF(unsigned short s, VerbFormC *vf)
         vf->tense = FUTURE;
 }
 */
-//this should determine how many forms each w has and compare them
-//no matter which order they occur in
-bool compareForms(UCS2 *w1, int w1len, UCS2 *w2, int w2len)
+void getStartEnd(UCS2 *w1, int w1len, int *starts, int *ends, int *numStrings)
 {
-    int starts[5];
-    int lens[5];
     int start = 0;
-    for (int i = 0; i < w1len; i++)
+    int end = 0;
+    int i = 0;
+    
+    while((w1[i] == SPACE || w1[i] == COMMA) && i < w1len)
+        i++;
+    
+    starts[0] = i;
+    for ( ; i < w1len; i++)
     {
         if (w1[i] == COMMA || w1[i] == SPACE)
         {
-            starts[start] = i;
+            ends[end++] = i;
+            i++;
+            while((w1[i] == SPACE || w1[i] == COMMA) && i < w1len)
+                i++;
+            if (i < w1len)
+            {
+                starts[++start] = i;
+            }
         }
     }
-    //make array of w1
-    //make array of w2
-    //iterate through w1
-        //iterate w2
-            //compare and if we have a match for each of w1 return true;
-    return false;
+    ends[end++] = w1len;
+    *numStrings = ++start;
+}
+
+bool compareForms(UCS2 *w1, int w1len, UCS2 *w2, int w2len)
+{
+    int starts[MAX_MULTIPLE_FORMS];
+    int ends[MAX_MULTIPLE_FORMS];
+    int numStrings = 0;
+    getStartEnd(w1, w1len, starts, ends, &numStrings);
+    
+    int starts2[MAX_MULTIPLE_FORMS];
+    int ends2[MAX_MULTIPLE_FORMS];
+    int numStrings2 = 0;
+    getStartEnd(w2, w2len, starts2, ends2, &numStrings2);
+    /*
+    for(int i = 0; i < numStrings; i++)
+    {
+        printf("s: %d, l: %d, \"%.*s\"\n", starts[i], ends[i] - starts[i], ends[i] - starts[i], &w1[starts[i]]);
+    }
+    for(int i = 0; i < numStrings2; i++)
+    {
+        printf("s: %d, l: %d, \"%.*s\"\n", starts2[i], ends2[i] - starts2[i], ends2[i] - starts2[i], &w2[starts2[i]]);
+    }
+    printf("num: %d\n", numStrings);
+    */
+    if (numStrings != numStrings2)
+        return false;
+    
+    bool hasMatch = false;
+    for (int i = 0; i < numStrings; i++)
+    {
+        hasMatch = false;
+        for (int j = 0; j < numStrings2; j++)
+        {
+            if ( compareWord(&w1[starts[i]], ends[i] - starts[i], &w2[starts2[j]], ends2[j] - starts2[j]) )
+            {
+                hasMatch = true;
+                break;
+            }
+        }
+        if (!hasMatch)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool compareWord(UCS2 *w1, int w1len, UCS2 *w2, int w2len)
@@ -702,7 +755,7 @@ char * getPrincipalPartForTense(Verb *verb, unsigned char tense, unsigned char v
         return verb->perfmid;
 }
 
-void changeFormByDegrees(VerbFormC *verbform, int degrees)
+void changeFormByDegrees(VerbFormC *vf, int degrees)
 {
     unsigned char tempPerson;
     unsigned char tempNumber;
@@ -714,11 +767,11 @@ void changeFormByDegrees(VerbFormC *verbform, int degrees)
     
     do
     {
-        tempPerson = verbform->person;
-        tempNumber = verbform->number;
-        tempTense = verbform->tense;
-        tempVoice = verbform->voice;
-        tempMood = verbform->mood;
+        tempPerson = vf->person;
+        tempNumber = vf->number;
+        tempTense = vf->tense;
+        tempVoice = vf->voice;
+        tempMood = vf->mood;
         
         //re-initialize components array to invalid values
         for (int i = 0; i < degrees; i++)
@@ -747,33 +800,41 @@ void changeFormByDegrees(VerbFormC *verbform, int degrees)
             
             if (v == PERSON)
             {
-                tempPerson = incrementValue(NUM_PERSONS, verbform->person);
+                tempPerson = incrementValue(NUM_PERSONS, vf->person);
             }
             else if (v == NUMBER)
             {
-                tempNumber = incrementValue(NUM_NUMBERS, verbform->number);
+                tempNumber = incrementValue(NUM_NUMBERS, vf->number);
             }
             else if (v == TENSE)
             {
-                tempTense = incrementValue(NUM_TENSES, verbform->tense);
+                tempTense = incrementValue(NUM_TENSES, vf->tense);
             }
             else if (v == VOICE)
             {
-                tempVoice = incrementValue(NUM_VOICES, verbform->voice);
+                tempVoice = incrementValue(NUM_VOICES, vf->voice);
             }
             else if (v == MOOD)
             {
-                tempMood = incrementValue(NUM_MOODS, verbform->mood);
+                tempMood = incrementValue(NUM_MOODS, vf->mood);
             }
         }
-    } //make sure form is valid and this verb has the required principal part
-    while(!formIsValidReal(tempPerson, tempNumber, tempTense, tempVoice, tempMood) || getPrincipalPartForTense(verbform->verb, tempTense, tempVoice)[0] == '\0');
+    } //make sure form is valid and this verb has the required principal part,
+    //and make sure we're not changing from mid to pass or vice versa unless the tense is aorist or future
+    while (!formIsValidReal(tempPerson, tempNumber, tempTense, tempVoice, tempMood) || getPrincipalPartForTense(vf->verb, tempTense, tempVoice)[0] == '\0' );
     
-    verbform->person = tempPerson;
-    verbform->number = tempNumber;
-    verbform->tense = tempTense;
-    verbform->voice = tempVoice;
-    verbform->mood = tempMood;
+    /*
+     || ((tempTense != AORIST && tempTense != FUTURE) && ((vf->voice == MIDDLE && tempVoice == PASSIVE) || (vf->voice == PASSIVE && tempVoice == MIDDLE)))
+     */
+    
+    
+    
+    
+    vf->person = tempPerson;
+    vf->number = tempNumber;
+    vf->tense = tempTense;
+    vf->voice = tempVoice;
+    vf->mood = tempMood;
 }
 
 //sort with weights going from smallest to largest, they will be ints who add up to 100
@@ -1077,6 +1138,11 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
                     isOpt = false;
                 
                 accentRecessive(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, isOpt);
+            }
+            
+            if (decompose && !ACCENT_DECOMPOSED_FORMS)
+            {
+                stripAccent(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen);
             }
             
             ucs2StemPlusEndingBufferLen += (tempStemLen - stemLen);
@@ -4259,7 +4325,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
                     rightShiftFromOffset(ucs2, 6, len);
                     rightShiftFromOffset(ucs2, 6, len);
                     
-                    ucs2[6] = GREEK_SMALL_LETTER_EPSILON;
+                    ucs2[6] = DECOMPOSED_AUGMENT_CHAR;
                     ucs2[7] = SPACE;
                     ucs2[8] = HYPHEN;
                     ucs2[9] = SPACE;
@@ -4290,7 +4356,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
                     rightShiftFromOffset(ucs2, 6, len);
                     rightShiftFromOffset(ucs2, 6, len);
                     
-                    ucs2[6] = GREEK_SMALL_LETTER_EPSILON;
+                    ucs2[6] = DECOMPOSED_AUGMENT_CHAR;
                     ucs2[7] = SPACE;
                     ucs2[8] = HYPHEN;
                     ucs2[9] = SPACE;
@@ -4318,7 +4384,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
                     rightShiftFromOffset(ucs2, 7, len);
                     rightShiftFromOffset(ucs2, 7, len);
                     
-                    ucs2[7] = GREEK_SMALL_LETTER_EPSILON;
+                    ucs2[7] = DECOMPOSED_AUGMENT_CHAR;
                     ucs2[8] = SPACE;
                     ucs2[9] = HYPHEN;
                     ucs2[10] = SPACE;
@@ -4345,7 +4411,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
                     rightShiftFromOffset(ucs2, 7, len);
                     rightShiftFromOffset(ucs2, 7, len);
                     
-                    ucs2[7] = GREEK_SMALL_LETTER_EPSILON;
+                    ucs2[7] = DECOMPOSED_AUGMENT_CHAR;
                     ucs2[8] = SPACE;
                     ucs2[9] = HYPHEN;
                     ucs2[10] = SPACE;
@@ -4385,7 +4451,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
                     rightShiftFromOffset(ucs2, 13, len);
                     rightShiftFromOffset(ucs2, 13, len);
                     rightShiftFromOffset(ucs2, 13, len);
-                    ucs2[13] = GREEK_SMALL_LETTER_EPSILON;
+                    ucs2[13] = DECOMPOSED_AUGMENT_CHAR;
                     ucs2[14] = SPACE;
                     ucs2[15] = HYPHEN;
                     ucs2[16] = SPACE;
@@ -4425,7 +4491,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
                     rightShiftFromOffset(ucs2, 7, len);
                     rightShiftFromOffset(ucs2, 7, len);
                     
-                    ucs2[7] = GREEK_SMALL_LETTER_EPSILON;
+                    ucs2[7] = DECOMPOSED_AUGMENT_CHAR;
                     ucs2[8] = SPACE;
                     ucs2[9] = HYPHEN;
                     ucs2[10] = SPACE;
@@ -4455,7 +4521,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
                     rightShiftFromOffset(ucs2, 7, len);
                     rightShiftFromOffset(ucs2, 7, len);
                     
-                    ucs2[7] = GREEK_SMALL_LETTER_EPSILON;
+                    ucs2[7] = DECOMPOSED_AUGMENT_CHAR;
                     ucs2[8] = SPACE;
                     ucs2[9] = HYPHEN;
                     ucs2[10] = SPACE;
@@ -4504,7 +4570,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
         rightShiftFromOffset(ucs2, 0, len);
         rightShiftFromOffset(ucs2, 0, len);
         rightShiftFromOffset(ucs2, 0, len);
-        ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_PSILI;
+        ucs2[0] = DECOMPOSED_AUGMENT_CHAR;
         ucs2[1] = SPACE;
         ucs2[2] = HYPHEN;
         ucs2[3] = SPACE;
@@ -4532,7 +4598,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
             rightShiftFromOffset(ucs2, 0, len);
             rightShiftFromOffset(ucs2, 0, len);
             rightShiftFromOffset(ucs2, 0, len);
-            ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_PSILI;
+            ucs2[0] = DECOMPOSED_AUGMENT_CHAR;
             ucs2[1] = SPACE;
             ucs2[2] = HYPHEN;
             ucs2[3] = SPACE;
@@ -4562,7 +4628,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
                 ucs2[3] = SPACE;
                 ucs2[4] = HYPHEN;
                 ucs2[5] = SPACE;
-                ucs2[6] = GREEK_SMALL_LETTER_EPSILON;
+                ucs2[6] = DECOMPOSED_AUGMENT_CHAR;
                 ucs2[7] = SPACE;
                 ucs2[8] = HYPHEN;
                 ucs2[9] = SPACE;
@@ -4591,7 +4657,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
                     rightShiftFromOffset(ucs2, 6, len);
                     rightShiftFromOffset(ucs2, 6, len);
                     rightShiftFromOffset(ucs2, 6, len);
-                    ucs2[6] = GREEK_SMALL_LETTER_EPSILON;
+                    ucs2[6] = DECOMPOSED_AUGMENT_CHAR;
                     ucs2[7] = SPACE;
                     ucs2[8] = HYPHEN;
                     ucs2[9] = SPACE;
@@ -4655,7 +4721,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
                 ucs2[6] = SPACE;
                 if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "στημι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "στημι")))
                 {
-                    ucs2[7] = GREEK_SMALL_LETTER_EPSILON;
+                    ucs2[7] = DECOMPOSED_AUGMENT_CHAR;
                     ucs2[8] = SPACE;
                     ucs2[9] = HYPHEN;
                     ucs2[10] = SPACE;
@@ -4726,7 +4792,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
                     rightShiftFromOffset(ucs2, 13, len);
                     rightShiftFromOffset(ucs2, 13, len);
                     rightShiftFromOffset(ucs2, 13, len);
-                    ucs2[13] = GREEK_SMALL_LETTER_EPSILON;
+                    ucs2[13] = DECOMPOSED_AUGMENT_CHAR;
                     ucs2[14] = SPACE;
                     ucs2[15] = HYPHEN;
                     ucs2[16] = SPACE;
@@ -4782,7 +4848,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
                 ucs2[4] = SPACE;
                 ucs2[5] = HYPHEN;
                 ucs2[6] = SPACE;
-                ucs2[7] = GREEK_SMALL_LETTER_EPSILON;
+                ucs2[7] = DECOMPOSED_AUGMENT_CHAR;
                 ucs2[8] = SPACE;
                 ucs2[9] = HYPHEN;
                 ucs2[10] = SPACE;

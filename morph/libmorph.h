@@ -12,6 +12,15 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+/* OPTIONS */
+
+//whether to show uncontracted form of aorist passive subjunctive when decomposed
+#define ADD_EPSILON_TO_AORIST_PASSIVE_SUBJUNCTIVE_STEM true
+
+#define ACCENT_DECOMPOSED_FORMS false
+
+/* END OPTIONS */
+
 #define NUM_VOWELS 14
 #define NUM_CONSONANTS 35
 
@@ -19,8 +28,7 @@ typedef unsigned short UCS2;
 
 #define NUM_VERBS 113//34//25 //
 
-//whether to show uncontracted form of aorist passive subjunctive when decomposed
-#define ADD_EPSILON_TO_AORIST_PASSIVE_SUBJUNCTIVE_STEM true
+#define MAX_MULTIPLE_FORMS 5
 
 //verb classes
 enum {
@@ -229,7 +237,9 @@ enum {
     AORIST_ACTIVE_INDICATIVE_MI_ROOT,
     NUM_ENDINGS
 };
-
+    
+bool compareForms(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
+bool compareWord(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
 int getForm(VerbFormC *vf, char *buffer, int bufferLen, bool includeAlternateForms, bool decompose);
 
 Verb *getRandomVerb(int *units, int numUnits);

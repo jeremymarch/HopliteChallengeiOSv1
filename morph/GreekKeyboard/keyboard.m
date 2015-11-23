@@ -189,7 +189,7 @@ enum {
 
     if ( self->device == 1)
     {
-        self->windowWidth =  self.frame.size.width;// 320;
+        self->windowWidth =  self.frame.size.width;// 320, 375 for 6;
         self->width = self->windowWidth / 9.6;//32; //includes left and right padding
         self->height = 50; //includes top and bottom padding
         self->hPadding = 3;
@@ -285,6 +285,7 @@ enum {
     }
     if (device == 1)
     {
+        NSLog(@"w: %i, d: %i", self->windowWidth, self->deleteWidth);
         self.deleteButton.frame = CGRectMake(self->windowWidth - self->width - 12, self->topMargin + (1 * self->height), self->deleteWidth, self->height);
         self.submitButton.frame = CGRectMake(self->windowWidth - 82, self->topMargin, 78, self->height);
         self.multipleFormsButton.frame = CGRectMake(5, self->topMargin, self->deleteWidth + 7, self->height);
@@ -575,6 +576,12 @@ void printUtf8(char *u, int len)
     {
         [self.delegate multipleFormsPressed];
     }
+    UITextRange *selectedTextRange = self.targetTextInput.selectedTextRange;
+    
+    if (!selectedTextRange) {
+        return;
+    }
+    [self textInput:self.targetTextInput replaceTextAtTextRange:selectedTextRange withString:@", "];
 }
 
 /**

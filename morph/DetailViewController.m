@@ -474,8 +474,18 @@ void printUCS22(UCS2 *u, int len)
     
     if (self.front)
     {
-        if ([self.textfield.text isEqual:self.changedForm.text])
+        //if ([self.textfield.text isEqual:self.changedForm.text])
+        
+        UCS2 test[512];
+        UCS2 check[512];
+        int testLen = 0;
+        int checkLen = 0;
+        utf8_to_ucs2_string([self.textfield.text UTF8String], test, &testLen);
+        utf8_to_ucs2_string([self.changedForm.text UTF8String], check, &checkLen);
+            
+        if (compareForms(test, testLen, check, checkLen))
         {
+            NSLog(@"correct");
             CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
             [self.greenCheckView setFrame:CGRectMake((self.view.frame.size.width + size.width) / 2 + 15, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
             self.greenCheckView.hidden = NO;
@@ -488,6 +498,7 @@ void printUCS22(UCS2 *u, int len)
         }
         else
         {
+            NSLog(@"not correct");
             CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
             [self.redXView setFrame:CGRectMake((self.view.frame.size.width + size.width) / 2 + 15, self.redXView.frame.origin.y, self.redXView.frame.size.width,self.redXView.frame.size.height)];
             self.redXView.hidden = NO;
@@ -648,11 +659,11 @@ void printUCS22(UCS2 *u, int len)
     //NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
     /*
-    vf.person = THIRD;
-    vf.number = PLURAL;
-    vf.tense = AORIST;
+    vf.person = SECOND;
+    vf.number = SINGULAR;
+    vf.tense = PRESENT;
     vf.voice = PASSIVE;
-    vf.mood = OPTATIVE;
+    vf.mood = INDICATIVE;
     getForm(&vf, buffer, bufferLen, true, false);
      */
     do
@@ -1567,7 +1578,7 @@ void printUCS22(UCS2 *u, int len)
 - (void)handlePinch:(UIPinchGestureRecognizer *)pinch
 {
     //NSLog(@"Scale: %.2f | Velocity: %.2f",pinch.scale, pinch.velocity);
-    CGFloat thresholdVelocity = 4.0;
+    CGFloat thresholdVelocity = 0;//4.0;
     
     if (self.front)
         return;
