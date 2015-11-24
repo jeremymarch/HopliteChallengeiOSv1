@@ -200,7 +200,7 @@ enum {
         
         self->deleteWidth = self->height - 16 + 12;
     }
-    else if (self->device == 2)
+    else if (self->device == 0)
     {
         if ( self.bounds.size.width < 769.0 )
         {
@@ -247,7 +247,7 @@ enum {
         NSArray *letters = [letterRows objectAtIndex:row];
         int numLetters = [letters count];
         //account for the delete button on iPad
-        if (row == 2 && device == 2)
+        if (row == 2 && device == 0)
             rowStart = (self.bounds.size.width - ((numLetters + 1) * self->width) ) / 2;
         else
             rowStart = (self.bounds.size.width - (numLetters * self->width) ) / 2;
@@ -283,7 +283,7 @@ enum {
                 button.frame = CGRectMake(rowStart + (letter * self->width) + xOffset, self->topMargin + (row * self->height), width1, self->height);
         }
     }
-    if (device == 1)
+    if (1)//device == 1)
     {
         NSLog(@"w: %i, d: %i", self->windowWidth, self->deleteWidth);
         self.deleteButton.frame = CGRectMake(self->windowWidth - self->width - 12, self->topMargin + (1 * self->height), self->deleteWidth, self->height);

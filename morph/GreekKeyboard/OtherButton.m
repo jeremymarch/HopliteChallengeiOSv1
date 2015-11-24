@@ -83,7 +83,7 @@ enum {
     CGFloat buttonRadius;
     CGFloat outerSideMargin;
     CGFloat outerTopMargin;
-    if (self.device == IPHONE)
+    if (1)//self.device == IPHONE)
     {
         buttonRadius = 4.0f;
         outerSideMargin = 2.75f;
@@ -125,7 +125,7 @@ enum {
         
         CGContextRestoreGState(context);
         
-        if (self.device == IPAD)
+        if (0)//self.device == IPAD)
         {
             //the 1px highlight on top
             CGContextSaveGState(context);
