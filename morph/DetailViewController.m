@@ -427,13 +427,26 @@ void printUCS22(UCS2 *u, int len)
 -(void)multipleFormsPressed
 {
     NSLog(@"mf pressed");
+    
     if (self.verbQuestionType == HOPLITE_CHALLENGE)
     {
+        if (!self.mfPressed)
+        {
+            CGFloat halfTime = self.HCTime / 2;
+            self.startTime += halfTime;
         
+            self.mfPressed = YES;
+        }
     }
     else if (self.verbQuestionType == HOPLITE_PRACTICE)
     {
-        
+        if (!self.mfPressed)
+        {
+            CGFloat halfTime = self.HCTime / 2;
+            self.startTime += halfTime;
+            
+            self.mfPressed = YES;
+        }
     }
 }
 
@@ -737,6 +750,7 @@ void printUCS22(UCS2 *u, int len)
     /******* NOW SETUP THE VIEW: static layout which should be done elsewhere ******/
     
     self.expanded = NO;
+    self.mfPressed = NO;
     self.textfield.text = @"";
     self.textfield.textColor = [UIColor blackColor];
     self.continueButton.hidden = YES;
@@ -1655,6 +1669,7 @@ void printUCS22(UCS2 *u, int len)
     //self.changedForm.layer.borderColor = [UIColor blackColor];
     self.changedForm.lineBreakMode = NSLineBreakByWordWrapping;
     
+    self.mfPressed = NO;
     self.expanded = NO;
     self.view.userInteractionEnabled = YES;
     UIPinchGestureRecognizer *pinch = [[UIPinchGestureRecognizer alloc]

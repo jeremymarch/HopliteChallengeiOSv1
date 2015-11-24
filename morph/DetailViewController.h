@@ -24,6 +24,7 @@ enum {
 }
 @property double typeInterval;
 @property BOOL expanded;
+@property BOOL mfPressed;
 @property BOOL soundDisabled;
 @property BOOL animationDisabled;
 @property bool animate;
