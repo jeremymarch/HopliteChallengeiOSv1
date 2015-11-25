@@ -267,6 +267,14 @@
                                     <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                             </button>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="MF" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="VYw-B1-Jpu" userLabel="MFlabel">
+                                <rect key="frame" x="113" y="77" width="24" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="0.22745098039215686" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -279,6 +287,7 @@
                         <outlet property="MCButtonB" destination="hQi-uF-dSg" id="WUo-v2-JgX"/>
                         <outlet property="MCButtonC" destination="z9v-Uj-1X2" id="Ox1-O2-xic"/>
                         <outlet property="MCButtonD" destination="kRM-Pd-iXs" id="MXA-UO-9im"/>
+                        <outlet property="MFLabel" destination="VYw-B1-Jpu" id="vMP-Az-7Ri"/>
                         <outlet property="backButton" destination="Cjy-M7-06q" id="NUf-qL-9Rs"/>
                         <outlet property="backLabel" destination="P1I-D2-tm3" id="nFM-gD-bla"/>
                         <outlet property="changeTo" destination="M3A-Df-Fch" id="pKC-Lr-kdp"/>
@@ -330,7 +339,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="VerbTableCell" id="wYm-0h-iaC">
-                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wYm-0h-iaC" id="dOp-UP-rZC">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>

@@ -267,6 +267,14 @@
                                     <color key="titleColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
                             </button>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="MF" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="VJO-11-VEG" userLabel="MFlabel">
+                                <rect key="frame" x="96" y="81" width="24" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <animations/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="0.2274509804" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -279,6 +287,7 @@
                         <outlet property="MCButtonB" destination="dYD-yW-yPf" id="gh4-6g-L0L"/>
                         <outlet property="MCButtonC" destination="8KD-Ig-N6v" id="bDQ-jo-9Mg"/>
                         <outlet property="MCButtonD" destination="3Ph-yw-CnQ" id="av2-bP-Eqw"/>
+                        <outlet property="MFLabel" destination="VJO-11-VEG" id="oCt-nR-3U6"/>
                         <outlet property="backButton" destination="081-3X-e8m" id="Jwq-of-OIn"/>
                         <outlet property="backLabel" destination="xqS-Ap-d3t" id="aWY-uQ-4l6"/>
                         <outlet property="changeTo" destination="Mxy-v3-vDa" id="IsJ-H9-Uu0"/>

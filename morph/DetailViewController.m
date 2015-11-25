@@ -233,6 +233,9 @@ UIView *backSideTest;
 
 -(void) loadNext
 {
+    [[(AppDelegate*)[[UIApplication sharedApplication] delegate] keyboard]
+     resetKeyboard];
+    
     if (self.cardType == 3)
         [self loadEnding];
     else if (self.cardType == 2)
@@ -246,6 +249,7 @@ UIView *backSideTest;
     
     [self stopTimer];
     self.timeLabel.hidden = YES;
+    self.MFLabel.hidden = YES;
     
     self.front = true;
 }
@@ -434,7 +438,7 @@ void printUCS22(UCS2 *u, int len)
         {
             CGFloat halfTime = self.HCTime / 2;
             self.startTime += halfTime;
-        
+            self.MFLabel.hidden = NO;
             self.mfPressed = YES;
         }
     }
@@ -444,7 +448,7 @@ void printUCS22(UCS2 *u, int len)
         {
             CGFloat halfTime = self.HCTime / 2;
             self.startTime += halfTime;
-            
+            self.MFLabel.hidden = NO;
             self.mfPressed = YES;
         }
     }
@@ -943,8 +947,6 @@ void printUCS22(UCS2 *u, int len)
                             dispatch_after(popTime5, dispatch_get_main_queue(), ^(void)
                             {
                                 self.timeLabel.hidden = NO;
-                                //self.timeLabel.font = [UIFont fontWithName:@"Menlo" size:22.0];
-                                self.timeLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:24.0];
                                 [self startTimer];
                             });
                         });
@@ -1373,6 +1375,7 @@ void printUCS22(UCS2 *u, int len)
     }
     
     [self.timeLabel setFrame:CGRectMake(12, 6,  140, 30)];
+    [self.MFLabel setFrame:CGRectMake(140, 6,  42, 30)];
     self.timeLabel.textAlignment = NSTextAlignmentLeft;
     
     [self loadNext];
@@ -1689,6 +1692,13 @@ void printUCS22(UCS2 *u, int len)
     self.popupShown = FALSE;
     self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
     [self.view addSubview:self.popup];
+    
+    //self.timeLabel.font = [UIFont fontWithName:@"Menlo" size:22.0];
+    self.timeLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:24.0];
+    self.MFLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:24.0];
+    self.MFLabel.layer.borderColor = [UIColor colorWithRed:(255/255.0) green:(56/255.0) blue:(0/255.0) alpha:1.0].CGColor;
+    self.MFLabel.layer.cornerRadius = 4.0f;
+    self.MFLabel.layer.borderWidth = 2.0f;
     
     //[self.backButton setFrame:CGRectMake(10, self.view.frame.size.height - 40, 50, 30)];
     

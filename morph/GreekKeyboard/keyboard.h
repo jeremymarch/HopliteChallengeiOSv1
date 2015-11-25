@@ -17,7 +17,12 @@
 - (void) multipleFormsPressed;
 @end
 
-@interface Keyboard : UIView <UIInputViewAudioFeedback>
+ @protocol k2abc <NSObject>          //[3] (in vc2.h)
+ - (void) resetKeyboard;
+ @end
+ 
+
+@interface Keyboard : UIView <UIInputViewAudioFeedback, k2abc>
 {
     int windowWidth;
     int width; //includes left and right padding
@@ -45,9 +50,11 @@
 @property (nonatomic, retain) OtherButton *submitButton;
 @property (nonatomic, retain) OtherButton *multipleFormsButton;
 @property (nonatomic, retain) NSString *greekFont;
+@property BOOL mfPressedOnce;
 
 - (id)initWithFrame:(CGRect)frame lang:(int)lang;
 
+-(void)resetKeyboard;
 -(void)setButtons:(int) lang;
 -(void)setTargetViewController:(UIViewController*) vc;
 -(void)addAccent:(int)accent;

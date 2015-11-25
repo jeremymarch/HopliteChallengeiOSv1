@@ -63,6 +63,7 @@ enum {
 @property NSMutableArray *mcButtonsOrder;
 @property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
 
+@property (strong, nonatomic) IBOutlet UILabel *MFLabel;
 @property (strong, nonatomic) IBOutlet UILabel *changeTo;
 @property (strong, nonatomic) IBOutlet UILabel *vocabFront;
 @property (strong, nonatomic) IBOutlet UILabel *vocabBack;

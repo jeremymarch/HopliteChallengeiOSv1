@@ -38,6 +38,13 @@ enum {
 @synthesize keys;
 @synthesize deleteButton;
 
+-(void)resetKeyboard
+{
+    NSLog(@"reset keyboard");
+    self.mfPressedOnce = NO;
+    [self.multipleFormsButton setTitle:@"MF" forState:UIControlStateNormal];
+}
+
 - (BOOL) enableInputClicksWhenVisible {
     return YES;
 }
@@ -64,6 +71,7 @@ enum {
         //self.systemFont = @"HelveticaNeue";
         //self.greekFont = @"NewAthenaUnicode";
         //@"Helvetica-Bold
+        self.mfPressedOnce = NO;
         self.greekFont = @"Helvetica";
         
          //this is done in layout subviews
@@ -554,16 +562,24 @@ void printUtf8(char *u, int len)
     if (!self.targetTextInput) {
         return;
     }
-    if ([self.delegate respondsToSelector:@selector(multipleFormsPressed)])
+    if (!self.mfPressedOnce)
     {
-        [self.delegate multipleFormsPressed];
+        if ([self.delegate respondsToSelector:@selector(multipleFormsPressed)])
+        {
+            [self.delegate multipleFormsPressed];
+        }
+        self.mfPressedOnce = YES;
+        [sender setTitle:@" , " forState:UIControlStateNormal];
     }
-    UITextRange *selectedTextRange = self.targetTextInput.selectedTextRange;
+    else
+    {
+        UITextRange *selectedTextRange = self.targetTextInput.selectedTextRange;
     
-    if (!selectedTextRange) {
-        return;
+        if (!selectedTextRange) {
+            return;
+        }
+        [self textInput:self.targetTextInput replaceTextAtTextRange:selectedTextRange withString:@", "];
     }
-    [self textInput:self.targetTextInput replaceTextAtTextRange:selectedTextRange withString:@", "];
 }
 
 /**
