@@ -18,6 +18,11 @@ enum {
     LATIN = 2
 };
 
+enum {
+    IPAD = 0,
+    IPHONE = 1
+};
+
 #define   DEGREES_TO_RADIANS(degrees)  ((M_PI * degrees)/ 180)
 
 #define BUTTON_DOWN_TOP_CORNER_RAD 5.0
@@ -72,7 +77,7 @@ enum {
             self->topMargin = 4;
             self->spaceWidth = 150;
             self->buttonDownAddHeight = 55;
-            self->device = 1;
+            self->device = IPHONE;
         }
         else
         {
@@ -87,7 +92,7 @@ enum {
             self->topMargin = 4;
             self->spaceWidth = 150;
             self->buttonDownAddHeight = 55;
-            self->device = 0;
+            self->device = IPAD;
         }
         
         //[super setAutoresizingMask: UIViewAutoresizingNone];
@@ -101,7 +106,7 @@ enum {
         
         UIColor *lightColor;
         UIColor *darkColor;
-        if (self->device == 0) //iPad
+        if (self->device == IPAD) //iPad
         {
             //lightColor = [UIColor colorWithRed:(187/255.0) green:(187/255.0) blue:(198/255.0) alpha:1.0];
             //darkColor = [UIColor colorWithRed:(143/255.0) green:(143/255.0) blue:(155/255.0) alpha:1.0];
@@ -187,7 +192,7 @@ enum {
 {
     //NSLog(@"Layout sub views keyboard width: %f", self.bounds.size.width);
 
-    if ( self->device == 1)
+    if ( self->device == IPHONE)
     {
         self->windowWidth =  self.frame.size.width;// 320, 375 for 6;
         self->width = self->windowWidth / 9.6;//32; //includes left and right padding
@@ -200,34 +205,18 @@ enum {
         
         self->deleteWidth = self->height - 16 + 12;
     }
-    else if (self->device == 0)
+    else if (self->device == IPAD)
     {
-        if ( self.bounds.size.width < 769.0 )
-        {
-            self->windowWidth = 768;
-            self->width = 76; //includes left and right padding
-            self->height = 76; //includes top and bottom padding
-            self->hPadding = 5;
-            self->vPadding = 6;
-            self->topMargin = 14;
-            self->spaceWidth = 150;
-            self->buttonDownAddHeight = 55;
-            
-            self->deleteWidth = self->width;
-        }
-        else
-        {
-            self->windowWidth = 1024;
-            self->width = 94; //includes left and right padding
-            self->height = 76; //includes top and bottom padding
-            self->hPadding = 7;
-            self->vPadding = 6;
-            self->topMargin = 4;
-            self->spaceWidth = 150;
-            self->buttonDownAddHeight = 55;
-            
-            self->deleteWidth = self->width;
-        }
+        self->windowWidth = self.frame.size.width;
+        self->width = self->windowWidth / 10; //includes left and right padding
+        self->height = 76; //includes top and bottom padding
+        self->hPadding = 7;
+        self->vPadding = 6;
+        self->topMargin = 4;
+        self->spaceWidth = 150;
+        self->buttonDownAddHeight = 55;
+        
+        self->deleteWidth = self->width;
     }
     
     NSArray *letterRows;
@@ -247,7 +236,7 @@ enum {
         NSArray *letters = [letterRows objectAtIndex:row];
         int numLetters = [letters count];
         //account for the delete button on iPad
-        if (row == 2 && device == 0)
+        if (0)//row == 2 && device == IPAD)
             rowStart = (self.bounds.size.width - ((numLetters + 1) * self->width) ) / 2;
         else
             rowStart = (self.bounds.size.width - (numLetters * self->width) ) / 2;
@@ -263,27 +252,41 @@ enum {
                 width1 = self->deleteWidth;
             else
                 width1 = self->width;
-            
-            int xOffset = 0;
+
             if (row == 0)
             {
-                xOffset = -12;
                 button.diacriticButton = YES;
             }
-            else if (row == 1)
-                xOffset = -21;
-            else if (row == 2)
-                xOffset = -1;
+            int xOffset = 0;
+            if ( device == IPHONE)
+            {
+                if (row == 0)
+                    xOffset = -12;
+                else if (row == 1)
+                    xOffset = -21;
+                else if (row == 2)
+                    xOffset = -1;
+                else
+                    xOffset = -1;
+            }
             else
-                xOffset = -1;
-            
+            {
+                if (row == 0)
+                    xOffset = self->width / 4 * -1;
+                else if (row == 1)
+                    xOffset = self->width / 4 * -1;
+                else if (row == 2)
+                    xOffset = self->width / 4 * -1;
+                else if (row == 3)
+                    xOffset = self->width / 4;
+            }
             
             
             if (button.selected == NO)
                 button.frame = CGRectMake(rowStart + (letter * self->width) + xOffset, self->topMargin + (row * self->height), width1, self->height);
         }
     }
-    if (1)//device == 1)
+    if (device == IPHONE)
     {
         NSLog(@"w: %i, d: %i", self->windowWidth, self->deleteWidth);
         self.deleteButton.frame = CGRectMake(self->windowWidth - self->width - 12, self->topMargin + (1 * self->height), self->deleteWidth, self->height);
@@ -292,12 +295,17 @@ enum {
     }
     else
     {
-        self.deleteButton.frame = CGRectMake(rowStart + (letter * self->width), self->topMargin + (2 * self->height), self->deleteWidth, self->height);
-        //needed to redraw icon and x at correct size
-        [self.deleteButton setNeedsDisplay];
+        NSLog(@"w: %i, d: %i", self->windowWidth, self->deleteWidth);
         
-        self.submitButton.frame = CGRectMake(self->windowWidth - self->width - 15, self->topMargin, self->deleteWidth, self->height);
-        self.multipleFormsButton.frame = CGRectMake(10, self->topMargin, self->deleteWidth + 8, self->height);
+
+        int x1 = ((self.bounds.size.width - ([[letterRows objectAtIndex:1] count] * self->width ) ) / 2) + ([[letterRows objectAtIndex:1] count] * self->width) + (self->width / 4 * -1);
+        self.deleteButton.frame = CGRectMake(x1, self->topMargin + (1 * self->height), self->deleteWidth, self->height);
+        
+        int x2 = ((self.bounds.size.width - ([[letterRows objectAtIndex:0] count] * self->width ) ) / 2) + ([[letterRows objectAtIndex:0] count] * self->width) + (self->width / 4 * -1);
+        self.submitButton.frame = CGRectMake(x2, self->topMargin, self->deleteWidth * 2, self->height);
+        
+        int x3 = ((self.bounds.size.width - ([[letterRows objectAtIndex:0] count] * self->width) ) / 2) + (self->width / 4 * -1);
+        self.multipleFormsButton.frame = CGRectMake(x3 - self->width, self->topMargin, self->deleteWidth * 2, self->height);
     }
     if (self->lang == GREEK1)
     {

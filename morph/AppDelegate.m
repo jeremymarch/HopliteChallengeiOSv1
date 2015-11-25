@@ -54,7 +54,7 @@
     }
     else
     {
-        self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 328.0) lang:1];  //was 1024 x 266
+        self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 308.0) lang:1];  //was 1024 x 266
     }
     
     return YES;
