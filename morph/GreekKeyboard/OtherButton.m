@@ -76,7 +76,7 @@ enum {
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
-    UIColor *redColor = [UIColor colorWithRed:(255/255.0) green:(54/255.0) blue:(0/255.0) alpha:1.0];
+    UIColor *redColor = [UIColor colorWithRed:(255/255.0) green:(56/255.0) blue:(0/255.0) alpha:1.0];
     
     UIColor *delIconColor = [UIColor colorWithRed:(110/255.0) green:(110/255.0) blue:(128/255.0) alpha:1.0];
     
@@ -178,7 +178,7 @@ enum {
     CGContextSaveGState(context);
     
     // Draw border around button for ipad
-    if (self.device == IPAD)
+    if (0)//self.device == IPAD)
     {
         CGContextSaveGState(context);
         CGContextSetLineWidth(context, 0.5);

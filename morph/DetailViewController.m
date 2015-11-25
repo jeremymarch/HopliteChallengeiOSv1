@@ -1106,12 +1106,12 @@ void printUCS22(UCS2 *u, int len)
     self.pluralLabel.hidden = true; 
     self.front = true;
     
-    [self.stemLabel sizeToFit];
+    //[self.stemLabel sizeToFit];
     [self.backLabel sizeToFit];
     [self.singLabel sizeToFit];
     [self.pluralLabel sizeToFit];
     
-    [self.stemLabel setCenter:self.view.center];
+    //[self.stemLabel setCenter:self.view.center];
     [self.backLabel setCenter:self.view.center];
 
     self.startTime = CACurrentMediaTime();
@@ -1246,10 +1246,10 @@ void printUCS22(UCS2 *u, int len)
     self.backLabel.textAlignment = NSTextAlignmentLeft;
     self.stemLabel.textAlignment = NSTextAlignmentLeft;
     
-    [self.stemLabel sizeToFit];
+    //[self.stemLabel sizeToFit];
     [self.backLabel sizeToFit];
     
-    [self.stemLabel setCenter:self.view.center];
+    //[self.stemLabel setCenter:self.view.center];
     [self.backLabel setCenter:self.view.center];
     
     self.front = true;

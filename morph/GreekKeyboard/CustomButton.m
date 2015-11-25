@@ -295,7 +295,7 @@ enum {
 	}
     
     // Draw border around button for ipad
-    if (self.device == IPAD)
+    if (0)//self.device == IPAD)
     {
         CGContextSaveGState(context);
         CGContextSetLineWidth(context, 0.5);

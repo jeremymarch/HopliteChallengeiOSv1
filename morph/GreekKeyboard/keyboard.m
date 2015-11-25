@@ -210,8 +210,8 @@ enum {
         self->windowWidth = self.frame.size.width;
         self->width = self->windowWidth / 10; //includes left and right padding
         self->height = 76; //includes top and bottom padding
-        self->hPadding = 7;
-        self->vPadding = 6;
+        self->hPadding = 0;//not used?
+        self->vPadding = 0;//not used?
         self->topMargin = 4;
         self->spaceWidth = 150;
         self->buttonDownAddHeight = 55;
@@ -281,7 +281,6 @@ enum {
                     xOffset = self->width / 4;
             }
             
-            
             if (button.selected == NO)
                 button.frame = CGRectMake(rowStart + (letter * self->width) + xOffset, self->topMargin + (row * self->height), width1, self->height);
         }
@@ -297,7 +296,6 @@ enum {
     {
         NSLog(@"w: %i, d: %i", self->windowWidth, self->deleteWidth);
         
-
         int x1 = ((self.bounds.size.width - ([[letterRows objectAtIndex:1] count] * self->width ) ) / 2) + ([[letterRows objectAtIndex:1] count] * self->width) + (self->width / 4 * -1);
         self.deleteButton.frame = CGRectMake(x1, self->topMargin + (1 * self->height), self->deleteWidth, self->height);
         
@@ -305,31 +303,7 @@ enum {
         self.submitButton.frame = CGRectMake(x2, self->topMargin, self->deleteWidth * 2, self->height);
         
         int x3 = ((self.bounds.size.width - ([[letterRows objectAtIndex:0] count] * self->width) ) / 2) + (self->width / 4 * -1);
-        self.multipleFormsButton.frame = CGRectMake(x3 - self->width, self->topMargin, self->deleteWidth * 2, self->height);
-    }
-    if (self->lang == GREEK1)
-    {
-        UIButton *button;
-        //button = [self.keys objectAtIndex:24];
-        //button.hidden = YES;
-        //button = [self.keys objectAtIndex:25];
-        //button.hidden = YES;
-    }
-    else
-    {
-        UIButton *button;
-        button = [self.keys objectAtIndex:24];
-        if (button.hidden == YES)
-        {
-            button.hidden = NO;
-            [button setNeedsDisplay];
-        }
-        button = [self.keys objectAtIndex:25];
-        if (button.hidden == YES)
-        {
-            button.hidden = NO;
-            [button setNeedsDisplay];
-        }
+        self.multipleFormsButton.frame = CGRectMake(x3 - self->width, self->topMargin, self->deleteWidth, self->height);
     }
 }
 
