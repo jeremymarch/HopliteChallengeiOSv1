@@ -42,6 +42,8 @@ enum {
 {
     NSLog(@"reset keyboard");
     self.mfPressedOnce = NO;
+    self.multipleFormsButton.titleLabel.font = [UIFont fontWithName:self.greekFont size:24];
+    self.multipleFormsButton.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
     [self.multipleFormsButton setTitle:@"MF" forState:UIControlStateNormal];
 }
 
@@ -569,7 +571,14 @@ void printUtf8(char *u, int len)
             [self.delegate multipleFormsPressed];
         }
         self.mfPressedOnce = YES;
-        [sender setTitle:@" , " forState:UIControlStateNormal];
+        [sender setTitle:@"," forState:UIControlStateNormal];
+        sender.titleEdgeInsets = UIEdgeInsetsMake(-18, 0, 0, 0);
+        sender.titleLabel.font = [UIFont fontWithName:self.greekFont size:40];
+        /*
+        sender.backgroundColor = [UIColor whiteColor];
+        sender.layer.borderWidth = 2.0f;
+        sender.layer.borderColor = [UIColor colorWithRed:(255/255.0) green:(56/255.0) blue:(0/255.0) alpha:1.0].CGColor;
+        */
     }
     else
     {

@@ -16,13 +16,14 @@
 - (void) preCheckVerbSubmit;
 - (void) multipleFormsPressed;
 @end
-
+/*
+ don't need this for some reason
  @protocol k2abc <NSObject>          //[3] (in vc2.h)
  - (void) resetKeyboard;
  @end
- 
+*/
 
-@interface Keyboard : UIView <UIInputViewAudioFeedback, k2abc>
+@interface Keyboard : UIView <UIInputViewAudioFeedback>
 {
     int windowWidth;
     int width; //includes left and right padding

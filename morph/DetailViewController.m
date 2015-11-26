@@ -366,6 +366,9 @@ UIView *backSideTest;
 }
 
 //http://stackoverflow.com/questions/11686642/letter-by-letter-animation-for-uilabel
+
+//for time envelopes see:
+//http://stackoverflow.com/questions/5161465/how-to-create-custom-easing-function-with-core-animation
 -(void)typeLabel:(UILabel*)l withString:(NSString*)string withInterval:(double)interval
 {
     //BOOL async = NO;
@@ -1682,9 +1685,7 @@ void printUCS22(UCS2 *u, int len)
     [self.view addGestureRecognizer:pinch];
     
     self.cardType = 1;
-    
 
-    
     self.systemFont = @"HelveticaNeue-Light";
     self.greekFont = @"NewAthenaUnicode";
     self.fontSize = 26.0;
