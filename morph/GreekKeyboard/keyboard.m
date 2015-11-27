@@ -596,60 +596,62 @@ void printUtf8(char *u, int len)
  */
 - (IBAction)keyboardDeletePressed:(UIButton *)sender
 {
-    /*
-     //add this in to delete combining characters too
-     
-     UITextRange *textRange;
-     NSString *s;
-     unsigned char buffer[1024];
-     UCS2 ucs2[1024];
-     int ucs2Len = 0;
-     
-     UITextRange *selectedTextRange = self.targetTextInput.selectedTextRange;
-     
-     if (!selectedTextRange) {
-     return;
-     }
-     //unsigned long l = 0;
-     //unsigned long l2 = 0;
-     const char *s2;
-     int i;
-     for (i = 1; i < 7; i++)
-     {
-     UITextPosition *start = [self.targetTextInput positionFromPosition:selectedTextRange.end offset: -i];
-     textRange = [self.targetTextInput textRangeFromPosition:start toPosition:selectedTextRange.start];
-     
-     s = [self.targetTextInput textInRange:textRange];
-     s2 = [s UTF8String];
-     utf8_to_ucs2_string((const unsigned char *)s2, ucs2, &ucs2Len);
-     
-     if (ucs2[0] != COMBINING_ACUTE && ucs2[0] != COMBINING_MACRON && ucs2[0] != COMBINING_ROUGH_BREATHING && ucs2[0] != COMBINING_SMOOTH_BREATHING)
-     break;
-     }
-     */
     if (!self.targetTextInput)
     {
         return;
     }
-    [[UIDevice currentDevice] playInputClick];
+    //add this in to delete combining characters too
+    UITextRange *textRange;
+    NSString *s;
+    UCS2 ucs2[1024];
+    int ucs2Len = 0;
     
     UITextRange *selectedTextRange = self.targetTextInput.selectedTextRange;
+    
     if (!selectedTextRange) {
         return;
     }
     
-    // Calculate the selected text to delete
-    UITextPosition  *startPosition  = [self.targetTextInput positionFromPosition:selectedTextRange.start offset:-1];
-    if (!startPosition) {
-        return;
-    }
-    UITextPosition *endPosition = selectedTextRange.end;
-    if (!endPosition) {
-        return;
-    }
-    UITextRange *rangeToDelete = [self.targetTextInput textRangeFromPosition:startPosition
-                                                                       toPosition:endPosition];
+    const char *s2;
+    int i;
+    UITextPosition *start;
     
+    //if positions are equal, there is no selection and we need to move offset left
+    if ([selectedTextRange.start isEqual: selectedTextRange.end])
+    {
+        for (i = 1; i < 7; i++)
+        {
+            start = [self.targetTextInput positionFromPosition:selectedTextRange.start offset: -i];
+            textRange = [self.targetTextInput textRangeFromPosition:start toPosition:selectedTextRange.start];
+            
+            s = [self.targetTextInput textInRange:textRange];
+            s2 = [s UTF8String];
+            utf8_to_ucs2_string((const unsigned char *)s2, ucs2, &ucs2Len);
+            
+            if (ucs2[0] != COMBINING_ACUTE && ucs2[0] != COMBINING_MACRON && ucs2[0] != COMBINING_ROUGH_BREATHING && ucs2[0] != COMBINING_SMOOTH_BREATHING)
+                break;
+        }
+    }
+    else
+    {
+        start = selectedTextRange.start;
+    }
+    /*
+    UITextRange *selectedTextRange = self.targetTextInput.selectedTextRange;
+    if (!selectedTextRange) {
+        return;
+    }
+    // Calculate the selected text to delete
+    UITextPosition  *start  = [self.targetTextInput positionFromPosition:selectedTextRange.start offset:-1];
+    */
+
+    UITextPosition *endPosition = selectedTextRange.end;
+    if (!start || !endPosition) {
+        return;
+    }
+    
+    [[UIDevice currentDevice] playInputClick];
+    UITextRange *rangeToDelete = [self.targetTextInput textRangeFromPosition:start toPosition:endPosition];
     [self textInput:self.targetTextInput replaceTextAtTextRange:rangeToDelete withString:@""];
 }
 
