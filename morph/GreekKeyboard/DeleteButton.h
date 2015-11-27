@@ -32,4 +32,7 @@
 @property (nonatomic, retain) NSString *font;
 
 - (id)initWithText:(NSString *)text AndDevice: (int) device AndFont:(NSString*)font;
+
+-(void) touchUpInside:sender;
+
 @end

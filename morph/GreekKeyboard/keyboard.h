@@ -51,6 +51,7 @@
 @property (nonatomic, retain) OtherButton *submitButton;
 @property (nonatomic, retain) OtherButton *multipleFormsButton;
 @property (nonatomic, retain) NSString *greekFont;
+@property (nonatomic, retain) NSTimer *deleteHoldTimer;
 @property BOOL mfPressedOnce;
 
 - (id)initWithFrame:(CGRect)frame lang:(int)lang;

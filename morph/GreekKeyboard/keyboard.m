@@ -183,6 +183,12 @@ enum {
         self.deleteButton = [[DeleteButton alloc] initWithText:@"XXX" AndDevice:self->device AndFont:self.greekFont];
         [self addSubview:self.deleteButton];
         [self.deleteButton addTarget:self action:@selector(keyboardDeletePressed:) forControlEvents:UIControlEventTouchDown];
+        
+        //for when delete is held
+        UILongPressGestureRecognizer *longDeletePressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longDeletePress:)];
+        //longDeletePressGesture.minimumPressDuration = 0.5;
+        //longDeletePressGesture.delaysTouchesBegan = true;
+        [self.deleteButton addGestureRecognizer:longDeletePressGesture];
     
         self.submitButton = [[OtherButton alloc] initWithText:@"Enter" AndDevice:self->device AndFont:self.greekFont];
         [self addSubview:self.submitButton];
@@ -614,45 +620,57 @@ void printUtf8(char *u, int len)
     
     const char *s2;
     int i;
-    UITextPosition *start;
+    UITextPosition *startPosition;
     
     //if positions are equal, there is no selection and we need to move offset left
     if ([selectedTextRange.start isEqual: selectedTextRange.end])
     {
         for (i = 1; i < 7; i++)
         {
-            start = [self.targetTextInput positionFromPosition:selectedTextRange.start offset: -i];
-            textRange = [self.targetTextInput textRangeFromPosition:start toPosition:selectedTextRange.start];
+            startPosition = [self.targetTextInput positionFromPosition:selectedTextRange.start offset: -i];
+            textRange = [self.targetTextInput textRangeFromPosition:startPosition toPosition:selectedTextRange.start];
             
             s = [self.targetTextInput textInRange:textRange];
             s2 = [s UTF8String];
             utf8_to_ucs2_string((const unsigned char *)s2, ucs2, &ucs2Len);
             
-            if (ucs2[0] != COMBINING_ACUTE && ucs2[0] != COMBINING_MACRON && ucs2[0] != COMBINING_ROUGH_BREATHING && ucs2[0] != COMBINING_SMOOTH_BREATHING)
+            if (ucs2[0] != COMBINING_ACUTE && ucs2[0] != COMBINING_GRAVE && ucs2[0] != COMBINING_MACRON && ucs2[0] != COMBINING_ROUGH_BREATHING && ucs2[0] != COMBINING_SMOOTH_BREATHING)
                 break;
         }
     }
     else
     {
-        start = selectedTextRange.start;
+        startPosition = selectedTextRange.start;
     }
-    /*
-    UITextRange *selectedTextRange = self.targetTextInput.selectedTextRange;
-    if (!selectedTextRange) {
-        return;
-    }
-    // Calculate the selected text to delete
-    UITextPosition  *start  = [self.targetTextInput positionFromPosition:selectedTextRange.start offset:-1];
-    */
 
     UITextPosition *endPosition = selectedTextRange.end;
-    if (!start || !endPosition) {
+    if (!startPosition || !endPosition) {
         return;
     }
     
     [[UIDevice currentDevice] playInputClick];
-    UITextRange *rangeToDelete = [self.targetTextInput textRangeFromPosition:start toPosition:endPosition];
+    UITextRange *rangeToDelete = [self.targetTextInput textRangeFromPosition:startPosition toPosition:endPosition];
     [self textInput:self.targetTextInput replaceTextAtTextRange:rangeToDelete withString:@""];
+}
+
+- (void)longDeletePress:(UILongPressGestureRecognizer*)gesture
+{
+    if ( gesture.state == UIGestureRecognizerStateBegan )
+    {
+        self.deleteHoldTimer = [NSTimer timerWithTimeInterval:0.1 target:self selector:@selector(keyboardDeletePressed:) userInfo:nil repeats:YES];
+        
+        NSRunLoop * theRunLoop = [NSRunLoop currentRunLoop];
+        [theRunLoop addTimer:self.deleteHoldTimer forMode:NSDefaultRunLoopMode];
+    }
+    else if ( gesture.state == UIGestureRecognizerStateEnded )
+    {
+        [self.deleteHoldTimer invalidate];
+        self.deleteHoldTimer = nil;
+        
+        //need this or it stays in the down state
+        [self.deleteButton touchUpInside:self.deleteButton];
+    }
+    //NSLog(@"lg: %ld", (long)gesture.state);
 }
 
 // The clear button was just pressed on the number pad
