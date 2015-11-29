@@ -249,6 +249,7 @@ void getRandomEndingAsString(int *units, int numUnits, char *buffer, int bufferL
 void changeFormByDegrees(VerbFormC *verbform, int degrees);
 void generateForm(VerbFormC *verbform);
 void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors, char *buffer);
+bool isValidFormForUnit(VerbFormC *vf, int unit);
 
 void getFullDescription (VerbFormC *vf, char *buffer, int len);
 void getAbbrevDescription (VerbFormC *vf, char *buffer, int len);

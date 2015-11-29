@@ -27,6 +27,7 @@
 @property  BOOL toggled;
 @property  BOOL diacriticButton;
 @property  BOOL mfButton;
+@property  BOOL mfPressed;
 @property  BOOL submitButton;
 @property  int device;
 @property (nonatomic, retain) NSString *font;

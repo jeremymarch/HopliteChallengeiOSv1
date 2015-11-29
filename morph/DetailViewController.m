@@ -249,6 +249,7 @@ UIView *backSideTest;
     
     [self stopTimer];
     self.timeLabel.hidden = YES;
+    [self.timeLabel setFrame:CGRectMake(12, 6,  140, 30)]; //reset in case mf.
     self.MFLabel.hidden = YES;
     
     self.front = true;
@@ -408,9 +409,19 @@ UIView *backSideTest;
     }
     else
     { */
-        for (int i = 0; i < [string length]; i++)
+    for (int i = 0, j = 0; i < [string length]; i++)
         {
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * i * NSEC_PER_SEC));
+            //don't wait for space characters
+            while ([string characterAtIndex:i] == ' ')
+            {
+                i++;
+            }
+            
+            if (i >= [string length])
+                break;
+            
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
+            j++;
             dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
             {
                 [l setText:[string substringToIndex:i+1]];
@@ -455,6 +466,7 @@ void printUCS22(UCS2 *u, int len)
             self.mfPressed = YES;
         }
     }
+    [self.timeLabel setFrame:CGRectMake(60, 6,  140, 30)];
 }
 
 -(void)preCheckVerbTimeout
@@ -543,8 +555,8 @@ void printUCS22(UCS2 *u, int len)
                 self.backButton.hidden = NO;
                 self.continueButton.enabled = NO;
                 self.backButton.enabled = NO;
-                [self.continueButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-                [self.backButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+                //[self.continueButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+                //[self.backButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
                 
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC));
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
@@ -554,8 +566,8 @@ void printUCS22(UCS2 *u, int len)
                     dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
                         self.continueButton.enabled = YES;
                         self.backButton.enabled = YES;
-                        [self.continueButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-                        [self.backButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+                        //[self.continueButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+                        //[self.backButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
                     });
                 });
             }
@@ -604,7 +616,7 @@ void printUCS22(UCS2 *u, int len)
     }
     self.startTime = CACurrentMediaTime();
     self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(runTimer)];
-    self.displayLink.frameInterval = 5;
+    self.displayLink.frameInterval = 1;
     [self.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 }
 
@@ -655,11 +667,19 @@ void printUCS22(UCS2 *u, int len)
     vf.verb = v;
     //vf.verb = &verbs[28];
     //don't use dash for first verb form.
+    
+    int highestUnit = 0;
+    for (int i = 0; i < self->numUnits; i++)
+    {
+        if (self->units[i] > highestUnit)
+            highestUnit = self->units[i];
+    }
+    
     do
     {
         generateForm(&vf);
         
-    } while (!getForm(&vf, buffer, bufferLen, false, false) || !strncmp(buffer, "—", 1));
+    } while (!getForm(&vf, buffer, bufferLen, false, false) || !isValidFormForUnit(&vf, highestUnit) || !strncmp(buffer, "—", 1));
     
     NSString *distractors = nil;
     NSArray *distractorArr = nil;
@@ -689,7 +709,7 @@ void printUCS22(UCS2 *u, int len)
     do
     {
         changeFormByDegrees(&vf, 2);
-    } while (!getForm(&vf, buffer, bufferLen, true, false) || !strncmp(buffer, "—", 1));
+    } while (!getForm(&vf, buffer, bufferLen, true, false) || !isValidFormForUnit(&vf, highestUnit) || !strncmp(buffer, "—", 1));
     
     newForm = [NSString stringWithUTF8String: (const char*)buffer];
     self.changedStr = newForm;
@@ -872,9 +892,10 @@ void printUCS22(UCS2 *u, int len)
             [self.changedForm setFrame:CGRectMake(10, f/1.7, self.view.frame.size.width - 20, size.height + 10)];
             
             //[self.continueButton setFrame:CGRectMake((screenSize.width - self.continueButton.frame.size.width) / 2, f/1.3, self.continueButton.frame.size.width, self.continueButton.frame.size.height)];
+            /*
             [self.continueButton setFrame:CGRectMake((screenSize.width / 2) - 2, screenSize.height - 70, (screenSize.width / 2) + 4, 70)];
             [self.backButton setFrame:CGRectMake(-2, screenSize.height - 70, (screenSize.width / 2) + 2, 70)];
-            
+            */
             
             //self.textfield.layer.borderWidth = 1.0;
             //self.changedForm.layer.borderWidth = 1.0;
@@ -1378,7 +1399,7 @@ void printUCS22(UCS2 *u, int len)
     }
     
     [self.timeLabel setFrame:CGRectMake(12, 6,  140, 30)];
-    [self.MFLabel setFrame:CGRectMake(140, 6,  42, 30)];
+    [self.MFLabel setFrame:CGRectMake(12, 6,  42, 30)];
     self.timeLabel.textAlignment = NSTextAlignmentLeft;
     
     [self loadNext];
@@ -1648,7 +1669,7 @@ void printUCS22(UCS2 *u, int len)
 {
     [super viewDidLoad];
     
-    self.typeInterval = 0.023;
+    self.typeInterval = 0.02;
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
@@ -1666,8 +1687,6 @@ void printUCS22(UCS2 *u, int len)
         self.HCTime = [[NSUserDefaults standardUserDefaults] integerForKey:@"HCTime"];
     else
         self.HCTime = 30;
-    
-    
     
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
@@ -1831,11 +1850,21 @@ void printUCS22(UCS2 *u, int len)
     [self.incorrectButton setFrame:CGRectMake((((w/2) - self.correctButton.frame.size.width) / 2) + w/2, self.view.frame.size.height / 1.3, self.correctButton.frame.size.width, self.correctButton.frame.size.height)];
     
     [self.continueButton.layer setMasksToBounds:YES];
-    self.continueButton.layer.borderWidth = 2.0f;
-    self.continueButton.layer.borderColor = [UIColor blackColor].CGColor;
+    self.continueButton.layer.borderWidth = 4.0f;
+    self.continueButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.continueButton.backgroundColor = UIColorFromRGB(0x43609c);
+    [self.continueButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.continueButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+    
     [self.backButton.layer setMasksToBounds:YES];
-    self.backButton.layer.borderWidth = 2.0f;
-    self.backButton.layer.borderColor = [UIColor blackColor].CGColor;
+    self.backButton.layer.borderWidth = 4.0f;
+    self.backButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.backButton.backgroundColor = UIColorFromRGB(0x43609c);
+    [self.backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.backButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+    
+    [self.continueButton setFrame:CGRectMake((screenSize.width / 2) - 4, screenSize.height - 70, (screenSize.width / 2) + 4, 70)];
+    [self.backButton setFrame:CGRectMake(0, screenSize.height - 70, (screenSize.width / 2), 70)];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {

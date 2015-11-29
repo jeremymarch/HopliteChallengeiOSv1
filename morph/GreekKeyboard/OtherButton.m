@@ -50,6 +50,8 @@ enum {
 {
     if ((self = [super initWithFrame:CGRectZero]))
     {
+        //([self.titleLabel.text isEqual:@"MF"] || [self.titleLabel.text isEqual:@","]) &&
+        self.mfPressed = NO;
         self.font = font;
         self.device = device;
         [self addTarget: self action: @selector(touchUpInside:) forControlEvents: UIControlEventTouchUpInside];
@@ -111,7 +113,12 @@ enum {
     if ([self.titleLabel.text isEqual:@"Enter"])
         CGContextSetFillColorWithColor(context, blueColor.CGColor);
     else
-        CGContextSetFillColorWithColor(context, redColor.CGColor);
+    {
+        if (self.mfPressed && !self.selected)
+            CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+        else
+            CGContextSetFillColorWithColor(context, redColor.CGColor);
+    }
     CGContextFillPath(context);
     CGContextRestoreGState(context);
     
@@ -142,8 +149,11 @@ enum {
             CGContextRestoreGState(context);
             CFRelease(highlightPath);
         }
-
-        [self setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+        NSLog(@"mf is pressed");
+        if (self.mfPressed)
+            [self setTitleColor:redColor forState:(UIControlStateNormal)];
+        else
+            [self setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
     }
     else
     {
@@ -157,9 +167,19 @@ enum {
         
         CGContextAddPath(context, outerPath);
         if (self.device == IPHONE)
-            CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+        {
+            if ((self.mfPressed && !self.selected) || [self.titleLabel.text isEqual:@"Enter"])
+                CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+            else
+                CGContextSetFillColorWithColor(context, redColor.CGColor);
+        }
         else if (self.device == IPAD)
-            CGContextSetFillColorWithColor(context, delIconColor.CGColor);
+        {
+            if ((self.mfPressed && !self.selected) || [self.titleLabel.text isEqual:@"Enter"])
+                CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+            else
+                CGContextSetFillColorWithColor(context, redColor.CGColor);
+        }
         CGContextFillPath(context);
         
         CGContextRestoreGState(context);
@@ -171,19 +191,29 @@ enum {
         }
         else
         {
-            [self setTitleColor:redColor forState:(UIControlStateNormal)];
+            if (self.mfPressed)
+                [self setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
+            else
+                [self setTitleColor:redColor forState:(UIControlStateNormal)];
         }
     }
     
     CGContextSaveGState(context);
     
     // Draw border around button for ipad
-    if (0)//self.device == IPAD)
+    if (self.mfPressed)//self.device == IPAD)
     {
         CGContextSaveGState(context);
-        CGContextSetLineWidth(context, 0.5);
-        CGContextSetStrokeColorWithColor(context, [UIColor darkGrayColor].CGColor);
-        CGContextAddPath(context, outerPath);
+        CGContextSetLineWidth(context, 3.0);
+        
+        if(self.selected)
+            CGContextSetStrokeColorWithColor(context, [UIColor whiteColor].CGColor);
+        else
+            CGContextSetStrokeColorWithColor(context, redColor.CGColor);
+        
+        CGRect highlightRect = CGRectInset(outerRect, 1.0f, 1.0f);
+        CGMutablePathRef highlightPath = createRoundedRectForRect(highlightRect, buttonRadius);
+        CGContextAddPath(context, highlightPath);
         CGContextStrokePath(context);
         CGContextRestoreGState(context);
     }

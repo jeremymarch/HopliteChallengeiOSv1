@@ -40,11 +40,13 @@ enum {
 
 -(void)resetKeyboard
 {
-    NSLog(@"reset keyboard");
+    //NSLog(@"reset keyboard");
     self.mfPressedOnce = NO;
     self.multipleFormsButton.titleLabel.font = [UIFont fontWithName:self.greekFont size:24];
     self.multipleFormsButton.titleEdgeInsets = UIEdgeInsetsMake(0, 0, 0, 0);
     [self.multipleFormsButton setTitle:@"MF" forState:UIControlStateNormal];
+    self.multipleFormsButton.mfPressed = NO;
+    [self.multipleFormsButton setNeedsDisplay];
 }
 
 - (BOOL) enableInputClicksWhenVisible {
@@ -188,6 +190,7 @@ enum {
         UILongPressGestureRecognizer *longDeletePressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longDeletePress:)];
         //longDeletePressGesture.minimumPressDuration = 0.5;
         //longDeletePressGesture.delaysTouchesBegan = true;
+        longDeletePressGesture.allowableMovement = 50.0f;
         [self.deleteButton addGestureRecognizer:longDeletePressGesture];
     
         self.submitButton = [[OtherButton alloc] initWithText:@"Enter" AndDevice:self->device AndFont:self.greekFont];
@@ -305,8 +308,13 @@ enum {
     {
         NSLog(@"w: %i, d: %i", self->windowWidth, self->deleteWidth);
         self.deleteButton.frame = CGRectMake(self->windowWidth - self->width - 12, self->topMargin + (1 * self->height), self->deleteWidth, self->height);
-        self.submitButton.frame = CGRectMake(self->windowWidth - 82, self->topMargin, 78, self->height);
-        self.multipleFormsButton.frame = CGRectMake(5, self->topMargin, self->deleteWidth + 7, self->height);
+        
+        int x2 = ((self.bounds.size.width - ([[letterRows objectAtIndex:0] count] * self->width ) ) / 2) + ([[letterRows objectAtIndex:0] count] * self->width) + (self->width / 4 * -1) - 2;
+        
+        self.submitButton.frame = CGRectMake(x2, self->topMargin, 78, self->height);
+        
+        int x3 = ((self.bounds.size.width - (([[letterRows objectAtIndex:0] count]) * self->width) ) / 2) - self->deleteWidth - 15;
+        self.multipleFormsButton.frame = CGRectMake(x3, self->topMargin, self->deleteWidth + 3, self->height);
     }
     else
     {
@@ -565,7 +573,7 @@ void printUtf8(char *u, int len)
     }
 }
 
-- (IBAction)multipleFormsButtonPressed:(UIButton *)sender {
+- (IBAction)multipleFormsButtonPressed:(OtherButton *)sender {
 
     if (!self.targetTextInput) {
         return;
@@ -580,6 +588,8 @@ void printUtf8(char *u, int len)
         [sender setTitle:@"," forState:UIControlStateNormal];
         sender.titleEdgeInsets = UIEdgeInsetsMake(-18, 0, 0, 0);
         sender.titleLabel.font = [UIFont fontWithName:self.greekFont size:40];
+        sender.mfPressed = YES;
+        [sender setNeedsDisplay];
         /*
         sender.backgroundColor = [UIColor whiteColor];
         sender.layer.borderWidth = 2.0f;
@@ -657,7 +667,7 @@ void printUtf8(char *u, int len)
 {
     if ( gesture.state == UIGestureRecognizerStateBegan )
     {
-        self.deleteHoldTimer = [NSTimer timerWithTimeInterval:0.1 target:self selector:@selector(keyboardDeletePressed:) userInfo:nil repeats:YES];
+        self.deleteHoldTimer = [NSTimer timerWithTimeInterval:0.085 target:self selector:@selector(keyboardDeletePressed:) userInfo:nil repeats:YES];
         
         NSRunLoop * theRunLoop = [NSRunLoop currentRunLoop];
         [theRunLoop addTimer:self.deleteHoldTimer forMode:NSDefaultRunLoopMode];

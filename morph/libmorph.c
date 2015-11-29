@@ -837,6 +837,42 @@ void changeFormByDegrees(VerbFormC *vf, int degrees)
     vf->mood = tempMood;
 }
 
+//unit is the highest unit we're up to
+bool isValidFormForUnit(VerbFormC *vf, int unit)
+{
+    if (unit <= 2)
+    {
+        if (vf->tense == PERFECT || vf->tense == PLUPERFECT || vf->voice != ACTIVE || vf->mood != INDICATIVE)
+            return false;
+    }
+    else if (unit <= 4)
+    {
+        if (vf->voice != ACTIVE || vf->mood == IMPERATIVE)
+            return false;
+    }
+    else if (unit <= 5)
+    {
+        if (vf->voice == MIDDLE || vf->mood == IMPERATIVE)
+            return false;
+    }
+    else if (unit <= 7)
+    {
+        if (vf->mood == IMPERATIVE)
+            return false;
+    }
+    else if (unit <= 11)
+    {
+        return true;
+    }
+    else if (unit <= 12)
+    {
+        if ((utf8HasSuffix(vf->verb->present, "μι") && vf->tense == AORIST) || (utf8HasSuffix(vf->verb->present, "στημι") && (vf->tense == AORIST || vf->tense == PERFECT || vf->tense == PLUPERFECT)))
+            return false;
+    }
+    
+    return true;
+}
+
 //sort with weights going from smallest to largest, they will be ints who add up to 100
 //http://stackoverflow.com/questions/8529665/changing-probability-of-getting-a-random-number
 int chooseRandomFromArrayWithWeighting(int *values, int len, int *weights)
