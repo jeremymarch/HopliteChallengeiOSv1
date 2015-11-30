@@ -532,7 +532,12 @@ void printUCS22(UCS2 *u, int len)
         {
             NSLog(@"not correct");
             CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
-            [self.redXView setFrame:CGRectMake((self.view.frame.size.width + size.width) / 2 + 15, self.redXView.frame.origin.y, self.redXView.frame.size.width,self.redXView.frame.size.height)];
+            int offset;
+            if (size.width == 0)
+                offset = -8;
+            else
+                offset = 15;
+            [self.redXView setFrame:CGRectMake((self.view.frame.size.width + size.width) / 2 + offset, self.redXView.frame.origin.y, self.redXView.frame.size.width,self.redXView.frame.size.height)];
             self.redXView.hidden = NO;
             
             if (!self.soundDisabled)
@@ -562,7 +567,7 @@ void printUCS22(UCS2 *u, int len)
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
                     [self typeLabel:self.changedForm withString:temp withInterval:self.typeInterval];
                     
-                    dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC));
+                    dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC));
                     dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
                         self.continueButton.enabled = YES;
                         self.backButton.enabled = YES;
@@ -583,11 +588,11 @@ void printUCS22(UCS2 *u, int len)
         }
         else
         {
-            dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC));
-            dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
+            //dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC));
+            //dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
                 self.continueButton.hidden = NO;
                 self.backButton.hidden = NO;
-            });
+            //});
         }
         
         self.front = false;
@@ -1850,21 +1855,23 @@ void printUCS22(UCS2 *u, int len)
     [self.incorrectButton setFrame:CGRectMake((((w/2) - self.correctButton.frame.size.width) / 2) + w/2, self.view.frame.size.height / 1.3, self.correctButton.frame.size.width, self.correctButton.frame.size.height)];
     
     [self.continueButton.layer setMasksToBounds:YES];
-    self.continueButton.layer.borderWidth = 4.0f;
+    self.continueButton.layer.borderWidth = 6.0f;
     self.continueButton.layer.borderColor = [UIColor whiteColor].CGColor;
     self.continueButton.backgroundColor = UIColorFromRGB(0x43609c);
     [self.continueButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.continueButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+    self.continueButton.layer.cornerRadius = 2.0f;
     
     [self.backButton.layer setMasksToBounds:YES];
-    self.backButton.layer.borderWidth = 4.0f;
+    self.backButton.layer.borderWidth = 6.0f;
     self.backButton.layer.borderColor = [UIColor whiteColor].CGColor;
     self.backButton.backgroundColor = UIColorFromRGB(0x43609c);
     [self.backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.backButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+    self.backButton.layer.cornerRadius = 2.0f;
     
-    [self.continueButton setFrame:CGRectMake((screenSize.width / 2) - 4, screenSize.height - 70, (screenSize.width / 2) + 4, 70)];
-    [self.backButton setFrame:CGRectMake(0, screenSize.height - 70, (screenSize.width / 2), 70)];
+    [self.continueButton setFrame:CGRectMake((screenSize.width / 2), screenSize.height - 70, (screenSize.width / 2), 70)];
+    [self.backButton setFrame:CGRectMake(0, screenSize.height - 70, (screenSize.width / 2) + 6, 70)];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {
