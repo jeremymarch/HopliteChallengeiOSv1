@@ -237,7 +237,9 @@ enum {
     AORIST_ACTIVE_INDICATIVE_MI_ROOT,
     NUM_ENDINGS
 };
-    
+
+void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, int units[], int numUnits);
+
 bool compareForms(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
 bool compareWord(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
 int getForm(VerbFormC *vf, char *buffer, int bufferLen, bool includeAlternateForms, bool decompose);

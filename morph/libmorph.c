@@ -85,6 +85,68 @@ void shortToVF(unsigned short s, VerbFormC *vf)
         vf->tense = FUTURE;
 }
 */
+bool newSeq()
+{
+
+    return true;
+}
+
+void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, int units[], int numUnits)
+{
+    static Verb *v;
+    int repsPerVerb = 3;
+    static int verbSeq = 4;
+    int bufferLen = 2048;
+    char buffer[bufferLen];
+    
+    if (verbSeq > repsPerVerb)
+    {
+        v = getRandomVerb(units, numUnits);
+        verbSeq = 1;
+    }
+    else
+    {
+        verbSeq++;
+    }
+    vf1->verb = v;
+    
+    int highestUnit = 0;
+    for (int i = 0; i < numUnits; i++)
+    {
+        if (units[i] > highestUnit)
+            highestUnit = units[i];
+    }
+    
+    do
+    {
+        generateForm(vf1);
+        
+    } while (!getForm(vf1, buffer, bufferLen, false, false) || !isValidFormForUnit(vf1, highestUnit) || !strncmp(buffer, "—", 1));
+    
+    //vf2 = vf1;
+    /*
+     vf.person = SECOND;
+     vf.number = SINGULAR;
+     vf.tense = PRESENT;
+     vf.voice = PASSIVE;
+     vf.mood = INDICATIVE;
+     getForm(&vf, buffer, bufferLen, true, false);
+     */
+    
+    vf2->person = vf1->person;
+    vf2->number = vf1->number;
+    vf2->tense = vf1->tense;
+    vf2->voice = vf1->voice;
+    vf2->mood = vf1->mood;
+    vf2->verb = vf1->verb;
+    
+    do
+    {
+        changeFormByDegrees(vf2, 2);
+    } while (!getForm(vf2, buffer, bufferLen, true, false) || !isValidFormForUnit(vf2, highestUnit) || !strncmp(buffer, "—", 1));
+}
+
+
 void getStartEnd(UCS2 *w1, int w1len, int *starts, int *ends, int *numStrings)
 {
     int start = 0;

@@ -370,6 +370,10 @@ UIView *backSideTest;
 
 //for time envelopes see:
 //http://stackoverflow.com/questions/5161465/how-to-create-custom-easing-function-with-core-animation
+//http://stackoverflow.com/questions/14961581/cadisplaylink-running-lower-frame-rate-on-ios5-1
+//http://stackoverflow.com/questions/29938707/animate-a-uiview-using-cadisplaylink-combined-with-camediatimingfunction-to
+//http://netcetera.org/camtf-playground.html
+
 -(void)typeLabel:(UILabel*)l withString:(NSString*)string withInterval:(double)interval
 {
     //BOOL async = NO;
@@ -662,29 +666,12 @@ void printUCS22(UCS2 *u, int len)
 
 -(void) loadMorphTraining
 {
-    VerbFormC vf;
-    Verb *v;
+    VerbFormC vf1, vf2;
     int bufferLen = 1024;
     char buffer[bufferLen];
 
-    //v = &verbs[13];
-    v = getRandomVerb( self->units, self->numUnits);
-    vf.verb = v;
-    //vf.verb = &verbs[28];
-    //don't use dash for first verb form.
-    
-    int highestUnit = 0;
-    for (int i = 0; i < self->numUnits; i++)
-    {
-        if (self->units[i] > highestUnit)
-            highestUnit = self->units[i];
-    }
-    
-    do
-    {
-        generateForm(&vf);
-        
-    } while (!getForm(&vf, buffer, bufferLen, false, false) || !isValidFormForUnit(&vf, highestUnit) || !strncmp(buffer, "—", 1));
+    nextVerbSeq(&vf1, &vf2, self->units, self->numUnits);
+    getForm(&vf1, buffer, bufferLen, false, false);
     
     NSString *distractors = nil;
     NSArray *distractorArr = nil;
@@ -696,33 +683,21 @@ void printUCS22(UCS2 *u, int len)
     origForm = [self selectRandomFromCSV:origForm];
     self.origStr = origForm;
     
-    getForm(&vf, buffer, bufferLen, false, true);
+    getForm(&vf1, buffer, bufferLen, false, true);
     self.origStrDecomposed = [NSString stringWithUTF8String: (const char*)buffer];
     self.origStrDecomposed = [self selectRandomFromCSV:self.origStrDecomposed]; //FIXME, What if not same as orig form
     
     //getAbbrevDescription(&vf, buffer, bufferLen);
     //NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
-    /*
-    vf.person = SECOND;
-    vf.number = SINGULAR;
-    vf.tense = PRESENT;
-    vf.voice = PASSIVE;
-    vf.mood = INDICATIVE;
-    getForm(&vf, buffer, bufferLen, true, false);
-     */
-    do
-    {
-        changeFormByDegrees(&vf, 2);
-    } while (!getForm(&vf, buffer, bufferLen, true, false) || !isValidFormForUnit(&vf, highestUnit) || !strncmp(buffer, "—", 1));
-    
+    getForm(&vf2, buffer, bufferLen, false, false);
     newForm = [NSString stringWithUTF8String: (const char*)buffer];
     self.changedStr = newForm;
     
-    getForm(&vf, buffer, bufferLen, true, true);
+    getForm(&vf2, buffer, bufferLen, true, true);
     self.changedStrDecomposed = [NSString stringWithUTF8String: (const char*)buffer];
     
-    getAbbrevDescription(&vf, buffer, bufferLen);
+    getAbbrevDescription(&vf2, buffer, bufferLen);
     newDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
     if (self.verbQuestionType == MULTIPLE_CHOICE)
@@ -730,7 +705,7 @@ void printUCS22(UCS2 *u, int len)
         //stops pause when updating button text
         //http://stackoverflow.com/questions/18946490/how-to-stop-unwanted-uibutton-animation-on-title-change
         
-        getDistractorsForChange(&vf, &vf, 3, buffer);
+        getDistractorsForChange(&vf2, &vf2, 3, buffer);
         distractors = [NSString stringWithUTF8String: (const char*)buffer];
         distractorArr = [distractors componentsSeparatedByString:@"; "];
     }
