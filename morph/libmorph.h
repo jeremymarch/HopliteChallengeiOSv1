@@ -125,6 +125,14 @@ enum {
 #define UNICODE_SURROGATE_PAIR    -1
 #define UNICODE_BAD_INPUT         -2
 
+typedef struct vso {
+    bool startOnFirstSing;
+    unsigned char repsPerVerb;
+    unsigned char degreesToChange;
+    unsigned char numUnits;
+    int units[20];
+} VerbSeqOptions;
+
 typedef struct v {
     unsigned int verbid; //an index in the verbs static array
     unsigned int verbclass; //a bitfield
@@ -238,7 +246,7 @@ enum {
     NUM_ENDINGS
 };
 
-void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, int units[], int numUnits);
+void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso);
 
 bool compareForms(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
 bool compareWord(UCS2 *w1, int w1len, UCS2 *w2, int w2len);

@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "PopUp.h"
 #import "keyboard.h"
+#import "libmorph.h"
 
 enum {
     HOPLITE_CHALLENGE = 0,
@@ -19,8 +20,7 @@ enum {
 
 @interface DetailViewController : UIViewController <UISplitViewControllerDelegate, vc2delegate, UIGestureRecognizerDelegate>
 {
-    int units[20];
-    int numUnits;
+    VerbSeqOptions vsOptions;
 }
 @property double typeInterval;
 @property BOOL expanded;
@@ -28,6 +28,7 @@ enum {
 @property BOOL soundDisabled;
 @property BOOL animationDisabled;
 @property bool animate;
+@property bool autoNav;
 
 @property (strong, nonatomic) id detailItem;
 @property NSInteger HCTime;

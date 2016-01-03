@@ -85,23 +85,23 @@ void shortToVF(unsigned short s, VerbFormC *vf)
         vf->tense = FUTURE;
 }
 */
-bool newSeq()
-{
 
-    return true;
-}
-
-void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, int units[], int numUnits)
+void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
 {
     static Verb *v;
-    int repsPerVerb = 3;
-    static int verbSeq = 4;
+    static Verb *lastV = NULL;
+    static int verbSeq = 4; //start one more than repsPerVerb, so we reset
     int bufferLen = 2048;
     char buffer[bufferLen];
     
-    if (verbSeq > repsPerVerb)
+    if (verbSeq >= vso->repsPerVerb)
     {
-        v = getRandomVerb(units, numUnits);
+        do //so we don't ask the same verb twice in a row
+        {
+            v = getRandomVerb(vso->units, vso->numUnits);
+        } while (v == lastV);
+        lastV = v;
+        
         verbSeq = 1;
     }
     else
@@ -111,27 +111,35 @@ void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, int units[], int numUnits)
     vf1->verb = v;
     
     int highestUnit = 0;
-    for (int i = 0; i < numUnits; i++)
+    for (int i = 0; i < vso->numUnits; i++)
     {
-        if (units[i] > highestUnit)
-            highestUnit = units[i];
+        if (vso->units[i] > highestUnit)
+            highestUnit = vso->units[i];
     }
     
-    do
+    if (vso->startOnFirstSing && verbSeq == 1)
     {
-        generateForm(vf1);
+        vf1->person = FIRST;
+        vf1->number = SINGULAR;
+        vf1->tense = PRESENT;
+        vf1->voice = ACTIVE;
+        vf1->mood = INDICATIVE;
         
-    } while (!getForm(vf1, buffer, bufferLen, false, false) || !isValidFormForUnit(vf1, highestUnit) || !strncmp(buffer, "—", 1));
-    
-    //vf2 = vf1;
-    /*
-     vf.person = SECOND;
-     vf.number = SINGULAR;
-     vf.tense = PRESENT;
-     vf.voice = PASSIVE;
-     vf.mood = INDICATIVE;
-     getForm(&vf, buffer, bufferLen, true, false);
-     */
+        //doesn't work if verb is deponent
+        if (!getForm(vf1, buffer, bufferLen, false, false))
+        {
+            vf1->voice = MIDDLE;
+            getForm(vf1, buffer, bufferLen, false, false);
+        }
+    }
+    else
+    {
+        do
+        {
+            generateForm(vf1);
+            
+        } while (!getForm(vf1, buffer, bufferLen, false, false) || !isValidFormForUnit(vf1, highestUnit) || !strncmp(buffer, "—", 1));
+    }
     
     vf2->person = vf1->person;
     vf2->number = vf1->number;
@@ -142,7 +150,7 @@ void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, int units[], int numUnits)
     
     do
     {
-        changeFormByDegrees(vf2, 2);
+        changeFormByDegrees(vf2, vso->degreesToChange);
     } while (!getForm(vf2, buffer, bufferLen, true, false) || !isValidFormForUnit(vf2, highestUnit) || !strncmp(buffer, "—", 1));
 }
 
@@ -1044,6 +1052,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     for (int i = 0; i < bufferLen; i++)
         utf8OutputBuffer[i] = '\0';
     
+    //Step 1: get principal part
     char *utf8Stems = getPrincipalPartForTense(vf->verb, vf->tense, vf->voice);
     if (!utf8Stems || utf8Stems[0] == '\0')
     {
@@ -1086,12 +1095,14 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         ucs2StemPlusEndingBuffer[i] = 0;
     
     int ucs2StemPlusEndingBufferLen = 0;
-
+    //Step 2: for each stem of this principal part...
     for (stem = 0; stem < numStems; stem++)
     {
-        bool contractedFuture = false;
         stemStart = stemStarts[stem];
         stemLen = stemStarts[stem + 1] - stemStarts[stem] - 2;
+     
+        //Step 3: check for contracted future before stripping accent, has to be done for each stem
+        bool contractedFuture = false;
         UCS2 contractedMiddleDeponentFuture[] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_UPSILON_WITH_PERISPOMENI, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
         
         if (vf->tense == FUTURE && (ucs2Stems[stemLen - 1] == GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI || hasSuffix(&ucs2Stems[stemStart], stemLen, contractedMiddleDeponentFuture, 5) ))
@@ -1105,6 +1116,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             continue;
         }
         
+        //Step 4: strip accent from principal part
         stripAccent(&ucs2Stems[stemStart], &stemLen);
         
         //weed out active forms if aorist deponent
@@ -1130,6 +1142,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             continue;
         }
         
+        //Step 5: get appropriate ending for this stem
         //This needs to be in the stems loop.  What if the stems require different endings?
         char *utf8Ending = getEnding(vf, &ucs2Stems[stemStart], stemLen, contractedFuture, !decompose); //get ending here before stripping from pp, so know if 2nd aorist
         if (!utf8Ending)
@@ -1153,7 +1166,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             }
         }
         endingStarts[numEndings] = i + 2; //to get length of last stem. plus 2 to simulate a comma and space
-        
+        //Step 6: for each alternative ending...
         for (ending = 0; ending < numEndings; ending++)
         {
             endingStart = endingStarts[ending];
@@ -1169,6 +1182,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             int stemStartInBuffer = ucs2StemPlusEndingBufferLen - stemLen; //set to the index in ucs2StemPlusEndingBuffer
             int tempStemLen = stemLen;
             
+            //Step 7: remove ending from principal part
             stripEndingFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, vf->tense, vf->voice);
             
             //only use one of the aorist passive imperative endings for second singular
@@ -1193,7 +1207,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
                     }
                 }
             }
-            
+            //Step 8: add or remove augment
             if (vf->tense == IMPERFECT || vf->tense == PLUPERFECT)
             {
                 augmentStem(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, decompose);
@@ -1214,7 +1228,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
                 
                 stripAugmentFromPrincipalPart(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, presentInitialLetter, decompose);
             }
-
+            //Step 9: add the ending to the principal part
             addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen, contractedFuture, decompose);
 
             //Labe/ Accent EXCEPTION H&Q page 326
@@ -1225,7 +1239,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             {
                 ucs2StemPlusEndingBuffer[3] = GREEK_SMALL_LETTER_EPSILON_WITH_OXIA;
             }
-            
+            //Step 10: add accent
             //add accent, if word does not already have one
             if (!wordIsAccented(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen))
             {

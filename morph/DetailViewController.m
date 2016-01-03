@@ -11,6 +11,11 @@
 #import "libmorph.h"
 #import "GreekForms.h"
 #import <AudioToolbox/AudioToolbox.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+
 
 //http://stackoverflow.com/questions/1560081/how-can-i-create-a-uicolor-from-a-hex-string
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
@@ -427,11 +432,36 @@ UIView *backSideTest;
             dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
             j++;
             dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
-            {
-                [l setText:[string substringToIndex:i+1]];
-            });
+                           {
+                               [l setText:[string substringToIndex:i+1]];
+                           });
         }
     //}
+}
+
+-(void)hideTypeLabel:(UILabel*)l withString:(NSString*)string withInterval:(double)interval
+{
+    if ([string length] < 1)
+        return;
+
+    for (NSInteger i = [string length] - 1, j = [string length] - 1; i >= 0; i--)
+    {
+        //don't wait for space characters
+        while ([string characterAtIndex:i] == ' ')
+        {
+            i--;
+        }
+        
+        if (i <= 0)
+            break;
+        
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
+        j--;
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+                       {
+                           [l setText:[string substringToIndex:i]];
+                       });
+    }
 }
 
 void printUCS22(UCS2 *u, int len)
@@ -560,10 +590,13 @@ void printUCS22(UCS2 *u, int len)
                 self.changedForm.text = @"";
                 self.changedForm.hidden = NO;
                 self.changedForm.textAlignment = NSTextAlignmentLeft;
-                self.continueButton.hidden = NO;
-                self.backButton.hidden = NO;
-                self.continueButton.enabled = NO;
-                self.backButton.enabled = NO;
+                if (!self.autoNav)
+                {
+                    self.continueButton.hidden = NO;
+                    self.backButton.hidden = NO;
+                    self.continueButton.enabled = NO;
+                    self.backButton.enabled = NO;
+                }
                 //[self.continueButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
                 //[self.backButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
                 
@@ -573,8 +606,19 @@ void printUCS22(UCS2 *u, int len)
                     
                     dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC));
                     dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
-                        self.continueButton.enabled = YES;
-                        self.backButton.enabled = YES;
+                        if (!self.autoNav)
+                        {
+                            self.continueButton.enabled = YES;
+                            self.backButton.enabled = YES;
+                        }
+                        else
+                        {
+                            self.redXView.hidden = YES;
+                            self.greenCheckView.hidden = YES;
+                            [self loadNext];
+                            self.textfield.text = @"";
+                            self.timeLabel.hidden = true;
+                        }
                         //[self.continueButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
                         //[self.backButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
                     });
@@ -585,8 +629,19 @@ void printUCS22(UCS2 *u, int len)
                 self.changedForm.hidden = NO;
                 dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC));
                 dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
-                    self.continueButton.hidden = NO;
-                    self.backButton.hidden = NO;
+                    if (!self.autoNav)
+                    {
+                        self.continueButton.hidden = NO;
+                        self.backButton.hidden = NO;
+                    }
+                    else
+                    {
+                        self.redXView.hidden = YES;
+                        self.greenCheckView.hidden = YES;
+                        [self loadNext];
+                        self.textfield.text = @"";
+                        self.timeLabel.hidden = true;
+                    }
                 });
             }
         }
@@ -606,6 +661,8 @@ void printUCS22(UCS2 *u, int len)
     {
         self.redXView.hidden = YES;
         self.greenCheckView.hidden = YES;
+        
+        //[self hideTypeLabel:self.changedForm withString:self.changedForm.text withInterval:self.typeInterval];
         
         [self loadNext];
         self.textfield.text = @"";
@@ -670,7 +727,7 @@ void printUCS22(UCS2 *u, int len)
     int bufferLen = 1024;
     char buffer[bufferLen];
 
-    nextVerbSeq(&vf1, &vf2, self->units, self->numUnits);
+    nextVerbSeq(&vf1, &vf2, &self->vsOptions);
     getForm(&vf1, buffer, bufferLen, false, false);
     
     NSString *distractors = nil;
@@ -1563,19 +1620,21 @@ void printUCS22(UCS2 *u, int len)
     if ([self.levels count] > 0)
     {
         int i;
-        self->numUnits = 0;
+        self->vsOptions.numUnits = 0;
         for (i = 0; i < [self.levels count]; i++)
         {
-            self->units[i] = (int)[[self.levels objectAtIndex:i] integerValue];
-            self->numUnits++;
+            self->vsOptions.units[i] = (int)[[self.levels objectAtIndex:i] integerValue];
+            self->vsOptions.numUnits++;
         }
     }
     else //default if nothing selected
     {
-        
-        self->units[0] = 1;
-        self->numUnits = 1;
+        self->vsOptions.units[0] = 1;
+        self->vsOptions.numUnits = 1;
     }
+    self->vsOptions.startOnFirstSing = true;
+    self->vsOptions.degreesToChange = 2;
+    self->vsOptions.repsPerVerb = 3;
 }
 
 -(void)setMode
@@ -1649,7 +1708,33 @@ void printUCS22(UCS2 *u, int len)
 {
     [super viewDidLoad];
     
+    /*
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectoryPath = [paths objectAtIndex:0];
+    NSLog(@"D: %@", documentsDirectoryPath);
+    NSLog(@"D2: %d", chdir([documentsDirectoryPath UTF8String]));
+    char path[1024];
+    snprintf(path, 1023, "%s%s", [documentsDirectoryPath UTF8String], "/hcdata" );
+    
+    void *mem = nil;
+    int fildes;// = open(path, O_RDWR | O_CREAT);
+    if ((fildes = open (path, O_RDWR | O_CREAT)) < 0)
+        NSLog(@"can't create %s for writing", path);
+    
+    // go to the location corresponding to the last byte
+    if (lseek (fildes, 1024, SEEK_SET) == -1)
+        NSLog (@"lseek error");
+    
+    // write a dummy byte at the last location
+    if (write (fildes, "", 1) != 1)
+        NSLog (@"write error");
+    
+    mem = mmap(0, 1024, PROT_READ | PROT_WRITE, MAP_PRIVATE, fildes, 0);
+    NSLog(@"D3: %d, %d", mem, fildes);
+    */
+    
     self.typeInterval = 0.02;
+    self.autoNav = NO;//YES;
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
