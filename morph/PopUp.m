@@ -8,6 +8,12 @@
 
 #import "PopUp.h"
 
+enum {
+    HC_TIMEOUT = 0,
+    DISABLE_SOUND = 1,
+    VERBS_ROW = 2
+};
+
 @implementation PopUp
 
 -(IBAction)segmentValueChaged:(id)sender
@@ -83,7 +89,7 @@
             //[self.buttonStates insertObject:[NSNumber numberWithBool:NO] atIndex:i];
         }
         
-        self.optionLabels = @[@"Hoplite Challenge Timeout", @"Disable Animation", @"Disable Sound", @"White on Black", @"Include Dual", @"Verbs"];
+        self.optionLabels = @[@"Hoplite Challenge Timeout", @"Disable Sound", @"Verbs"];
         //self.modePickerLabels = @[@"Hoplite Challenge", @"Hoplite Practice", @"Self Practice", @"Multiple Choice"];
         
         self.segment=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:@"H&Q Units", @"Options", nil]];
@@ -163,20 +169,11 @@
     else
     {
         switch (indexPath.row) {
-            case 0:
+            case HC_TIMEOUT:
                 //[defaults setBool:b forKey:@"HCTime"];
                 break;
-            case 1:
-                [defaults setBool:b forKey:@"DisableAnimations"];
-                break;
-            case 2:
+            case DISABLE_SOUND:
                 [defaults setBool:b forKey:@"DisableSound"];
-                break;
-            case 3:
-                [defaults setBool:b forKey:@"WhiteOnBlack"];
-                break;
-            case 4:
-                [defaults setBool:b forKey:@"IncludeDual"];
                 break;
             default:
                 break;
@@ -254,7 +251,7 @@
                 [defaults synchronize];
             }
         }
-        else if (self->unitsOrOptions == OPTIONS && indexPath.row == 5)
+        else if (self->unitsOrOptions == OPTIONS && indexPath.row == VERBS_ROW)
         {
             //for Verbs, just show an arrow.
             cell.accessoryView = nil;
@@ -274,20 +271,11 @@
             else if (self->unitsOrOptions == OPTIONS)
             {
                 switch (indexPath.row) {
-                    case 0:
+                    case HC_TIMEOUT:
                         //mode row
                         break;
-                    case 1:
-                        b = ([defaults boolForKey:@"DisableAnimations"] == YES) ? YES : NO;
-                        break;
-                    case 2:
+                    case DISABLE_SOUND:
                         b = ([defaults boolForKey:@"DisableSound"] == YES) ? YES : NO;
-                        break;
-                    case 3:
-                        b = ([defaults boolForKey:@"WhiteOnBlack"] == YES) ? YES : NO;
-                        break;
-                    case 4:
-                        b = ([defaults boolForKey:@"IncludeDual"] == YES) ? YES : NO;
                         break;
                     default:
                         break;
@@ -323,7 +311,7 @@
     }
     if (self->unitsOrOptions == OPTIONS)
     {
-        if (indexPath.row == 5)
+        if (indexPath.row == VERBS_ROW)
         {
             //VerbDetailViewController *vdvc = [self.storyboard instantiateViewControllerWithIdentifier:@"vdvc"];
             //[self.navigationController pushViewController:dvc animated:NO];
@@ -377,7 +365,7 @@
 - (void)orientationChanged:(NSNotification *)notification
 {
     UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
-    CGRect rect = CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.height, [[UIScreen mainScreen] bounds].size.width);;
+    CGRect rect = CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.height, [[UIScreen mainScreen] bounds].size.width);
     
     switch (deviceOrientation) {
         case 1:

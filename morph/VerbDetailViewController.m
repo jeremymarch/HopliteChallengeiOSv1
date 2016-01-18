@@ -70,6 +70,25 @@
     [self printVerbs];
 }
 
+- (NSString *) getPPString: (Verb *)verb
+{
+    NSString *pres = [NSString stringWithUTF8String: verb->present];
+    NSString *fut = [NSString stringWithUTF8String: verb->future];
+    NSString *aor = [NSString stringWithUTF8String: verb->aorist];
+    NSString *perf = [NSString stringWithUTF8String: verb->perf];
+    NSString *perfmid = [NSString stringWithUTF8String: verb->perfmid];
+    NSString *aorpass = [NSString stringWithUTF8String: verb->aoristpass];
+    
+    pres = [pres stringByReplacingOccurrencesOfString:@"," withString:@" or"];
+    fut = [fut stringByReplacingOccurrencesOfString:@"," withString:@" or"];
+    aor = [aor stringByReplacingOccurrencesOfString:@"," withString:@" or"];
+    perf = [perf stringByReplacingOccurrencesOfString:@"," withString:@" or"];
+    perfmid = [perfmid stringByReplacingOccurrencesOfString:@"," withString:@" or"];
+    aorpass = [aorpass stringByReplacingOccurrencesOfString:@"," withString:@" or"];
+    
+    return [NSString stringWithFormat:@"%@, %@, %@, %@, %@, %@", pres, fut, aor, perf, perfmid, aorpass];
+}
+
 -(void) printVerbs
 {
     [[self.view subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
@@ -82,8 +101,29 @@
     int labelHeight = 28;
     int verticalPadding = 4;
     int leftPadding = 12;
+    bool twoCols = true;
+    int yOffset = 0;
     
     vf.verb = &verbs[self.verbIndex];
+    
+    //principal part label
+    UILabel *l = [[UILabel alloc] init];
+
+    l.numberOfLines = 0;
+    
+    l.text = [self getPPString:vf.verb];
+    l.font = [UIFont fontWithName:@"NewAthenaUnicode" size:24.0];
+    [self.view addSubview:l];
+    
+    //http://stackoverflow.com/questions/27374612/how-do-i-calculate-the-uilabel-height-dynamically
+    CGFloat maxLabelWidth = self.view.bounds.size.width - (leftPadding * 2);
+    CGSize neededSize = [l sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)];
+    [l setFrame:CGRectMake(leftPadding, yOffset, self.view.frame.size.width - (leftPadding * 2), neededSize.height + (verticalPadding * 2))];
+    yOffset += neededSize.height + (verticalPadding * 2);
+    
+    //countPerSection++;
+    rowCount += 4;
+    
     for (int g1 = 0; g1 < NUM_TENSES; g1++)
     {
         vf.tense = g1;
@@ -116,7 +156,8 @@
                     continue; //skip passive if middle+passive are the same
                 }
                 
-                UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(0, rowCount * (labelHeight + verticalPadding), self.view.frame.size.width, labelHeight)];
+                UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, self.view.frame.size.width, labelHeight)];
+                yOffset += (labelHeight + verticalPadding);
                 l.text = s;
                 l.font = [UIFont fontWithName:@"HelveticaNeue" size:18.0];
                 l.textColor = [UIColor whiteColor];
@@ -137,9 +178,25 @@
                         
                         if (getForm(&vf, buffer, bufferLen, true, self.expanded))
                         {
-                            UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(leftPadding, rowCount * (labelHeight + verticalPadding), self.view.frame.size.width, labelHeight)];
+                            UILabel *l = [[UILabel alloc] init];
+                            
+
                             l.text = [NSString stringWithUTF8String: buffer];
                             l.font = [UIFont fontWithName:@"NewAthenaUnicode" size:24.0];
+                            
+                            if (twoCols)
+                            {
+                                neededSize = [l sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)];
+                                l.numberOfLines = 0;
+                            }
+                            else
+                            {
+                                neededSize.height = labelHeight;
+                            }
+                        
+                            [l setFrame:CGRectMake(leftPadding, yOffset, self.view.frame.size.width - (leftPadding * 2), neededSize.height + verticalPadding)];
+                            yOffset += neededSize.height + verticalPadding;
+                            
                             [self.view addSubview:l];
                             countPerSection++;
                             rowCount++;
@@ -158,7 +215,7 @@
         }
     }
     //set height of scrollview
-    self.view.contentSize = CGSizeMake([[UIScreen mainScreen] bounds].size.width, rowCount * (labelHeight + verticalPadding));
+    self.view.contentSize = CGSizeMake([[UIScreen mainScreen] bounds].size.width, yOffset);
 }
 
 - (void)didReceiveMemoryWarning {

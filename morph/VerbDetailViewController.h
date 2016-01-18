@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "libmorph.h"
 
 @interface VerbDetailViewController : UIViewController <UIGestureRecognizerDelegate>
 @property (strong, nonatomic) UIScrollView *view;
@@ -15,4 +16,6 @@
 
 -(void)setVerbIndex2:(NSInteger)verbIndex;
 -(NSInteger)verbIndex2;
+-(NSString *) getPPString: (Verb *)verb;
+
 @end

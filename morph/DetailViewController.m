@@ -705,7 +705,15 @@ void printUCS22(UCS2 *u, int len)
     else
     {
         elapsedTime = CACurrentMediaTime() - self.startTime;
-        self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
+        if (self.limitElapsedTime && elapsedTime > self.elapsedTimeLimit)
+        {
+            self.timeLabel.text = @"Timed Out!";
+            [self preCheckVerbTimeout];
+        }
+        else
+        {
+            self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
+        }
     }
 }
 
@@ -1673,6 +1681,10 @@ void printUCS22(UCS2 *u, int len)
                 //self.changedForm.hidden = NO;
                 //self.textfield.hidden = YES;
                 self.textfield.text = self.changedStrDecomposed;
+                
+                //slide green check over
+                CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
+                [self.greenCheckView setFrame:CGRectMake((self.view.frame.size.width + size.width) / 2 + 15, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
             }
             else
             {
@@ -1691,6 +1703,9 @@ void printUCS22(UCS2 *u, int len)
             if (self.changedForm.hidden == YES)
             {
                 self.textfield.text = self.changedStr;
+                //slide green check over
+                CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
+                [self.greenCheckView setFrame:CGRectMake((self.view.frame.size.width + size.width) / 2 + 15, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
             }
             else
             {
@@ -1717,24 +1732,26 @@ void printUCS22(UCS2 *u, int len)
     snprintf(path, 1023, "%s%s", [documentsDirectoryPath UTF8String], "/hcdata" );
     
     void *mem = nil;
-    int fildes;// = open(path, O_RDWR | O_CREAT);
-    if ((fildes = open (path, O_RDWR | O_CREAT)) < 0)
+    int fd;// = open(path, O_RDWR | O_CREAT);
+    if ((fd = open (path, O_RDWR | O_CREAT)) < 0)
         NSLog(@"can't create %s for writing", path);
     
     // go to the location corresponding to the last byte
-    if (lseek (fildes, 1024, SEEK_SET) == -1)
+    if (lseek (fd, 1024, SEEK_SET) == -1)
         NSLog (@"lseek error");
     
     // write a dummy byte at the last location
-    if (write (fildes, "", 1) != 1)
+    if (write (fd, "", 1) != 1)
         NSLog (@"write error");
     
-    mem = mmap(0, 1024, PROT_READ | PROT_WRITE, MAP_PRIVATE, fildes, 0);
-    NSLog(@"D3: %d, %d", mem, fildes);
+    mem = mmap(0, 1024, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+    NSLog(@"D3: %d, %d", mem, fd);
     */
     
+    self.elapsedTimeLimit = 4; //upper limit in seconds for practice mode
+    self.limitElapsedTime = NO; //whether to enforce an upper time limit for practice mode
     self.typeInterval = 0.02;
-    self.autoNav = NO;//YES;
+    self.autoNav = NO;//YES;  //load next automatically or stop and show nav buttons?
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     

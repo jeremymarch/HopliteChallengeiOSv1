@@ -171,7 +171,7 @@ alpha:1.0]
         self.HCButton.titleLabel.textColor = [UIColor redColor];
         */
     }
-    else
+    else if (0)
     {
         double sw = self.view.frame.size.width;
         double sh = self.view.frame.size.height;
@@ -222,9 +222,64 @@ alpha:1.0]
          self.HCButton.titleLabel.textColor = [UIColor redColor];
          */
     }
+    else
+    {
+        double sw = self.view.frame.size.width;
+        double sh = self.view.frame.size.height;
+        
+        double bw = sw * 0.5;//150;
+        double v1 = sh * 0.5;
+        double v2 = sh * 0.75;
+        double bh = sh / 4;
+        
+        [self.HCButton setFrame:CGRectMake(10, sh - 180, sw - 20, 80)];
+        [self.HPButton setFrame:CGRectMake(10, sh - 90, sw - 20, 80)];
+        self.SPButton.hidden = YES;
+        self.MCButton.hidden = YES;
+        //[self.SPButton setFrame:CGRectMake(0 - 2, v2, bw + 2, bh)];
+        //[self.MCButton setFrame:CGRectMake(sw/2 - 2, v2, bw + 4, bh)];
+        
+        /*
+         [self.HCButton setBackgroundColor: UIColorFromRGB(0xCC4422)];
+         [self.HPButton setBackgroundColor: UIColorFromRGB(0x22CC55)];
+         [self.SPButton setBackgroundColor: UIColorFromRGB(0x4466CC)];
+         [self.MCButton setBackgroundColor: UIColorFromRGB(0xFFAA00)];
+         
+        self.HCButton.layer.borderWidth = 2.0;
+        self.HPButton.layer.borderWidth = 2.0;
+        self.SPButton.layer.borderWidth = 2.0;
+        self.MCButton.layer.borderWidth = 2.0;
+        */
+        
+        self.HCButton.backgroundColor = UIColorFromRGB(0x43609c);
+        self.HPButton.backgroundColor = UIColorFromRGB(0x43609c);
+        UIColor *textColor = [UIColor whiteColor];
+        UIFont *textFont = [UIFont fontWithName:@"Helvetica" size:22.0];
+        
+        [self.HCButton setTitleColor:textColor forState:UIControlStateNormal];
+        [self.HPButton setTitleColor:textColor forState:UIControlStateNormal];
+        [self.SPButton setTitleColor:textColor forState:UIControlStateNormal];
+        [self.MCButton setTitleColor:textColor forState:UIControlStateNormal];
+        [self.HCButton.titleLabel setFont:textFont];
+        [self.HPButton.titleLabel setFont:textFont];
+        [self.SPButton.titleLabel setFont:textFont];
+        [self.MCButton.titleLabel setFont:textFont];
+        
+        self.HCButton.titleLabel.numberOfLines = 2;
+        self.HPButton.titleLabel.numberOfLines = 2;
+        self.SPButton.titleLabel.numberOfLines = 2;
+        self.MCButton.titleLabel.numberOfLines = 2;
+        /*
+         self.HCButton.titleLabel.text = @"Hoplite Challenge";
+         self.HCButton.titleLabel.backgroundColor = [UIColor yellowColor];
+         self.HCButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+         self.HCButton.titleLabel.textColor = [UIColor redColor];
+         */
+    }
     [self.LGILabel setFrame:CGRectMake(30, 45, self.LGILabel.frame.size.width, self.LGILabel.frame.size.height)];
     self.LGILabel.hidden = YES;
-    [self.HCLabel setFrame:CGRectMake(30, 68, self.HCLabel.frame.size.width, self.HCLabel.frame.size.height)];
+    [self.HCLabel setFrame:CGRectMake(0, 120, self.view.bounds.size.width, self.HCLabel.frame.size.height)];
+    self.HCLabel.textAlignment = NSTextAlignmentCenter;
     [self.EOPLabel setFrame:CGRectMake(180, (sh /2) - 34, self.EOPLabel.frame.size.width, self.EOPLabel.frame.size.height)];
     [self.EOPLabel setFont:[UIFont fontWithName:@"NewAthenaUnicode" size:26.0]];
     [self.view bringSubviewToFront:self.EOPLabel];

@@ -29,6 +29,8 @@ enum {
 @property BOOL animationDisabled;
 @property bool animate;
 @property bool autoNav;
+@property CFTimeInterval elapsedTimeLimit;
+@property bool limitElapsedTime;
 
 @property (strong, nonatomic) id detailItem;
 @property NSInteger HCTime;

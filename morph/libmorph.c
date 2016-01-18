@@ -90,7 +90,7 @@ void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
 {
     static Verb *v;
     static Verb *lastV = NULL;
-    static int verbSeq = 4; //start one more than repsPerVerb, so we reset
+    static int verbSeq = 4; //start one more than repsPerVerb                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              , so we reset
     int bufferLen = 2048;
     char buffer[bufferLen];
     
