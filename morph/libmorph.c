@@ -96,6 +96,7 @@ void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
 {
     static Verb *v;
     static Verb *lastV = NULL;
+    static VerbFormC lastVF;
 
     int bufferLen = 2048;
     char buffer[bufferLen];
@@ -140,24 +141,43 @@ void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     }
     else
     {
+        /*
         do
         {
             generateForm(vf1);
             
         } while (!getForm(vf1, buffer, bufferLen, false, false) || !isValidFormForUnit(vf1, highestUnit) || !strncmp(buffer, "—", 1));
+         */
+        vf1->person = lastVF.person;
+        vf1->number = lastVF.number;
+        vf1->tense = lastVF.tense;
+        vf1->voice = lastVF.voice;
+        vf1->mood = lastVF.mood;
+        vf1->verb = lastVF.verb;
+        
+        //we assume this is valid since it was the resulting form from last seq.
+        //getForm(vf1, buffer, bufferLen, false, false);
     }
-    
-    vf2->person = vf1->person;
-    vf2->number = vf1->number;
-    vf2->tense = vf1->tense;
-    vf2->voice = vf1->voice;
-    vf2->mood = vf1->mood;
-    vf2->verb = vf1->verb;
     
     do
     {
+        //these need to be in the loop, so we're always starting from the same place
+        vf2->person = vf1->person;
+        vf2->number = vf1->number;
+        vf2->tense = vf1->tense;
+        vf2->voice = vf1->voice;
+        vf2->mood = vf1->mood;
+        vf2->verb = vf1->verb;
+        
         changeFormByDegrees(vf2, vso->degreesToChange);
     } while (!getForm(vf2, buffer, bufferLen, true, false) || !isValidFormForUnit(vf2, highestUnit) || !strncmp(buffer, "—", 1));
+    
+    lastVF.person = vf2->person;
+    lastVF.number = vf2->number;
+    lastVF.tense = vf2->tense;
+    lastVF.voice = vf2->voice;
+    lastVF.mood = vf2->mood;
+    lastVF.verb = vf2->verb;
 }
 
 
