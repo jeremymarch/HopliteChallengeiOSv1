@@ -254,7 +254,7 @@ UIView *backSideTest;
     
     [self stopTimer];
     self.timeLabel.hidden = YES;
-    [self.timeLabel setFrame:CGRectMake(12, 6,  140, 30)]; //reset in case mf.
+    //[self.timeLabel setFrame:CGRectMake(42, self.timeLabel.frame.origin.y,  self.timeLabel.frame.size.width, self.timeLabel.frame.size.height)]; //reset in case mf.
     self.MFLabel.hidden = YES;
     
     self.front = true;
@@ -500,7 +500,7 @@ void printUCS22(UCS2 *u, int len)
             self.mfPressed = YES;
         }
     }
-    [self.timeLabel setFrame:CGRectMake(60, 6,  140, 30)];
+    //[self.timeLabel setFrame:CGRectMake(90, self.timeLabel.frame.origin.y,  self.timeLabel.frame.size.width, self.timeLabel.frame.size.height)]; //reset in case mf.
 }
 
 -(void)preCheckVerbTimeout
@@ -826,7 +826,7 @@ void printUCS22(UCS2 *u, int len)
     self.textfield.text = @"";
     self.textfield.textColor = [UIColor blackColor];
     self.continueButton.hidden = YES;
-    self.backButton.hidden = YES;
+    //self.backButton.hidden = YES;
     self.redXView.hidden = YES;
     self.greenCheckView.hidden = YES;
     
@@ -1443,9 +1443,9 @@ void printUCS22(UCS2 *u, int len)
                                               ,  screenSize.height - 40, 240.0)];
     }
     
-    [self.timeLabel setFrame:CGRectMake(12, 6,  140, 30)];
-    [self.MFLabel setFrame:CGRectMake(12, 6,  42, 30)];
-    self.timeLabel.textAlignment = NSTextAlignmentLeft;
+    [self.timeLabel setFrame:CGRectMake(self.view.bounds.size.width - 120, 6,  114, 30)];
+    [self.MFLabel setFrame:CGRectMake(self.view.bounds.size.width - 120 - 42, 6,  42, 30)];
+    self.timeLabel.textAlignment = NSTextAlignmentRight;
     
     [self loadNext];
 }
@@ -1643,6 +1643,7 @@ void printUCS22(UCS2 *u, int len)
     self->vsOptions.startOnFirstSing = true;
     self->vsOptions.degreesToChange = 2;
     self->vsOptions.repsPerVerb = 3;
+    resetVerbSeq();
 }
 
 -(void)setMode
@@ -1837,8 +1838,14 @@ void printUCS22(UCS2 *u, int len)
     //sets focus and raises keyboard
     //[self.textfield becomeFirstResponder];
     self.textfield.hidden = YES;
-    self.backButton.hidden = YES;
-    [self.backButton setTitle:@"Menu" forState:UIControlStateNormal];
+    //self.backButton.hidden = YES;
+    [self.backButton setTitle:@"X" forState:UIControlStateNormal];
+    self.backButton.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:20.0];
+    self.backButton.layer.borderColor = [UIColor grayColor].CGColor;
+    self.backButton.layer.borderWidth = 2.0;
+    //UIImage *btnImage = [UIImage imageNamed:@"XClose.png"];
+    //[self.backButton setImage:btnImage forState:UIControlStateNormal];
+    
     
     [[UIApplication sharedApplication] setStatusBarHidden:YES
                                             withAnimation:NO];
@@ -1940,15 +1947,15 @@ void printUCS22(UCS2 *u, int len)
     self.continueButton.layer.cornerRadius = 2.0f;
     
     [self.backButton.layer setMasksToBounds:YES];
-    self.backButton.layer.borderWidth = 6.0f;
-    self.backButton.layer.borderColor = [UIColor whiteColor].CGColor;
-    self.backButton.backgroundColor = UIColorFromRGB(0x43609c);
-    [self.backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    //self.backButton.layer.borderWidth = 6.0f;
+    //self.backButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    //self.backButton.backgroundColor = UIColorFromRGB(0x43609c);
+    [self.backButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
     [self.backButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
     self.backButton.layer.cornerRadius = 2.0f;
     
-    [self.continueButton setFrame:CGRectMake((screenSize.width / 2), screenSize.height - 70, (screenSize.width / 2), 70)];
-    [self.backButton setFrame:CGRectMake(0, screenSize.height - 70, (screenSize.width / 2) + 6, 70)];
+    [self.continueButton setFrame:CGRectMake(0, screenSize.height - 70, (screenSize.width), 70)];
+    [self.backButton setFrame:CGRectMake(6, 6, 30, 30)];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {

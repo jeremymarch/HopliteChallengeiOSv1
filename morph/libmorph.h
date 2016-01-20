@@ -246,6 +246,7 @@ enum {
     NUM_ENDINGS
 };
 
+void resetVerbSeq();
 void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso);
 
 bool compareForms(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
