@@ -78,13 +78,28 @@
     NSString *perf = [NSString stringWithUTF8String: verb->perf];
     NSString *perfmid = [NSString stringWithUTF8String: verb->perfmid];
     NSString *aorpass = [NSString stringWithUTF8String: verb->aoristpass];
-    
+
     pres = [pres stringByReplacingOccurrencesOfString:@"," withString:@" or"];
     fut = [fut stringByReplacingOccurrencesOfString:@"," withString:@" or"];
     aor = [aor stringByReplacingOccurrencesOfString:@"," withString:@" or"];
     perf = [perf stringByReplacingOccurrencesOfString:@"," withString:@" or"];
     perfmid = [perfmid stringByReplacingOccurrencesOfString:@"," withString:@" or"];
     aorpass = [aorpass stringByReplacingOccurrencesOfString:@"," withString:@" or"];
+    
+    NSString *dash = @"—";
+    
+    if ([pres length] == 0)
+        pres = dash;
+    if ([fut length] == 0)
+        fut = dash;
+    if ([aor length] == 0)
+        aor = dash;
+    if ([perf length] == 0)
+        perf = dash;
+    if ([perfmid length] == 0)
+        perfmid = dash;
+    if ([aorpass length] == 0)
+        aorpass = dash;
     
     return [NSString stringWithFormat:@"%@, %@, %@, %@, %@, %@", pres, fut, aor, perf, perfmid, aorpass];
 }

@@ -1642,7 +1642,7 @@ void printUCS22(UCS2 *u, int len)
     }
     self->vsOptions.startOnFirstSing = true;
     self->vsOptions.degreesToChange = 2;
-    self->vsOptions.repsPerVerb = 3;
+    self->vsOptions.repsPerVerb = 4;
     resetVerbSeq();
 }
 
@@ -1955,7 +1955,7 @@ void printUCS22(UCS2 *u, int len)
     self.backButton.layer.cornerRadius = 2.0f;
     
     [self.continueButton setFrame:CGRectMake(0, screenSize.height - 70, (screenSize.width), 70)];
-    [self.backButton setFrame:CGRectMake(6, 6, 30, 30)];
+    [self.backButton setFrame:CGRectMake(6, 6, 33, 30)];
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
     {
