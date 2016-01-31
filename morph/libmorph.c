@@ -92,7 +92,7 @@ void resetVerbSeq()
     verbSeq = 99999;
 }
 
-void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
+int nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
 {
     static Verb *v;
     static Verb *lastV = NULL;
@@ -178,6 +178,15 @@ void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     lastVF.voice = vf2->voice;
     lastVF.mood = vf2->mood;
     lastVF.verb = vf2->verb;
+    
+    
+    //temp
+    if(0)//verbSeq == 2)
+    {
+        return VERB_SEQ_PP;
+    }
+    
+    return VERB_SEQ_CHANGE;
 }
 
 
@@ -571,6 +580,10 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     
     else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == OPTATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
         ending = AORIST_PASSIVE_OPT;
+    
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == OPTATIVE && utf8HasSuffix(vf->verb->present, "τίθημι"))
+        ending = PRESENT_MIDPASS_OPT_TITHHMI;
+    
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == OPTATIVE && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι")))
         ending = PRESENT_MIDPASS_OPT;
     
@@ -738,8 +751,8 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     else if (vf->tense == AORIST && vf->voice == ACTIVE && vf->mood == IMPERATIVE && hasSuffix(word, wordLen, secondAorist, 2))
         ending = PRESENT_ACTIVE_IMPERATIVE;
     else if (vf->tense == AORIST && vf->voice == MIDDLE && vf->mood == IMPERATIVE && (hasSuffix(word, wordLen, secondAorist, 2) || hasSuffix(word, wordLen, secondAorist2, 4)))
-        ending = PRESENT_MIDPASS_IMPERATIVE;
-/* SECOND AORIST */
+        ending = SECOND_AORIST_MIDDLE_IMPERATIVE; //remember irreg accent on 2nd sing!
+/* end SECOND AORIST */
     else if (vf->tense == AORIST && vf->voice == ACTIVE && vf->mood == INDICATIVE)
         ending = AORIST_ACTIVE_IND;
     else if (vf->tense == PERFECT && vf->voice == ACTIVE && vf->mood == INDICATIVE)
@@ -3594,7 +3607,6 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
     }
     else if (vf->tense == PRESENT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι"))) //mi verbs, present tense
     {
-        //shorten stem vowel
         if (vf->voice != ACTIVE || vf->number == PLURAL || vf->mood == OPTATIVE || vf->mood == IMPERATIVE || vf->mood == SUBJUNCTIVE)
         {
             if (ucs2[*len - 1] == GREEK_SMALL_LETTER_OMEGA)
@@ -3642,10 +3654,21 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         }
         if (vf->mood == OPTATIVE)
         {
-            leftShift(ending, &elen);
-            if (vf->person != FIRST && vf->voice != ACTIVE)
+            //exceptional alternates H&Q page 347
+            if (vf->tense == PRESENT && vf->mood == OPTATIVE && vf->voice != ACTIVE && utf8HasSuffix(vf->verb->present, "τίθημι") && (vf->number == PLURAL || vf->person == THIRD))
             {
-                ending[0] = GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI;
+                if (ending[0] == GREEK_SMALL_LETTER_OMICRON && !decompose)
+                    --(*len);
+                else if (ending[0] == GREEK_SMALL_LETTER_EPSILON)
+                    leftShift(ending, &elen);
+            }
+            else
+            {
+                leftShift(ending, &elen);
+                if (vf->person != FIRST && vf->voice != ACTIVE)
+                {
+                    ending[0] = GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI;
+                }
             }
         }
         if (vf->mood == IMPERATIVE)

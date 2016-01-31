@@ -168,14 +168,14 @@ UIView *backSideTest;
     
     if (self.front) //then show back
     {
-        if (self.cardType == 2) //Principal Parts
+        if (self.cardType == CARD_PRINCIPAL_PARTS) //Principal Parts
         {
             self.stemLabel.hidden = true;
             self.backLabel.hidden = false;
             self.singLabel.hidden = true;
             self.pluralLabel.hidden = true;
         }
-        else if (self.cardType == 3) //Endings
+        else if (self.cardType == CARD_ENDINGS) //Endings
         {
             self.stemLabel.hidden = true;
             self.backLabel.hidden = true;
@@ -183,11 +183,11 @@ UIView *backSideTest;
             self.pluralLabel.hidden = false;
             
         }
-        else if (self.cardType == 5) //Accents
+        else if (self.cardType == CARD_ACCENTS) //Accents
         {
             
         }
-        else if (self.cardType == 1) //Verbs
+        else if (self.cardType == CARD_VERBS) //Verbs
         {
             //self.backLabel.hidden = false;
             if (self.verbQuestionType != MULTIPLE_CHOICE)
@@ -214,7 +214,7 @@ UIView *backSideTest;
                 return;
             }
         }
-        else if (self.cardType == 4) //Vocab Training
+        else if (self.cardType == CARD_VOCAB) //Vocab Training
         {
             [self turnDown];
         }
@@ -226,7 +226,7 @@ UIView *backSideTest;
     }
     else //load new card
     {
-        if (self.cardType == 1 && self.verbQuestionType == SELF_PRACTICE)
+        if (self.cardType == CARD_VERBS && self.verbQuestionType == SELF_PRACTICE)
         {
             return;
         }
@@ -238,18 +238,17 @@ UIView *backSideTest;
 
 -(void) loadNext
 {
-    [[(AppDelegate*)[[UIApplication sharedApplication] delegate] keyboard]
-     resetKeyboard];
+    [[(AppDelegate*)[[UIApplication sharedApplication] delegate] keyboard] resetKeyboard];
     
-    if (self.cardType == 3)
+    if (self.cardType == CARD_ENDINGS)
         [self loadEnding];
-    else if (self.cardType == 2)
-        [self loadPrincipalPart];
-    else if (self.cardType == 5)
+    //else if (self.cardType == CARD_PRINCIPAL_PARTS)
+    //    [self loadPrincipalPart];
+    else if (self.cardType == CARD_ACCENTS)
         [self loadAccents];
-    else if (self.cardType == 1)
+    else if (self.cardType == CARD_VERBS)
         [self loadMorphTraining];
-    else if (self.cardType == 4)
+    else if (self.cardType == CARD_VOCAB)
         [self loadVocabulary];
     
     [self stopTimer];
@@ -513,6 +512,40 @@ void printUCS22(UCS2 *u, int len)
 
 -(void)preCheckVerbSubmit
 {
+    if (self.cardType == CARD_PRINCIPAL_PARTS)
+    {
+        if (self.front)
+        {
+            
+            self.stemLabel.hidden = YES;
+            self.backLabel.hidden = NO;
+            self.front = NO;
+        }
+        else
+        {
+            self.cardType = CARD_VERBS;
+            [self loadNext];
+        }
+        return;
+    }
+    else if (self.cardType == CARD_ENDINGS)
+    {
+        if (self.front)
+        {
+            
+            self.stemLabel.hidden = YES;
+            self.backLabel.hidden = NO;
+            self.front = NO;
+        }
+        else
+        {
+            self.cardType = CARD_VERBS;
+            [self loadNext];
+        }
+        return;
+    }
+    
+    
     if (self.verbQuestionType == HOPLITE_CHALLENGE)
     {
         CFTimeInterval elapsedTime = self.HCTime - (CACurrentMediaTime() - self.startTime);
@@ -735,7 +768,14 @@ void printUCS22(UCS2 *u, int len)
     int bufferLen = 1024;
     char buffer[bufferLen];
 
-    nextVerbSeq(&vf1, &vf2, &self->vsOptions);
+    int type = nextVerbSeq(&vf1, &vf2, &self->vsOptions);
+    
+    if (type == VERB_SEQ_PP)
+    {
+        self.cardType = CARD_PRINCIPAL_PARTS;
+        [self loadPrincipalPart:&vf2];
+        return;
+    }
     getForm(&vf1, buffer, bufferLen, false, false);
     
     NSString *distractors = nil;
@@ -904,6 +944,7 @@ void printUCS22(UCS2 *u, int len)
             [self.textfield setFrame:CGRectMake(0, 278, self.view.frame.size.width, 60.0)];
             
             self.origForm.text = origForm;
+            
             self.changeTo.text = @"Change to";
             self.stemLabel.text = newDescription;
         }
@@ -922,6 +963,7 @@ void printUCS22(UCS2 *u, int len)
             double f = self.view.frame.size.height;
             self.origForm.text = @"";
             self.changeTo.text = @"";
+            self.changeTo.hidden = NO;
             self.stemLabel.text = @"";
             if (self.verbQuestionType == SELF_PRACTICE || self.verbQuestionType == MULTIPLE_CHOICE)
                 self.textfield.hidden = YES;
@@ -1189,55 +1231,11 @@ void printUCS22(UCS2 *u, int len)
 }
 
 
--(void) loadPrincipalPart
+-(void) loadPrincipalPart:(VerbFormC *)vf
 {
-    /*
-    //NSLog(@"typeabc: %ld", [[self.detailItem  valueForKey:@"sort"] integerValue]);
-    
-    NSError *error = nil;
-    NSManagedObjectContext *moc = [(AppDelegate*)[[UIApplication sharedApplication] delegate] managedObjectContext];
-    
-    NSEntityDescription *entityDescription = [NSEntityDescription
-                                              entityForName:@"Verbs" inManagedObjectContext:moc];
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:entityDescription];
-
-    if ([self.levels count] > 0)
-    {
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"hq IN %@", self.levels];
-        //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"hq > 0"];
-        [request setPredicate:predicate];
-    }
-    else
-    {
-        [request setPredicate:NULL];
-    }
-    
-    NSInteger count = [moc countForFetchRequest:request error:&error];
-    
-    NSLog(@"count: %ld", (long)count);
-    
-    // Set example predicate and sort orderings...
-    NSUInteger offsetStart = 0;
-    int randomNumber = arc4random() % count;
-    NSUInteger offset = offsetStart + randomNumber;
-    [request setFetchOffset:offset];
-    [request setFetchLimit:1];
-    
-    NSArray *array = [moc executeFetchRequest:request error:&error];
-    
-    if (array == nil)
-    {
-        // Deal with error...
-        NSLog(@"Error: Def not found by id: %d.", 1);
-        return;
-    }
-    
-    //NSLog(@"num results: %lu, count: %lu", (unsigned long)[array count], (unsigned long)count);
-    */
-    
     int bufferLen = 1024;
     char buffer[bufferLen];
+    /*
     long units[20] = { 1,2,3,4,5,6,7,8,9,10,11 };
     int numUnits = 11;
     if ([self.levels count] > 0)
@@ -1256,11 +1254,17 @@ void printUCS22(UCS2 *u, int len)
     vf.verb = v;
     
     generateForm(&vf);
-    getForm(&vf, buffer, bufferLen, false, false);
+    */
+    self.stemLabel.hidden = YES;
+    self.origForm.hidden = YES;
+    self.changedForm.hidden = YES;
+    self.changeTo.hidden = YES;
+    
+    getForm(vf, buffer, bufferLen, false, false);
     NSString *frontForm = [NSString stringWithUTF8String: (const char*)buffer];
     frontForm = [self selectRandomFromCSV:frontForm];
     
-    getPrincipalParts(v, buffer, bufferLen);
+    getPrincipalParts(vf->verb, buffer, bufferLen);
     NSString *principalParts = [NSString stringWithUTF8String: (const char*)buffer];
      
     NSArray *PPs = [principalParts componentsSeparatedByString:@"; "];
@@ -1279,7 +1283,7 @@ void printUCS22(UCS2 *u, int len)
     NSString *spacer = @"—";//"@"--";
 
     NSMutableAttributedString* attrString; 
-    if (1) //one line each
+    if (1) //one line each111
     {
         
     /*self.backCard*/NSString *temp = [NSString stringWithFormat:@"%@\n%@\n%@\n%@\n%@\n%@", pres.length > 0 ? pres : spacer, fut.length > 0 ? fut : spacer, aor.length > 0 ? aor : spacer, perf.length > 0 ? perf : spacer, perfmid.length > 0 ? perfmid : spacer, aorpass.length > 0 ? aorpass : spacer];
@@ -1294,15 +1298,18 @@ void printUCS22(UCS2 *u, int len)
     {
         self.backCard = [NSString stringWithFormat:@"%@, %@, %@, %@, %@, %@", pres.length > 0 ? pres : spacer, fut.length > 0 ? fut : spacer, aor.length > 0 ? aor : spacer, perf.length > 0 ? perf : spacer, perfmid.length > 0 ? perfmid : spacer, aorpass.length > 0 ? aorpass : spacer];
     }
-    self.stemLabel.text = frontForm;
+    self.origForm.text = @"";
+    self.origForm.hidden = NO;
+    [self centerLabel:self.origForm withString:frontForm];
+    [self typeLabel:self.origForm withString:frontForm withInterval:self.typeInterval];
     //self.backLabel.text = self.backCard;
     self.backLabel.attributedText = attrString;
     
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
-    if ( [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait )
+    if (1)// [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait )
     {
-        [self.stemLabel setFrame:CGRectMake(20, (screenSize.height - 240)/2, screenSize.width - 40, 240.0)];
+        //[self.stemLabel setFrame:CGRectMake(20, (screenSize.height - 240)/2, screenSize.width - 40, 240.0)];
         [self.backLabel setFrame:CGRectMake(20, (screenSize.height - 240)/2, screenSize.width - 40, 240.0)];
     }
     else
@@ -1311,7 +1318,7 @@ void printUCS22(UCS2 *u, int len)
         [self.backLabel setFrame:CGRectMake(20, (screenSize.width - 240)/2, screenSize.height - 40, 240.0)];
     }
     
-    self.stemLabel.hidden = false;
+    //self.stemLabel.hidden = false;
     self.backLabel.hidden = true;
     
     self.backLabel.textAlignment = NSTextAlignmentLeft;
@@ -1383,9 +1390,9 @@ void printUCS22(UCS2 *u, int len)
     
     self.cardType = [[self.detailItem  valueForKey:@"sort"] integerValue];
     if (!self.cardType)
-        self.cardType = 1;
+        self.cardType = CARD_VERBS;
     
-    if (1)//self.cardType != 1)
+    if (1)//self.cardType != CARD_VERBS)
     {
         self.verbModeButton.hidden = YES;
     }
@@ -1418,7 +1425,7 @@ void printUCS22(UCS2 *u, int len)
     
     self.stemLabel.font = [UIFont fontWithName:self.systemFont size:self.fontSize];
     self.changeTo.font = [UIFont fontWithName:self.systemFont size:self.fontSize];
-    self.backLabel.font = [UIFont fontWithName:self.systemFont size:self.fontSize];
+    self.backLabel.font = [UIFont fontWithName:self.greekFont size:self.fontSize];
     self.singLabel.font = [UIFont fontWithName:self.greekFont size:self.fontSize];
     self.pluralLabel.font = [UIFont fontWithName:self.greekFont size:self.fontSize];
     
@@ -1786,7 +1793,7 @@ void printUCS22(UCS2 *u, int len)
     //pinch.tag = self;
     [self.view addGestureRecognizer:pinch];
     
-    self.cardType = 1;
+    self.cardType = CARD_VERBS;
 
     self.systemFont = @"HelveticaNeue-Light";
     self.greekFont = @"NewAthenaUnicode";

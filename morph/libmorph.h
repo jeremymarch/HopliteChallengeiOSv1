@@ -49,6 +49,12 @@ enum {
 };
 
 enum {
+    VERB_SEQ_CHANGE = 1,
+    VERB_SEQ_PP,
+    VERB_SEQ_ENDING
+};
+
+enum {
     NO_ACCENT = 0,
     ACUTE,
     CIRCUMFLEX,
@@ -130,6 +136,8 @@ typedef struct vso {
     unsigned char repsPerVerb;
     unsigned char degreesToChange;
     unsigned char numUnits;
+    bool askEndings;
+    bool askPrincipalParts;
     int units[20];
 } VerbSeqOptions;
 
@@ -243,11 +251,13 @@ enum {
     AORIST_ACTIVE_IMPERATIVES_MI_ROOT,
     AORIST_MIDDLE_IMPERATIVES_MI,
     AORIST_ACTIVE_INDICATIVE_MI_ROOT,
+    SECOND_AORIST_MIDDLE_IMPERATIVE,
+    PRESENT_MIDPASS_OPT_TITHHMI,
     NUM_ENDINGS
 };
 
 void resetVerbSeq();
-void nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso);
+int nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso);
 
 bool compareForms(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
 bool compareWord(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
