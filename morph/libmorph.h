@@ -256,21 +256,9 @@ enum {
     NUM_ENDINGS
 };
 
-void resetVerbSeq();
-int nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso);
-
 bool compareForms(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
 bool compareWord(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
 int getForm(VerbFormC *vf, char *buffer, int bufferLen, bool includeAlternateForms, bool decompose);
-
-Verb *getRandomVerb(int *units, int numUnits);
-Ending *getRandomEnding(int *units, int numUnits);
-void getRandomEndingAsString(int *units, int numUnits, char *buffer, int bufferLen);
-
-void changeFormByDegrees(VerbFormC *verbform, int degrees);
-void generateForm(VerbFormC *verbform);
-void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors, char *buffer);
-bool isValidFormForUnit(VerbFormC *vf, int unit);
 
 void getFullDescription (VerbFormC *vf, char *buffer, int len);
 void getAbbrevDescription (VerbFormC *vf, char *buffer, int len);

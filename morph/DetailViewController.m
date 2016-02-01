@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "DetailViewController.h"
 #import "libmorph.h"
+#import "VerbSequence.h"
 #import "GreekForms.h"
 #import <AudioToolbox/AudioToolbox.h>
 #include <sys/types.h>
