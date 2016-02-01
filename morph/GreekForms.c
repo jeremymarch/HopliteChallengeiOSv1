@@ -217,6 +217,6 @@ Ending endings[NUM_ENDINGS] = {
     { 0, 10, 0, 0, 0, "ν", "ς", "", "μεν", "τε", "σαν", "" },//mi root aorist indicative
     
     { 0, 11, 0, 0, 0, "", "οῦ", "εσθω", "", "εσθε", "εσθων", "Present Middle/Passive Imperative" }, //second aorist middle/passive imperatives
-    { 0, 5, 0, 0, 0, "ειμην", "εῖο", "εῖτο, οῖτο", "ειμεθα, οιμεθα", "εῖσθε, οῖσθε", "εῖντο, οῖντο", "Present Middle/Passive Optative Tithemi" }
+    { 0, 5, 0, 0, 0, "ειμην", "εῖο", "εῖτο, οῖτο", "ειμεθα, οιμεθα", "εῖσθε, οῖσθε", "εῖντο, οῖντο", "Present Middle/Passive Optative Tithemi" } //Exception: H&Q page 347
 };
 

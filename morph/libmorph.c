@@ -582,7 +582,7 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
         ending = AORIST_PASSIVE_OPT;
     
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == OPTATIVE && utf8HasSuffix(vf->verb->present, "τίθημι"))
-        ending = PRESENT_MIDPASS_OPT_TITHHMI;
+        ending = PRESENT_MIDPASS_OPT_TITHHMI; //Exception: H&Q page 347
     
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == OPTATIVE && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι")))
         ending = PRESENT_MIDPASS_OPT;
