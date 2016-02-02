@@ -17,7 +17,8 @@ void resetVerbSeq()
     verbSeq = 99999;
 }
 
-int nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
+long lastInitialDegreesToChange = 0;
+int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
 {
     static Verb *v;
     static Verb *lastV = NULL;
@@ -25,6 +26,7 @@ int nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     
     int bufferLen = 2048;
     char buffer[bufferLen];
+    long degreesToChange = vso->degreesToChange;
     
     if (verbSeq >= vso->repsPerVerb)
     {
@@ -40,6 +42,7 @@ int nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     {
         verbSeq++;
     }
+    *seq = verbSeq;
     vf1->verb = v;
     
     int highestUnit = 0;
@@ -56,6 +59,13 @@ int nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
         vf1->tense = PRESENT;
         vf1->voice = ACTIVE;
         vf1->mood = INDICATIVE;
+        
+        do
+        {
+            degreesToChange = randWithMax(4) + 2; //2-5
+        } while (degreesToChange == lastInitialDegreesToChange); //for variety
+        
+        lastInitialDegreesToChange = degreesToChange;
         
         //doesn't work if verb is deponent
         if (!getForm(vf1, buffer, bufferLen, false, false))
@@ -94,7 +104,7 @@ int nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
         vf2->mood = vf1->mood;
         vf2->verb = vf1->verb;
         
-        changeFormByDegrees(vf2, vso->degreesToChange);
+        changeFormByDegrees(vf2, degreesToChange);
     } while (!getForm(vf2, buffer, bufferLen, true, false) || !isValidFormForUnit(vf2, highestUnit) || !strncmp(buffer, "—", 1));
     
     lastVF.person = vf2->person;

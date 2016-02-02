@@ -13,7 +13,7 @@
 #include "libmorph.h"
 #include "GreekForms.h"
 
-int nextVerbSeq(VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso);
+int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso);
 void resetVerbSeq();
 void changeFormByDegrees(VerbFormC *verbform, int degrees);
 void generateForm(VerbFormC *verbform);

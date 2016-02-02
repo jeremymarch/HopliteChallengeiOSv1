@@ -371,6 +371,32 @@ UIView *backSideTest;
     [l setFrame: CGRectMake((screenSize.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, adjustedSize.height)];
 }
 
+-(void)centerLabel:(UILabel*)l withAttributedString:(NSAttributedString*)string
+{
+    CGRect screenBound = [[UIScreen mainScreen] bounds];
+    CGSize screenSize = screenBound.size;
+    
+    //string = [string stringByReplacingOccurrencesOfString:@", " withString:@",\n"];
+    
+    l.hidden = YES;
+    l.attributedText = string;
+    CGSize size = [l sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+ 
+    
+    l.attributedText = nil;
+    l.hidden = NO;
+    // Values are fractional -- you should take the ceilf to get equivalent values
+    if (size.width > screenSize.width)
+    {
+        size.width = screenSize.width;
+        //size.height = size.height * 3;
+    }
+    
+    CGSize adjustedSize = CGSizeMake(ceilf(size.width), ceilf(size.height));
+    
+    [l setFrame: CGRectMake((screenSize.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, adjustedSize.height)];
+}
+
 //http://stackoverflow.com/questions/11686642/letter-by-letter-animation-for-uilabel
 
 //for time envelopes see:
@@ -384,7 +410,10 @@ UIView *backSideTest;
     //BOOL async = NO;
     
     if ([string length] < 1)
+    {
+        l.text = @"";
         return;
+    }
     /*
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
@@ -444,22 +473,53 @@ UIView *backSideTest;
     if ([string length] < 1)
         return;
 
-    for (NSInteger i = [string length] - 1, j = [string length] - 1; i >= 0; i--)
+    for (NSInteger i = [string length] - 1, j = 0; i >= 0; i--)
     {
         //don't wait for space characters
+        
         while ([string characterAtIndex:i] == ' ')
         {
-            i--;
+            --i;
         }
         
-        if (i <= 0)
+        if (i < 0)
             break;
         
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
-        j--;
+        ++j;
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
                        {
                            [l setText:[string substringToIndex:i]];
+                       });
+    }
+}
+
+-(void)typeAttLabel:(UILabel*)l withString:(NSAttributedString*)string withInterval:(double)interval
+{
+    if ([string length] < 1)
+    {
+        l.attributedText = string;
+        return;
+    }
+    [self centerLabel:l withAttributedString:string];
+    
+    for (int i = 0, j = 0; i < [string length]; i++)
+    {
+        //don't wait for space characters
+        NSAttributedString *space = [[NSAttributedString alloc] initWithString:@" "];
+        while ([[string attributedSubstringFromRange:NSMakeRange(i,1)] isEqualToAttributedString: space])
+        {
+            i++;
+        }
+     
+        if (i >= [string length])
+            break;
+        
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
+        j++;
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+                       {
+                           l.attributedText = [string attributedSubstringFromRange:NSMakeRange(0,i+1)];
                        });
     }
 }
@@ -763,13 +823,41 @@ void printUCS22(UCS2 *u, int len)
     self.displayLink = nil;
 }
 
+-(NSMutableAttributedString *)attributedDescription:(NSString*)d1 newDescription:(NSString*)d2
+{
+    NSArray *ad1 = [d1 componentsSeparatedByString: @" "];
+    NSArray *ad2 = [d2 componentsSeparatedByString: @" "];
+    NSMutableAttributedString *a = [[NSMutableAttributedString alloc] initWithString:d2];
+    
+    for (int i = 0; i < 5; i++)
+    {
+        NSUInteger start = 0;
+        NSUInteger len = 0;
+        if ( ![[ad1 objectAtIndex:i] isEqualToString: [ad2 objectAtIndex:i]] )
+        {
+            for(int j = 0; j < i; j++)
+            {
+                start += [[ad2 objectAtIndex:j] length] + 1;
+            }
+            len = [[ad2 objectAtIndex:i] length];
+            
+        }
+        [a addAttribute:NSFontAttributeName
+                  value:[UIFont fontWithName:@"HelveticaNeue-Bold" size:26.0]
+                  range:NSMakeRange(start, len)];
+    }
+    
+    return a;
+}
+
 -(void) loadMorphTraining
 {
     VerbFormC vf1, vf2;
     int bufferLen = 1024;
     char buffer[bufferLen];
+    int seq = 0;
 
-    int type = nextVerbSeq(&vf1, &vf2, &self->vsOptions);
+    int type = nextVerbSeq(&seq, &vf1, &vf2, &self->vsOptions);
     
     if (type == VERB_SEQ_PP)
     {
@@ -793,8 +881,8 @@ void printUCS22(UCS2 *u, int len)
     self.origStrDecomposed = [NSString stringWithUTF8String: (const char*)buffer];
     self.origStrDecomposed = [self selectRandomFromCSV:self.origStrDecomposed]; //FIXME, What if not same as orig form
     
-    //getAbbrevDescription(&vf, buffer, bufferLen);
-    //NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
+    getAbbrevDescription(&vf1, buffer, bufferLen);
+    NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
     getForm(&vf2, buffer, bufferLen, false, false);
     newForm = [NSString stringWithUTF8String: (const char*)buffer];
@@ -805,6 +893,8 @@ void printUCS22(UCS2 *u, int len)
     
     getAbbrevDescription(&vf2, buffer, bufferLen);
     newDescription = [NSString stringWithUTF8String: (const char*)buffer];
+    
+    NSAttributedString *attDesc = [self attributedDescription: origDescription newDescription:newDescription];
     
     if (self.verbQuestionType == MULTIPLE_CHOICE)
     {
@@ -1030,7 +1120,8 @@ void printUCS22(UCS2 *u, int len)
                     {
                         if (self.animate)
                         {
-                            [self typeLabel:self.stemLabel withString:newDescription withInterval:self.typeInterval];
+                            //[self typeLabel:self.stemLabel withString:newDescription withInterval:self.typeInterval];
+                            [self typeAttLabel:self.stemLabel withString: attDesc withInterval:self.typeInterval];
                         }
                         else
                         {
