@@ -991,7 +991,15 @@ void printUCS22(UCS2 *u, int len)
     NSString *newForm = nil;
     NSString *newDescription = nil;
     
-    origForm = [NSString stringWithUTF8String: (const char*)buffer];
+    if (self->verbSeq == 1)
+    {
+        //use lemma rather than a possibly contracted form
+        origForm = [NSString stringWithUTF8String: (const char*)vf1.verb->present];
+    }
+    else
+    {
+        origForm = [NSString stringWithUTF8String: (const char*)buffer];
+    }
     origForm = [self selectRandomFromCSV:origForm];
     self.origStr = origForm;
     
