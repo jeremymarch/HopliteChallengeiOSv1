@@ -24,6 +24,7 @@ Verb *getRandomVerb(int *units, int numUnits);
 Ending *getRandomEnding(int *units, int numUnits);
 void getRandomEndingAsString(int *units, int numUnits, char *buffer, int bufferLen);
 
+
 #endif /* VerbSequence_h */
 
 
