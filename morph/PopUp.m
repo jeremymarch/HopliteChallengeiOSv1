@@ -184,11 +184,29 @@ enum {
 
 -(void)cancelNumberPad{
     [self.HCTimeField resignFirstResponder];
-    self.HCTimeField.text = @"30";
+    
+    //restore to default
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *n = [defaults objectForKey:@"HCTime"];
+    NSInteger myInt = [n intValue];
+    if (myInt < 5 || myInt > 300)
+    {
+        n = @"30";
+        self.HCTimeField.text = n;
+    }
+    
+    self.HCTimeField.text = n;
 }
 
 -(void)doneWithNumberPad{
     NSString *numberFromTheKeyboard = self.HCTimeField.text;
+
+    NSInteger myInt = [numberFromTheKeyboard intValue];
+    if (myInt < 5 || myInt > 300)
+    {
+        numberFromTheKeyboard = @"30";
+        self.HCTimeField.text = numberFromTheKeyboard;
+    }
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:numberFromTheKeyboard forKey:@"HCTime"];
     [defaults synchronize];

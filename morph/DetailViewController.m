@@ -483,7 +483,73 @@ UIView *backSideTest;
     for (i = [string length] - 1, j = 0; i >= 0; i--)
     {
         //don't wait for space characters
+        while ([string characterAtIndex:i] == ' ')
+        {
+            --i;
+        }
         
+        if (i < 0)
+            break;
+        
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
+        ++j;
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+                       {
+                           [l setText:[string substringToIndex:i]];
+                       });
+    }
+    if (done)
+    {
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), done);
+    }
+}
+
+-(void)hideTypeAttLabel:(UILabel*)l withInterval:(double)interval completion:(void (^)(void))done
+{
+    NSAttributedString *string = l.attributedText;
+    
+    if ([string length] < 1)
+        return;
+    
+    NSInteger i = 0;
+    NSInteger j = 0;
+    for (i = [string length] - 1, j = 0; i >= 0; i--)
+    {
+        //don't wait for space characters
+        NSAttributedString *space = [[NSAttributedString alloc] initWithString:@" "];
+        while ([[string attributedSubstringFromRange:NSMakeRange(i,1)] isEqualToAttributedString: space])
+        {
+            --i;
+        }
+        
+        if (i < 0)
+            break;
+        
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
+        ++j;
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+                       {
+                           //[l setText:[string substringToIndex:i]];
+                           l.attributedText = [string attributedSubstringFromRange:NSMakeRange(0,i)];
+                       });
+    }
+    if (done)
+    {
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), done);
+    }
+}
+
+-(void)hideTypeTextField:(UITextField*)l withInterval:(double)interval completion:(void (^)(void))done
+{
+    NSString *string = l.text;
+    
+    NSInteger i = 0;
+    NSInteger j = 0;
+    for (i = [string length] - 1, j = 0; i >= 0; i--)
+    {
+        //don't wait for space characters
         while ([string characterAtIndex:i] == ' ')
         {
             --i;
@@ -767,18 +833,52 @@ void printUCS22(UCS2 *u, int len)
         self.redXView.hidden = YES;
         self.greenCheckView.hidden = YES;
         
-        [self hideTypeLabel:self.changedForm withInterval:self.typeInterval completion:^{
-            [self hideTypeLabel:self.stemLabel withInterval:self.typeInterval completion:^{
-                [self hideTypeLabel:self.changeTo withInterval:self.typeInterval completion:^{
-                    [self hideTypeLabel:self.origForm withInterval:self.typeInterval completion:^{
-                        [self loadNext];
+        if (1)
+        {
+            self.continueButton.hidden = YES;
+            [self hideTypeLabel:self.changedForm withInterval:self.typeInterval completion:^{
+                [self hideTypeTextField:self.textfield withInterval:self.typeInterval completion:^{
+                    [self hideTypeAttLabel:self.stemLabel withInterval:self.typeInterval completion:^{
+                        [self hideTypeLabel:self.changeTo withInterval:self.typeInterval completion:^{
+                            [self hideTypeLabel:self.origForm withInterval:self.typeInterval completion:^{
+                                [self loadNext];
+                            }];
+                        }];
                     }];
                 }];
             }];
-        }];
-        
-        //[self loadNext];
-        self.textfield.text = @"";
+        }
+        else if (0)
+        {
+            dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC));
+            dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
+                [self hideTypeLabel:self.changedForm withInterval:self.typeInterval completion:nil];
+            });
+            dispatch_time_t popTime3 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.15 * NSEC_PER_SEC));
+            dispatch_after(popTime3, dispatch_get_main_queue(), ^(void){
+                [self hideTypeTextField:self.textfield withInterval:self.typeInterval completion:nil];
+            });
+            dispatch_time_t popTime4 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC));
+            dispatch_after(popTime4, dispatch_get_main_queue(), ^(void){
+                [self hideTypeAttLabel:self.stemLabel withInterval:self.typeInterval completion:nil];
+            });
+            dispatch_time_t popTime5 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC));
+            dispatch_after(popTime5, dispatch_get_main_queue(), ^(void){
+                [self hideTypeLabel:self.changeTo withInterval:self.typeInterval completion:nil];
+            });
+            dispatch_time_t popTime6 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+            dispatch_after(popTime6, dispatch_get_main_queue(), ^(void){
+                [self hideTypeLabel:self.origForm withInterval:self.typeInterval completion:^{
+                    [self loadNext];
+                }];
+            });
+        }
+        else
+        {
+            self.textfield.text = @"";
+            [self loadNext];
+        }
+
         self.timeLabel.hidden = true;
     }
 }
@@ -988,7 +1088,7 @@ void printUCS22(UCS2 *u, int len)
     
     [self.verbModeButton setFrame:CGRectMake(self.view.frame.size.width - 60 - 6, 6, 60, 36.0)];
     
-    self.stemLabel.textAlignment = NSTextAlignmentCenter;
+    self.stemLabel.textAlignment = NSTextAlignmentLeft;//NSTextAlignmentCenter;
     
     /* init stuff */
     
@@ -1037,8 +1137,8 @@ void printUCS22(UCS2 *u, int len)
             i++;
         }
 
-        self.stemLabel.layer.borderWidth = 0.0;
-        [self.stemLabel setFrame:CGRectMake(0, 140, self.view.frame.size.width, 100.0)];
+        //self.stemLabel.layer.borderWidth = 0.0;
+        //[self.stemLabel setFrame:CGRectMake(0, 140, self.view.frame.size.width, 100.0)];
         [self.origForm setFrame:CGRectMake(0, 80, self.view.frame.size.width, 50.0)];
     }
     
@@ -1105,10 +1205,8 @@ void printUCS22(UCS2 *u, int len)
             self.changeTo.textAlignment = NSTextAlignmentLeft;
             self.stemLabel.textAlignment = NSTextAlignmentLeft;
             
-            
-            
             //http://stackoverflow.com/questions/15335649/adding-delay-between-execution-of-two-following-lines
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.9 * NSEC_PER_SEC));
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC));
             dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
             {
                 if (self.animate)
@@ -1513,7 +1611,7 @@ void printUCS22(UCS2 *u, int len)
     
     self.backLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.backLabel.textAlignment = NSTextAlignmentCenter;
-    self.stemLabel.textAlignment = NSTextAlignmentCenter;
+    //self.stemLabel.textAlignment = NSTextAlignmentCenter;
     self.stemLabel.numberOfLines = 0;
     self.backLabel.numberOfLines = 0;
     self.singLabel.numberOfLines = 0;
