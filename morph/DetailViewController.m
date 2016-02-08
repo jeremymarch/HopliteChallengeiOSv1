@@ -240,6 +240,8 @@ UIView *backSideTest;
 -(void) loadNext
 {
     [[(AppDelegate*)[[UIApplication sharedApplication] delegate] keyboard] resetKeyboard];
+    self.timeLabel.textColor = [UIColor blackColor];
+    
     
     if (self.cardType == CARD_ENDINGS)
         [self loadEnding];
@@ -256,6 +258,7 @@ UIView *backSideTest;
     self.timeLabel.hidden = YES;
     //[self.timeLabel setFrame:CGRectMake(42, self.timeLabel.frame.origin.y,  self.timeLabel.frame.size.width, self.timeLabel.frame.size.height)]; //reset in case mf.
     self.MFLabel.hidden = YES;
+    
     
     self.front = true;
 }
@@ -468,12 +471,16 @@ UIView *backSideTest;
     //}
 }
 
--(void)hideTypeLabel:(UILabel*)l withString:(NSString*)string withInterval:(double)interval
+-(void)hideTypeLabel:(UILabel*)l withInterval:(double)interval completion:(void (^)(void))done
 {
+    NSString *string = l.text;
+    
     if ([string length] < 1)
         return;
 
-    for (NSInteger i = [string length] - 1, j = 0; i >= 0; i--)
+    NSInteger i = 0;
+    NSInteger j = 0;
+    for (i = [string length] - 1, j = 0; i >= 0; i--)
     {
         //don't wait for space characters
         
@@ -491,6 +498,11 @@ UIView *backSideTest;
                        {
                            [l setText:[string substringToIndex:i]];
                        });
+    }
+    if (done)
+    {
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), done);
     }
 }
 
@@ -566,6 +578,7 @@ void printUCS22(UCS2 *u, int len)
 -(void)preCheckVerbTimeout
 {
     self.timeLabel.text = @"0.00 sec";
+    self.timeLabel.textColor = [UIColor redColor];
     self.timeLabel.hidden = NO;
     [self stopTimer];
     [self checkVerb];
@@ -634,8 +647,6 @@ void printUCS22(UCS2 *u, int len)
     
     if (self.front)
     {
-        //if ([self.textfield.text isEqual:self.changedForm.text])
-        
         UCS2 test[512];
         UCS2 check[512];
         int testLen = 0;
@@ -751,14 +762,22 @@ void printUCS22(UCS2 *u, int len)
         self.front = false;
         self.textfield.enabled = false;
     }
-    else
+    else //if back
     {
         self.redXView.hidden = YES;
         self.greenCheckView.hidden = YES;
         
-        //[self hideTypeLabel:self.changedForm withString:self.changedForm.text withInterval:self.typeInterval];
+        [self hideTypeLabel:self.changedForm withInterval:self.typeInterval completion:^{
+            [self hideTypeLabel:self.stemLabel withInterval:self.typeInterval completion:^{
+                [self hideTypeLabel:self.changeTo withInterval:self.typeInterval completion:^{
+                    [self hideTypeLabel:self.origForm withInterval:self.typeInterval completion:^{
+                        [self loadNext];
+                    }];
+                }];
+            }];
+        }];
         
-        [self loadNext];
+        //[self loadNext];
         self.textfield.text = @"";
         self.timeLabel.hidden = true;
     }
@@ -855,9 +874,8 @@ void printUCS22(UCS2 *u, int len)
     VerbFormC vf1, vf2;
     int bufferLen = 1024;
     char buffer[bufferLen];
-    int seq = 0;
 
-    int type = nextVerbSeq(&seq, &vf1, &vf2, &self->vsOptions);
+    int type = nextVerbSeq(&self->verbSeq, &vf1, &vf2, &self->vsOptions);
     
     if (type == VERB_SEQ_PP)
     {

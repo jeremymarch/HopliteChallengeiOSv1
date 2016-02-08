@@ -29,7 +29,9 @@ enum {
 @interface DetailViewController : UIViewController <UISplitViewControllerDelegate, vc2delegate, UIGestureRecognizerDelegate>
 {
     VerbSeqOptions vsOptions;
+    int verbSeq;
 }
+
 @property double typeInterval;
 @property BOOL expanded;
 @property BOOL mfPressed;
