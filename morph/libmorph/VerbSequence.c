@@ -52,6 +52,10 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
             highestUnit = vso->units[i];
     }
     
+    //only change 1 degree for unites 1 and 2
+    if (highestUnit <= 2)
+        degreesToChange = 1;
+    
     if (vso->startOnFirstSing && verbSeq == 1)
     {
         vf1->person = FIRST;
