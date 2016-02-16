@@ -10,6 +10,34 @@
 
 void randomAlternative(char *s, int *offset);
 
+void init()
+{
+    /*
+     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+     NSString *documentsDirectoryPath = [paths objectAtIndex:0];
+     NSLog(@"D: %@", documentsDirectoryPath);
+     NSLog(@"D2: %d", chdir([documentsDirectoryPath UTF8String]));
+     char path[1024];
+     snprintf(path, 1023, "%s%s", [documentsDirectoryPath UTF8String], "/hcdata" );
+     
+     void *mem = nil;
+     int fd;// = open(path, O_RDWR | O_CREAT);
+     if ((fd = open (path, O_RDWR | O_CREAT)) < 0)
+     NSLog(@"can't create %s for writing", path);
+     
+     // go to the location corresponding to the last byte
+     if (lseek (fd, 1024, SEEK_SET) == -1)
+     NSLog (@"lseek error");
+     
+     // write a dummy byte at the last location
+     if (write (fd, "", 1) != 1)
+     NSLog (@"write error");
+     
+     mem = mmap(0, 1024, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+     NSLog(@"D3: %d, %d", mem, fd);
+     */
+}
+
 static int verbSeq = 99999; //start more than repsPerVerb so we reset
 
 void resetVerbSeq()
@@ -42,6 +70,8 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     {
         verbSeq++;
     }
+    //v = &verbs[35]; //to force a particular verb for testing purposes
+    
     *seq = verbSeq;
     vf1->verb = v;
     
@@ -68,7 +98,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
         if (!getForm(vf1, buffer, bufferLen, false, false))
         {
             vf1->voice = MIDDLE;
-            getForm(vf1, buffer, bufferLen, false, false);
+            getForm(vf1, buffer, bufferLen, false, false); //do we need this?
         }
     }
     else
@@ -98,8 +128,12 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
             int limit = 1000;
             do
             {
-                degreesToChange = randWithMax(4) + 2; //2-5
+                if (highestUnit <= 2)
+                    degreesToChange = 1;
+                else
+                    degreesToChange = randWithMax(4) + 2; //2-5
                 limit--;
+                
             } while (degreesToChange == lastInitialDegreesToChange && limit > 0); //for variety
             if (limit == 0)
             {

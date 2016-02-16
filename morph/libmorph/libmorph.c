@@ -634,6 +634,12 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         return 0;
     }
     
+    //middle deponents do not have a passive voice.  H&Q page 316
+    if (deponentType(vf->verb) == MIDDLE_DEPONENT && vf->voice == PASSIVE)
+    {
+        return 0;
+    }
+    
     UCS2 ucs2Stems[(strlen(utf8Stems) * 3) + 1];
     int ucs2StemsLen = 0;
     utf8_to_ucs2_string((const unsigned char*)utf8Stems, ucs2Stems, &ucs2StemsLen);
@@ -875,15 +881,15 @@ bool utf8HasSuffix(char *s, char *suffix)
 //page 316 in h&q
 int deponentType(Verb *v)
 {
-    if ( utf8HasSuffix(v->present, "ομαι") && utf8HasSuffix(v->future, "ομαι") && utf8HasSuffix(v->aorist, "άμην") && v->perf[0] == '\0' && utf8HasSuffix(v->perfmid, "μαι") && v->aoristpass[0] == '\0')
+    if ( utf8HasSuffix(v->present, "μαι") && utf8HasSuffix(v->future, "μαι") && utf8HasSuffix(v->aorist, "άμην") && v->perf[0] == '\0' && utf8HasSuffix(v->perfmid, "μαι") && v->aoristpass[0] == '\0')
     {
         return MIDDLE_DEPONENT;
     }
-    else if ( utf8HasSuffix(v->present, "ομαι") && utf8HasSuffix(v->future, "ομαι") && v->aorist[0] == '\0' && v->perf[0] == '\0' && utf8HasSuffix(v->perfmid, "μαι") && v->aoristpass[0] != '\0')
+    else if ( utf8HasSuffix(v->present, "μαι") && utf8HasSuffix(v->future, "μαι") && v->aorist[0] == '\0' && v->perf[0] == '\0' && utf8HasSuffix(v->perfmid, "μαι") && v->aoristpass[0] != '\0')
     {
         return PASSIVE_DEPONENT;
     }
-    else if (utf8HasSuffix(v->present, "ομαι") || utf8HasSuffix(v->future, "ομαι") || utf8HasSuffix(v->aorist, "άμην") )
+    else if (utf8HasSuffix(v->present, "μαι") || utf8HasSuffix(v->future, "μαι") || utf8HasSuffix(v->aorist, "άμην") )
     {
         return PARTIAL_DEPONENT;
     }

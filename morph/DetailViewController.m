@@ -1947,31 +1947,6 @@ void printUCS22(UCS2 *u, int len)
 {
     [super viewDidLoad];
     
-    /*
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectoryPath = [paths objectAtIndex:0];
-    NSLog(@"D: %@", documentsDirectoryPath);
-    NSLog(@"D2: %d", chdir([documentsDirectoryPath UTF8String]));
-    char path[1024];
-    snprintf(path, 1023, "%s%s", [documentsDirectoryPath UTF8String], "/hcdata" );
-    
-    void *mem = nil;
-    int fd;// = open(path, O_RDWR | O_CREAT);
-    if ((fd = open (path, O_RDWR | O_CREAT)) < 0)
-        NSLog(@"can't create %s for writing", path);
-    
-    // go to the location corresponding to the last byte
-    if (lseek (fd, 1024, SEEK_SET) == -1)
-        NSLog (@"lseek error");
-    
-    // write a dummy byte at the last location
-    if (write (fd, "", 1) != 1)
-        NSLog (@"write error");
-    
-    mem = mmap(0, 1024, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
-    NSLog(@"D3: %d, %d", mem, fd);
-    */
-    
     self.elapsedTimeLimit = 4; //upper limit in seconds for practice mode
     self.limitElapsedTime = NO; //whether to enforce an upper time limit for practice mode
     self.typeInterval = 0.02;

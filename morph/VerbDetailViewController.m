@@ -156,7 +156,8 @@
                 }
                 else if (v == MIDDLE)
                 {
-                    //FIX ME, is this right?? how do we label these?
+                    //FIX ME, is this right?? how do we label these.
+                    //yes it's correct, middle deponents do not have a passive voice.  H&Q page 316
                     if ( deponentType(vf.verb) == MIDDLE_DEPONENT || deponentType(vf.verb) == PASSIVE_DEPONENT)
                     {
                         s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], @"middle", [NSString stringWithUTF8String: moods[m]]];
