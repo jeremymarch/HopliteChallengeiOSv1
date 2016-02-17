@@ -374,30 +374,27 @@ UIView *backSideTest;
     [l setFrame: CGRectMake((screenSize.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, adjustedSize.height)];
 }
 
--(void)centerLabel:(UILabel*)l withAttributedString:(NSAttributedString*)string
+-(void)centerLabel:(UILabel*)l withAttributedString:(NSAttributedString*)string withSize:(CGSize)size
 {
-    CGRect screenBound = [[UIScreen mainScreen] bounds];
-    CGSize screenSize = screenBound.size;
-    
     //string = [string stringByReplacingOccurrencesOfString:@", " withString:@",\n"];
-    
+    NSAttributedString *temp = l.attributedText;
     l.hidden = YES;
     l.attributedText = string;
-    CGSize size = [l sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+    CGSize lsize = [l sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
  
     
-    l.attributedText = nil;
+    l.attributedText = temp;
     l.hidden = NO;
     // Values are fractional -- you should take the ceilf to get equivalent values
-    if (size.width > screenSize.width)
+    if (lsize.width > size.width)
     {
-        size.width = screenSize.width;
+        lsize.width = size.width;
         //size.height = size.height * 3;
     }
     
-    CGSize adjustedSize = CGSizeMake(ceilf(size.width), ceilf(size.height));
+    CGSize adjustedSize = CGSizeMake(ceilf(lsize.width), ceilf(lsize.height));
     
-    [l setFrame: CGRectMake((screenSize.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, adjustedSize.height)];
+    [l setFrame: CGRectMake((size.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, adjustedSize.height)];
 }
 
 //http://stackoverflow.com/questions/11686642/letter-by-letter-animation-for-uilabel
@@ -576,10 +573,10 @@ UIView *backSideTest;
 {
     if ([string length] < 1)
     {
-        l.attributedText = string;
+        //l.attributedText = string;
         return;
     }
-    [self centerLabel:l withAttributedString:string];
+    [self centerLabel:l withAttributedString:string withSize:self.view.frame.size];
     
     for (int i = 0, j = 0; i < [string length]; i++)
     {
@@ -1182,6 +1179,7 @@ void printUCS22(UCS2 *u, int len)
             self.changeTo.text = @"";
             self.changeTo.hidden = NO;
             self.stemLabel.text = @"";
+            self.stemLabel.attributedText = nil;
             if (self.verbQuestionType == SELF_PRACTICE || self.verbQuestionType == MULTIPLE_CHOICE)
                 self.textfield.hidden = YES;
             else
@@ -1245,6 +1243,7 @@ void printUCS22(UCS2 *u, int len)
                         if (self.animate)
                         {
                             //[self typeLabel:self.stemLabel withString:newDescription withInterval:self.typeInterval];
+                            self.stemLabel.attributedText = nil;
                             [self typeAttLabel:self.stemLabel withString: attDesc withInterval:self.typeInterval];
                         }
                         else
@@ -2185,6 +2184,57 @@ void printUCS22(UCS2 *u, int len)
     [self setLevels];
     
     [self configureView];
+}
+
+//http://stackoverflow.com/questions/26069874/what-is-the-right-way-to-handle-orientation-changes-in-ios-8
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    // Code here will execute before the rotation begins.
+    // Equivalent to placing it in the deprecated method -[willRotateToInterfaceOrientation:duration:]
+    
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        
+        // Place code here to perform animations during the rotation.
+        // You can pass nil or leave this block empty if not necessary.
+        
+        double f = size.height;
+        CGSize fsize = [@"ξφψΑΒ" sizeWithAttributes:@{NSFontAttributeName: self.origForm.font }];
+        CGSize fsizeS = [@"ABCD" sizeWithAttributes:@{NSFontAttributeName: self.stemLabel.font }];
+        
+        [self.origForm setFrame:CGRectMake(0, f/6, self.view.frame.size.width, fsize.height + 10)];
+        [self.changeTo setFrame:CGRectMake(0, f/3.4, self.view.frame.size.width, fsizeS.height + 10)];
+        [self.stemLabel setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, fsizeS.height + 10)];
+        [self.textfield setFrame:CGRectMake(10, f/2.1, self.view.frame.size.width - 20, fsize.height + 10)];
+        [self.changedForm setFrame:CGRectMake(10, f/1.7, self.view.frame.size.width - 20, fsize.height + 10)];
+        
+        [self.timeLabel setFrame:CGRectMake(size.width - 120, 6,  114, 30)];
+        [self.MFLabel setFrame:CGRectMake(size.width - 120 - 42, 6,  42, 30)];
+        
+        [self centerLabel:self.origForm withString:self.origForm.text ];
+        [self centerLabel:self.changeTo withString:self.changeTo.text ];
+        [self centerLabel:self.stemLabel withAttributedString:self.stemLabel.attributedText withSize:size];
+        [self centerLabel:self.changedForm withString:self.changedForm.text ];
+        
+        [self.continueButton setFrame:CGRectMake(0, size.height - 70, (size.width), 70)];
+        
+        CGSize lsize = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
+        int offset;
+        if (lsize.width == 0)
+            offset = -8;
+        else
+            offset = 15;
+        [self.redXView setFrame:CGRectMake((size.width + lsize.width) / 2 + offset, self.textfield.frame.origin.y + 9, self.redXView.frame.size.width,self.redXView.frame.size.height)];
+        
+        [self.greenCheckView setFrame:CGRectMake((size.width + lsize.width) / 2 + offset, self.textfield.frame.origin.y + 9, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
+        
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        
+        // Code here will execute after the rotation has finished.
+        // Equivalent to placing it in the deprecated method -[didRotateFromInterfaceOrientation:]
+        //NSLog(@"size w: %f, h: %f", size.width, size.height);
+    }];
 }
 
 - (void)didReceiveMemoryWarning

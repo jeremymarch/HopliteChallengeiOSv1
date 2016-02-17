@@ -87,7 +87,7 @@
         <scene sceneID="O6I-fM-16d">
             <objects>
                 <viewController storyboardIdentifier="dvc" title="Detail" id="WFZ-F6-Key" customClass="DetailViewController" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="xsG-G1-U5o">
+                    <view key="view" contentMode="scaleToFill" id="xsG-G1-U5o" customClass="HCGameView">
                         <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
