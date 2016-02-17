@@ -143,7 +143,7 @@ enum {
     CGFloat width = self.frame.size.width;
     CGFloat height = self.frame.size.height - 64 - 50;
     CGRect tableFrame = CGRectMake(x, y, width, height);
-    self.table.frame = tableFrame;
+    [self.table setFrame:tableFrame];
  }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

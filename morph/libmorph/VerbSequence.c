@@ -161,6 +161,15 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     lastVF.mood = vf2->mood;
     lastVF.verb = vf2->verb;
     
+    /*
+     for testing to force form:
+    vf2->person = SECOND;
+    vf2->number = SINGULAR;
+    vf2->tense = PRESENT;
+    vf2->voice = MIDDLE;
+    vf2->mood = INDICATIVE;
+    vf2->verb = vf1->verb;
+    */
     
     //temp
     if(0)//verbSeq == 2)

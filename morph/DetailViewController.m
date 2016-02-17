@@ -710,14 +710,16 @@ void printUCS22(UCS2 *u, int len)
     
     if (self.front)
     {
-        UCS2 test[512];
-        UCS2 check[512];
-        int testLen = 0;
-        int checkLen = 0;
-        utf8_to_ucs2_string([self.textfield.text UTF8String], test, &testLen);
-        utf8_to_ucs2_string([self.changedForm.text UTF8String], check, &checkLen);
+        UCS2 givenForm[512];
+        UCS2 expectedForm[512];
+        int givenLen = 0;
+        int expectedLen = 0;
+
+        utf8_to_ucs2_string([self.textfield.text UTF8String], givenForm, &givenLen);
+        utf8_to_ucs2_string([self.changedForm.text UTF8String], expectedForm, &expectedLen);
             
-        if (compareForms(test, testLen, check, checkLen))
+        //if (compareForms(test, testLen, check, checkLen))
+        if (compareFormsCheckMFRecordResult(expectedForm, expectedLen, givenForm, givenLen, self.mfPressed))
         {
             NSLog(@"correct");
             CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
@@ -2199,35 +2201,7 @@ void printUCS22(UCS2 *u, int len)
         // Place code here to perform animations during the rotation.
         // You can pass nil or leave this block empty if not necessary.
         
-        double f = size.height;
-        CGSize fsize = [@"ξφψΑΒ" sizeWithAttributes:@{NSFontAttributeName: self.origForm.font }];
-        CGSize fsizeS = [@"ABCD" sizeWithAttributes:@{NSFontAttributeName: self.stemLabel.font }];
-        
-        [self.origForm setFrame:CGRectMake(0, f/6, self.view.frame.size.width, fsize.height + 10)];
-        [self.changeTo setFrame:CGRectMake(0, f/3.4, self.view.frame.size.width, fsizeS.height + 10)];
-        [self.stemLabel setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, fsizeS.height + 10)];
-        [self.textfield setFrame:CGRectMake(10, f/2.1, self.view.frame.size.width - 20, fsize.height + 10)];
-        [self.changedForm setFrame:CGRectMake(10, f/1.7, self.view.frame.size.width - 20, fsize.height + 10)];
-        
-        [self.timeLabel setFrame:CGRectMake(size.width - 120, 6,  114, 30)];
-        [self.MFLabel setFrame:CGRectMake(size.width - 120 - 42, 6,  42, 30)];
-        
-        [self centerLabel:self.origForm withString:self.origForm.text ];
-        [self centerLabel:self.changeTo withString:self.changeTo.text ];
-        [self centerLabel:self.stemLabel withAttributedString:self.stemLabel.attributedText withSize:size];
-        [self centerLabel:self.changedForm withString:self.changedForm.text ];
-        
-        [self.continueButton setFrame:CGRectMake(0, size.height - 70, (size.width), 70)];
-        
-        CGSize lsize = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
-        int offset;
-        if (lsize.width == 0)
-            offset = -8;
-        else
-            offset = 15;
-        [self.redXView setFrame:CGRectMake((size.width + lsize.width) / 2 + offset, self.textfield.frame.origin.y + 9, self.redXView.frame.size.width,self.redXView.frame.size.height)];
-        
-        [self.greenCheckView setFrame:CGRectMake((size.width + lsize.width) / 2 + offset, self.textfield.frame.origin.y + 9, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
+        [self positionWidgetsToSize:size];
         
     } completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
@@ -2235,6 +2209,39 @@ void printUCS22(UCS2 *u, int len)
         // Equivalent to placing it in the deprecated method -[didRotateFromInterfaceOrientation:]
         //NSLog(@"size w: %f, h: %f", size.width, size.height);
     }];
+}
+
+-(void) positionWidgetsToSize:(CGSize)size
+{
+    double f = size.height;
+    CGSize fsize = [@"ξφψΑΒ" sizeWithAttributes:@{NSFontAttributeName: self.origForm.font }];
+    CGSize fsizeS = [@"ABCD" sizeWithAttributes:@{NSFontAttributeName: self.stemLabel.font }];
+    
+    [self.origForm setFrame:CGRectMake(0, f/6, self.view.frame.size.width, fsize.height + 10)];
+    [self.changeTo setFrame:CGRectMake(0, f/3.4, self.view.frame.size.width, fsizeS.height + 10)];
+    [self.stemLabel setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, fsizeS.height + 10)];
+    [self.textfield setFrame:CGRectMake(10, f/2.1, self.view.frame.size.width - 20, fsize.height + 10)];
+    [self.changedForm setFrame:CGRectMake(10, f/1.7, self.view.frame.size.width - 20, fsize.height + 10)];
+    
+    [self.timeLabel setFrame:CGRectMake(size.width - 120, 6,  114, 30)];
+    [self.MFLabel setFrame:CGRectMake(size.width - 120 - 42, 6,  42, 30)];
+    
+    [self centerLabel:self.origForm withString:self.origForm.text ];
+    [self centerLabel:self.changeTo withString:self.changeTo.text ];
+    [self centerLabel:self.stemLabel withAttributedString:self.stemLabel.attributedText withSize:size];
+    [self centerLabel:self.changedForm withString:self.changedForm.text ];
+    
+    [self.continueButton setFrame:CGRectMake(0, size.height - 70, (size.width), 70)];
+    
+    CGSize lsize = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
+    int offset;
+    if (lsize.width == 0)
+        offset = -8;
+    else
+        offset = 15;
+    [self.redXView setFrame:CGRectMake((size.width + lsize.width) / 2 + offset, self.textfield.frame.origin.y + 9, self.redXView.frame.size.width,self.redXView.frame.size.height)];
+    
+    [self.greenCheckView setFrame:CGRectMake((size.width + lsize.width) / 2 + offset, self.textfield.frame.origin.y + 9, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
 }
 
 - (void)didReceiveMemoryWarning

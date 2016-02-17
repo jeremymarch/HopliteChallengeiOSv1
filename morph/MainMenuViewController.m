@@ -22,6 +22,44 @@ alpha:1.0]
 
 @implementation MainMenuViewController
 
+//http://stackoverflow.com/questions/26069874/what-is-the-right-way-to-handle-orientation-changes-in-ios-8
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    // Code here will execute before the rotation begins.
+    // Equivalent to placing it in the deprecated method -[willRotateToInterfaceOrientation:duration:]
+    
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        
+        // Place code here to perform animations during the rotation.
+        // You can pass nil or leave this block empty if not necessary.
+        
+        double sw = size.width;
+        double sh = size.height;
+        
+        double bw = sw * 0.5;//150;
+        double v1 = sh * 0.5;
+        double v2 = sh * 0.75;
+        double bh = sh / 4;
+        
+        [self.HCButton setFrame:CGRectMake(10, sh - 180, sw - 20, 80)];
+        [self.HPButton setFrame:CGRectMake(10, sh - 90, sw - 20, 80)];
+        [self.HCLabel setFrame:CGRectMake(0, 120, self.view.bounds.size.width, self.HCLabel.frame.size.height)];
+        [self.menuButton setFrame:CGRectMake(sw - 70 - 6, 24, 70, 36)];
+        
+        [self.popup setFrame:CGRectMake (0, size.height + 200, size.width, size.height)];
+        
+
+        
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        [self.popup setNeedsDisplay];
+        // Code here will execute after the rotation has finished.
+        // Equivalent to placing it in the deprecated method -[didRotateFromInterfaceOrientation:]
+        //NSLog(@"size w: %f, h: %f", size.width, size.height);
+    }];
+}
+
 - (void) showGame:(id)sender
 {
     UIButton *b = (UIButton*) sender;
