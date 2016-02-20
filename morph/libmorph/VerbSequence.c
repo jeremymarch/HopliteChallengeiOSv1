@@ -6,6 +6,7 @@
 //  Copyright © 2016 Jeremy March. All rights reserved.
 //
 #include <stdlib.h> // For random(), RAND_MAX
+#include <string.h>
 #include "VerbSequence.h"
 
 void randomAlternative(char *s, int *offset);
@@ -101,15 +102,17 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
             getForm(vf1, buffer, bufferLen, false, false); //do we need this?
         }
     }
-    else
+    else if (verbSeq == 1)
     {
-        /*
          do
          {
-         generateForm(vf1);
+             generateForm(vf1);
          
          } while (!getForm(vf1, buffer, bufferLen, false, false) || !isValidFormForUnit(vf1, highestUnit) || !strncmp(buffer, "—", 1));
-         */
+    }
+    else
+    {
+
         vf1->person = lastVF.person;
         vf1->number = lastVF.number;
         vf1->tense = lastVF.tense;
@@ -128,19 +131,23 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
             int limit = 1000;
             do
             {
+                /*
                 if (highestUnit <= 2)
                     degreesToChange = 1;
                 else
                     degreesToChange = randWithMax(4) + 2; //2-5
+                */
                 limit--;
                 
             } while (degreesToChange == lastInitialDegreesToChange && limit > 0); //for variety
+            /*
             if (limit == 0)
             {
                 degreesToChange = 2;
             }
             
             lastInitialDegreesToChange = degreesToChange;
+             */
         }
         
         //these need to be in the loop, so we're always starting from the same place

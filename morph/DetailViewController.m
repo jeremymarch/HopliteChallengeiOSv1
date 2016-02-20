@@ -990,7 +990,7 @@ void printUCS22(UCS2 *u, int len)
     NSString *newForm = nil;
     NSString *newDescription = nil;
     
-    if (self->verbSeq == 1)
+    if (self->verbSeq == 1 && self->vsOptions.startOnFirstSing)
     {
         //use lemma rather than a possibly contracted form
         origForm = [NSString stringWithUTF8String: (const char*)vf1.verb->present];
@@ -1864,7 +1864,7 @@ void printUCS22(UCS2 *u, int len)
         self->vsOptions.units[0] = 1;
         self->vsOptions.numUnits = 1;
     }
-    self->vsOptions.startOnFirstSing = true;
+    self->vsOptions.startOnFirstSing = false;//true;
     self->vsOptions.degreesToChange = 2;
     self->vsOptions.repsPerVerb = 4;
     resetVerbSeq();
