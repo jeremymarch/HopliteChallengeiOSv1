@@ -61,6 +61,7 @@ enum {
 @property (strong, retain) UIImageView *greenCheckView;
 @property (strong, retain) UIImageView *redXView;
 
+@property (strong, nonatomic) NSString *lemma;
 @property (strong, nonatomic) NSString *origStr;
 @property (strong, nonatomic) NSString *changedStr;
 @property (strong, nonatomic) NSString *origStrDecomposed;

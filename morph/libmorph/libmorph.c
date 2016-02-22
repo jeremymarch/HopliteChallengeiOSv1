@@ -658,7 +658,12 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     {
         return 0;
     }
-    
+    /*
+    if (vf->mood == IMPERATIVE && vf->person == FIRST)
+    {
+        return 0;
+    }
+    */
     UCS2 ucs2Stems[(strlen(utf8Stems) * 3) + 1];
     int ucs2StemsLen = 0;
     utf8_to_ucs2_string((const unsigned char*)utf8Stems, ucs2Stems, &ucs2StemsLen);
@@ -866,7 +871,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     }
     ucs2StemPlusEndingBufferLen -= 2; //remove trailing comma and space.
     
-    if (vf->mood == IMPERATIVE && vf->person == FIRST)
+    if (vf->mood == IMPERATIVE && vf->person == FIRST && ucs2StemPlusEndingBufferLen > 0) //check len so we don't give dashes for deponents in active voice
     {
         ucs2StemPlusEndingBuffer[0] = EM_DASH;
         ucs2StemPlusEndingBufferLen = 1;

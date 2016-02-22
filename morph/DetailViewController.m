@@ -199,7 +199,7 @@ UIView *backSideTest;
                 {
                     //NSLog(@"type: %@", self.changedForm.text);
                     self.changedForm.textAlignment = NSTextAlignmentLeft;
-                    [self typeLabel:self.changedForm withString:self.changedForm.text withInterval:self.typeInterval];
+                    [self typeLabel:self.changedForm withString:self.changedForm.text withInterval:self.typeInterval  completion:nil];
                 }
 
                 self.changedForm.hidden = NO;
@@ -405,75 +405,49 @@ UIView *backSideTest;
 //http://stackoverflow.com/questions/29938707/animate-a-uiview-using-cadisplaylink-combined-with-camediatimingfunction-to
 //http://netcetera.org/camtf-playground.html
 
--(void)typeLabel:(UILabel*)l withString:(NSString*)string withInterval:(double)interval
+-(void)typeLabel:(UILabel*)l withString:(NSString*)string withInterval:(double)interval completion:(void (^)(void))done
 {
-    //BOOL async = NO;
-    
     if ([string length] < 1)
     {
         l.text = @"";
         return;
     }
-    /*
-    CGRect screenBound = [[UIScreen mainScreen] bounds];
-    CGSize screenSize = screenBound.size;
 
-    CGSize size = [string sizeWithAttributes:@{NSFontAttributeName: l.font}];
-    
-    // Values are fractional -- you should take the ceilf to get equivalent values
-    CGSize adjustedSize = CGSizeMake(ceilf(size.width), ceilf(size.height));
-    
-    [l setFrame: CGRectMake((screenSize.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, adjustedSize.height)];
-    */
     [self centerLabel:l withString:string];
     
-    //l.textAlignment = NSTextAlignmentLeft;
-    /*
-    if (async)
+    NSInteger i = 0;
+    NSInteger j = 0;
+    for (i = 0, j = 0; i < [string length]; i++)
     {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0),
-                       ^{
-                           [self asyncTypingLabel:string characterDelay:interval label:l];
+        //don't wait for space characters
+        while ([string characterAtIndex:i] == ' ')
+        {
+            i++;
+        }
+        
+        if (i >= [string length])
+            break;
+        
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
+        j++;
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+                       {
+                           [l setText:[string substringToIndex:i+1]];
                        });
     }
-    else
+    if (done)
     {
-        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-        [dict setObject:string forKey:@"string"];
-        [dict setObject:@0 forKey:@"currentCount"];
-        [dict setObject:l forKey:@"label"];
-        NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:interval target:self selector:@selector(typingLabel:) userInfo:dict repeats:YES];
-        [timer fire];
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), done);
     }
-    else
-    { */
-    for (int i = 0, j = 0; i < [string length]; i++)
-        {
-            //don't wait for space characters
-            while ([string characterAtIndex:i] == ' ')
-            {
-                i++;
-            }
-            
-            if (i >= [string length])
-                break;
-            
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(interval * j * NSEC_PER_SEC));
-            j++;
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
-                           {
-                               [l setText:[string substringToIndex:i+1]];
-                           });
-        }
-    //}
 }
 
 -(void)hideTypeLabel:(UILabel*)l withInterval:(double)interval completion:(void (^)(void))done
 {
     NSString *string = l.text;
     
-    if ([string length] < 1)
-        return;
+    //if ([string length] < 1)
+    //    return;
 
     NSInteger i = 0;
     NSInteger j = 0;
@@ -772,7 +746,7 @@ void printUCS22(UCS2 *u, int len)
                 
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC));
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                    [self typeLabel:self.changedForm withString:temp withInterval:self.typeInterval];
+                    [self typeLabel:self.changedForm withString:temp withInterval:self.typeInterval completion:nil];
                     
                     dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC));
                     dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
@@ -968,6 +942,12 @@ void printUCS22(UCS2 *u, int len)
     return a;
 }
 
+void dispatchAfter(double delay, void (^block)(void))
+{
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), block);
+}
+
 -(void) loadMorphTraining
 {
     VerbFormC vf1, vf2;
@@ -990,6 +970,7 @@ void printUCS22(UCS2 *u, int len)
     NSString *newForm = nil;
     NSString *newDescription = nil;
     
+    self.lemma = [NSString stringWithUTF8String: (const char*)vf1.verb->present];
     if (self->verbSeq == 1 && self->vsOptions.startOnFirstSing)
     {
         //use lemma rather than a possibly contracted form
@@ -1176,7 +1157,7 @@ void printUCS22(UCS2 *u, int len)
     {
         if (self.verbQuestionType == HOPLITE_PRACTICE || self.verbQuestionType == HOPLITE_CHALLENGE || self.verbQuestionType == SELF_PRACTICE || self.verbQuestionType == MULTIPLE_CHOICE)
         {
-            double f = self.view.frame.size.height;
+            //double f = self.view.frame.size.height;
             self.origForm.text = @"";
             self.changeTo.text = @"";
             self.changeTo.hidden = NO;
@@ -1186,6 +1167,7 @@ void printUCS22(UCS2 *u, int len)
                 self.textfield.hidden = YES;
             else
                 self.textfield.hidden = NO;
+            /*
             CGSize size = [@"ξφψΑΒ" sizeWithAttributes:@{NSFontAttributeName: self.origForm.font }];
             CGSize sizeS = [@"ABCD" sizeWithAttributes:@{NSFontAttributeName: self.stemLabel.font }];
             
@@ -1194,15 +1176,8 @@ void printUCS22(UCS2 *u, int len)
             [self.stemLabel setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, sizeS.height + 10)];
             [self.textfield setFrame:CGRectMake(10, f/2.1, self.view.frame.size.width - 20, size.height + 10)];
             [self.changedForm setFrame:CGRectMake(10, f/1.7, self.view.frame.size.width - 20, size.height + 10)];
-            
-            //[self.continueButton setFrame:CGRectMake((screenSize.width - self.continueButton.frame.size.width) / 2, f/1.3, self.continueButton.frame.size.width, self.continueButton.frame.size.height)];
-            /*
-            [self.continueButton setFrame:CGRectMake((screenSize.width / 2) - 2, screenSize.height - 70, (screenSize.width / 2) + 4, 70)];
-            [self.backButton setFrame:CGRectMake(-2, screenSize.height - 70, (screenSize.width / 2) + 2, 70)];
             */
-            
-            //self.textfield.layer.borderWidth = 1.0;
-            //self.changedForm.layer.borderWidth = 1.0;
+            [self positionWidgetsToSize:self.view.frame.size];
             
             self.changedForm.numberOfLines = 0;
             self.changedForm.lineBreakMode = NSLineBreakByWordWrapping;
@@ -1214,65 +1189,58 @@ void printUCS22(UCS2 *u, int len)
             self.stemLabel.textAlignment = NSTextAlignmentLeft;
             
             //http://stackoverflow.com/questions/15335649/adding-delay-between-execution-of-two-following-lines
-            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC));
-            dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
+            //or maybe try this:  http://stackoverflow.com/questions/17949511/the-proper-way-of-doing-chain-animations
+if (0)//self->verbSeq == 1)
+{
+            dispatchAfter( 0.8, ^(void)
             {
-                if (self.animate)
+                self.origForm.font = [UIFont fontWithName:self.systemFont size:self.fontSize];
+                self.origForm.textColor = [UIColor grayColor];
+                [self typeLabel:self.origForm withString:@"The verb is:" withInterval:self.typeInterval completion:nil];
+                dispatchAfter( 1.2, ^(void)
                 {
-                    [self typeLabel:self.origForm withString:origForm withInterval:self.typeInterval];
-                }
-                else
-                {
-                    self.origForm.hidden = NO;
-                }
-                dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC));
-                dispatch_after(popTime2, dispatch_get_main_queue(), ^(void)
-                {
-                    if (self.animate)
+                    [self hideTypeLabel:self.origForm withInterval:self.typeInterval completion:nil];
+                    
+                    dispatchAfter( 0.8, ^(void)
                     {
-                        [self typeLabel:self.changeTo withString:@"Change to:" withInterval:self.typeInterval];
-                    }
-                    else
-                    {
-                        self.changeTo.hidden = NO;
-                    }
-                    //self.changeTo.text = @"Change to:";
-                    //self.changeTo.textAlignment = NSTextAlignmentCenter;
+                        self.origForm.font = [UIFont fontWithName:self.greekFont size:36.0];
+                        self.origForm.textColor = [UIColor blackColor];
+                        [self typeLabel:self.origForm withString:self.lemma withInterval:self.typeInterval completion:nil];
+                        dispatchAfter( 1.2, ^(void)
+                        {
+                            [self hideTypeLabel:self.origForm withInterval:self.typeInterval completion:nil];
+                            dispatchAfter( 0.8, ^(void)
+                                          {
+                                              self.origForm.font = [UIFont fontWithName:self.systemFont size:self.fontSize];
+                                              self.origForm.textColor = [UIColor grayColor];
+                                              [self typeLabel:self.origForm withString:@"Initial form is:" withInterval:self.typeInterval completion:nil];
+                                              dispatchAfter( 0.8, ^(void)
+                                                            {
+                                                                [self hideTypeLabel:self.origForm withInterval:self.typeInterval completion:nil];
+            dispatchAfter( 0.8, ^(void)
+            {
+                self.origForm.font = [UIFont fontWithName:self.greekFont size:36.0];
+                self.origForm.textColor = [UIColor blackColor];
+                [self typeLabel:self.origForm withString:origForm withInterval:self.typeInterval completion:nil];
 
-                    dispatch_time_t popTime3 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
-                    dispatch_after(popTime3, dispatch_get_main_queue(), ^(void)
+                dispatchAfter( 0.8, ^(void)
+                {
+                    [self typeLabel:self.changeTo withString:@"Change to..." withInterval:self.typeInterval completion:nil];
+                    dispatchAfter( 1.2, ^(void)
+                                  {
+                                      [self hideTypeLabel:self.changeTo withInterval:self.typeInterval completion:nil];
+                    dispatchAfter( 0.5, ^(void)
                     {
-                        if (self.animate)
-                        {
-                            //[self typeLabel:self.stemLabel withString:newDescription withInterval:self.typeInterval];
-                            self.stemLabel.attributedText = nil;
-                            [self typeAttLabel:self.stemLabel withString: attDesc withInterval:self.typeInterval];
-                        }
-                        else
-                        {
-                            self.stemLabel.hidden = NO;
-                        }
-                        //self.stemLabel.text = newDescription;
-                        //self.stemLabel.textAlignment = NSTextAlignmentCenter;
-                       
+                        //[self typeLabel:self.stemLabel withString:newDescription withInterval:self.typeInterval];
+                        self.stemLabel.attributedText = nil;
+                        [self typeAttLabel:self.stemLabel withString: attDesc withInterval:self.typeInterval];
                         
-                        dispatch_time_t popTime4 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.7 * NSEC_PER_SEC));
-                        dispatch_after(popTime4, dispatch_get_main_queue(), ^(void)
+                        dispatchAfter( 0.7, ^(void)
                         {
-                            if (self.verbQuestionType == HOPLITE_PRACTICE || self.verbQuestionType == HOPLITE_CHALLENGE )
-                            {
-                                self.textfield.enabled = YES;
-                                [self.textfield becomeFirstResponder];
-                            }
-                            else if (self.verbQuestionType == MULTIPLE_CHOICE)
-                            {
-                                self.MCButtonA.hidden = NO;
-                                self.MCButtonB.hidden = NO;
-                                self.MCButtonC.hidden = NO;
-                                self.MCButtonD.hidden = NO;
-                            }
-                            dispatch_time_t popTime5 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC));
-                            dispatch_after(popTime5, dispatch_get_main_queue(), ^(void)
+                            self.textfield.enabled = YES;
+                            [self.textfield becomeFirstResponder];
+
+                            dispatchAfter( 0.4, ^(void)
                             {
                                 self.timeLabel.hidden = NO;
                                 [self startTimer];
@@ -1282,6 +1250,48 @@ void printUCS22(UCS2 *u, int len)
                     });
                 });
             });
+                                            });
+                          });
+                                            });
+                          });
+                });
+            });
+                            });
+}
+            else
+            {
+                dispatchAfter( 0.8, ^(void)
+                {
+                    [self typeLabel:self.origForm withString:origForm withInterval:self.typeInterval completion:nil];
+                                  
+                    dispatchAfter( 1.2, ^(void)
+                    {
+                        [self typeLabel:self.changeTo withString:@"Change to..." withInterval:self.typeInterval completion:nil];
+                        dispatchAfter( 1.2, ^(void)
+                        {
+                            [self hideTypeLabel:self.changeTo withInterval:self.typeInterval * 0.7 completion:nil];
+                            dispatchAfter( 0.5, ^(void)
+                            {
+                                //[self typeLabel:self.stemLabel withString:newDescription withInterval:self.typeInterval];
+                                self.stemLabel.attributedText = nil;
+                                [self typeAttLabel:self.stemLabel withString: attDesc withInterval:self.typeInterval];
+                                                                                        
+                                dispatchAfter( 0.7, ^(void)
+                                {
+                                    self.textfield.enabled = YES;
+                                    [self.textfield becomeFirstResponder];
+                                    
+                                    dispatchAfter( 0.4, ^(void)
+                                    {
+                                        self.timeLabel.hidden = NO;
+                                        [self startTimer];
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            }
         }
         else
         {
@@ -1518,7 +1528,7 @@ void printUCS22(UCS2 *u, int len)
     self.origForm.text = @"";
     self.origForm.hidden = NO;
     [self centerLabel:self.origForm withString:frontForm];
-    [self typeLabel:self.origForm withString:frontForm withInterval:self.typeInterval];
+    [self typeLabel:self.origForm withString:frontForm withInterval:self.typeInterval completion:nil];
     //self.backLabel.text = self.backCard;
     self.backLabel.attributedText = attrString;
     
@@ -2218,7 +2228,8 @@ void printUCS22(UCS2 *u, int len)
     CGSize fsizeS = [@"ABCD" sizeWithAttributes:@{NSFontAttributeName: self.stemLabel.font }];
     
     [self.origForm setFrame:CGRectMake(0, f/6, self.view.frame.size.width, fsize.height + 10)];
-    [self.changeTo setFrame:CGRectMake(0, f/3.4, self.view.frame.size.width, fsizeS.height + 10)];
+    //[self.changeTo setFrame:CGRectMake(0, f/3.4, self.view.frame.size.width, fsizeS.height + 10)];
+    [self.changeTo setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, fsizeS.height + 10)];
     [self.stemLabel setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, fsizeS.height + 10)];
     [self.textfield setFrame:CGRectMake(10, f/2.1, self.view.frame.size.width - 20, fsize.height + 10)];
     [self.changedForm setFrame:CGRectMake(10, f/1.7, self.view.frame.size.width - 20, fsize.height + 10)];

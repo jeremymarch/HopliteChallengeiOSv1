@@ -196,7 +196,6 @@
                         {
                             UILabel *l = [[UILabel alloc] init];
                             
-
                             l.text = [NSString stringWithUTF8String: buffer];
                             l.font = [UIFont fontWithName:@"NewAthenaUnicode" size:24.0];
                             
@@ -224,6 +223,7 @@
                 {
                     //remove label
                     [l removeFromSuperview];
+                    yOffset -= (labelHeight + verticalPadding);
                     rowCount--;
                 }
             }
