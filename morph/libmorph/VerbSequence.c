@@ -11,7 +11,7 @@
 
 void randomAlternative(char *s, int *offset);
 
-void init()
+void init(char *path)
 {
     /*
      NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -179,7 +179,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     */
     
     //temp
-    if(0)//verbSeq == 2)
+    if(verbSeq == 2 && vso->askPrincipalParts)
     {
         return VERB_SEQ_PP;
     }

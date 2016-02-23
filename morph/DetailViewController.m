@@ -9,7 +9,6 @@
 #import "AppDelegate.h"
 #import "DetailViewController.h"
 #import "libmorph.h"
-#import "VerbSequence.h"
 #import "GreekForms.h"
 #import <AudioToolbox/AudioToolbox.h>
 #include <sys/types.h>
@@ -164,8 +163,8 @@ UIView *backSideTest;
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if (self.verbQuestionType == HOPLITE_PRACTICE || self.verbQuestionType == HOPLITE_CHALLENGE)
-        return;
+    //if (self.verbQuestionType == HOPLITE_PRACTICE || self.verbQuestionType == HOPLITE_CHALLENGE)
+      //  return;
     
     if (self.front) //then show back
     {
@@ -184,6 +183,11 @@ UIView *backSideTest;
             self.pluralLabel.hidden = false;
             
         }
+        else
+        {
+            return;
+        }
+        /*
         else if (self.cardType == CARD_ACCENTS) //Accents
         {
             
@@ -219,18 +223,20 @@ UIView *backSideTest;
         {
             [self turnDown];
         }
+        */
         self.front = false;
         
         CFTimeInterval elapsedTime = CACurrentMediaTime() - self.startTime;
         self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
         self.timeLabel.hidden = false;
     }
-    else //load new card
+    else if (self.cardType == CARD_PRINCIPAL_PARTS || self.cardType == CARD_ENDINGS)//load new card
     {
         if (self.cardType == CARD_VERBS && self.verbQuestionType == SELF_PRACTICE)
         {
             return;
         }
+        self.cardType = CARD_VERBS;
         [self loadNext];
         self.front = true;
         self.timeLabel.hidden = true;
@@ -958,6 +964,7 @@ void dispatchAfter(double delay, void (^block)(void))
     
     if (type == VERB_SEQ_PP)
     {
+        NSLog(@"principal parts!");
         self.cardType = CARD_PRINCIPAL_PARTS;
         [self loadPrincipalPart:&vf2];
         return;
@@ -1086,6 +1093,7 @@ void dispatchAfter(double delay, void (^block)(void))
     self.changedForm.hidden = YES;
     self.correctButton.hidden = YES;
     self.incorrectButton.hidden = YES;
+    self.backLabel.hidden = YES;
     
     if (self.verbQuestionType == MULTIPLE_CHOICE)
     {
@@ -1226,7 +1234,7 @@ if (0)//self->verbSeq == 1)
                 dispatchAfter( 0.8, ^(void)
                 {
                     [self typeLabel:self.changeTo withString:@"Change to..." withInterval:self.typeInterval completion:nil];
-                    dispatchAfter( 1.2, ^(void)
+                    dispatchAfter( 1.0, ^(void)
                                   {
                                       [self hideTypeLabel:self.changeTo withInterval:self.typeInterval completion:nil];
                     dispatchAfter( 0.5, ^(void)
@@ -1264,10 +1272,10 @@ if (0)//self->verbSeq == 1)
                 {
                     [self typeLabel:self.origForm withString:origForm withInterval:self.typeInterval completion:nil];
                                   
-                    dispatchAfter( 1.2, ^(void)
+                    dispatchAfter( 1.0, ^(void)
                     {
                         [self typeLabel:self.changeTo withString:@"Change to..." withInterval:self.typeInterval completion:nil];
-                        dispatchAfter( 1.2, ^(void)
+                        dispatchAfter( 1.0, ^(void)
                         {
                             [self hideTypeLabel:self.changeTo withInterval:self.typeInterval * 0.7 completion:nil];
                             dispatchAfter( 0.5, ^(void)
@@ -1462,26 +1470,7 @@ if (0)//self->verbSeq == 1)
 {
     int bufferLen = 1024;
     char buffer[bufferLen];
-    /*
-    long units[20] = { 1,2,3,4,5,6,7,8,9,10,11 };
-    int numUnits = 11;
-    if ([self.levels count] > 0)
-    {
-        int i;
-        numUnits = 0;
-        for (i = 0; i < [self.levels count]; i++)
-        {
-            units[i] = [[self.levels objectAtIndex:i] integerValue];
-            numUnits++;
-        }
-    }
-    
-    Verb *v = getRandomVerb(units, numUnits);//&verbs[13];//
-    VerbFormC vf;
-    vf.verb = v;
-    
-    generateForm(&vf);
-    */
+
     self.stemLabel.hidden = YES;
     self.origForm.hidden = YES;
     self.changedForm.hidden = YES;
@@ -1652,7 +1641,7 @@ if (0)//self->verbSeq == 1)
     
     self.stemLabel.font = [UIFont fontWithName:self.systemFont size:self.fontSize];
     self.changeTo.font = [UIFont fontWithName:self.systemFont size:self.fontSize];
-    self.backLabel.font = [UIFont fontWithName:self.greekFont size:self.fontSize];
+    self.backLabel.font = [UIFont fontWithName:self.greekFont size:36.0];
     self.singLabel.font = [UIFont fontWithName:self.greekFont size:self.fontSize];
     self.pluralLabel.font = [UIFont fontWithName:self.greekFont size:self.fontSize];
     
@@ -1877,6 +1866,7 @@ if (0)//self->verbSeq == 1)
     self->vsOptions.startOnFirstSing = false;//true;
     self->vsOptions.degreesToChange = 2;
     self->vsOptions.repsPerVerb = 4;
+    self->vsOptions.askPrincipalParts = false;//(self.verbQuestionType == HOPLITE_PRACTICE) ? true : false;
     resetVerbSeq();
 }
 

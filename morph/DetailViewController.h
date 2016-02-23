@@ -10,6 +10,7 @@
 #import "PopUp.h"
 #import "keyboard.h"
 #import "libmorph.h"
+#import "VerbSequence.h"
 
 enum {
     HOPLITE_CHALLENGE = 0,

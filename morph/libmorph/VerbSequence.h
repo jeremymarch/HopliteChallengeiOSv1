@@ -13,6 +13,17 @@
 #include "libmorph.h"
 #include "GreekForms.h"
 
+typedef struct vso {
+    bool startOnFirstSing;
+    unsigned char repsPerVerb;
+    unsigned char degreesToChange;
+    unsigned char numUnits;
+    bool askEndings;
+    bool askPrincipalParts;
+    int units[20];
+} VerbSeqOptions;
+
+void init(char *path);
 int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso);
 void resetVerbSeq();
 void changeFormByDegrees(VerbFormC *verbform, int degrees);

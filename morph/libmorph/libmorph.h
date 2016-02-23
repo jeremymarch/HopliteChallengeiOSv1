@@ -131,16 +131,6 @@ enum {
 #define UNICODE_SURROGATE_PAIR    -1
 #define UNICODE_BAD_INPUT         -2
 
-typedef struct vso {
-    bool startOnFirstSing;
-    unsigned char repsPerVerb;
-    unsigned char degreesToChange;
-    unsigned char numUnits;
-    bool askEndings;
-    bool askPrincipalParts;
-    int units[20];
-} VerbSeqOptions;
-
 typedef struct v {
     unsigned int verbid; //an index in the verbs static array
     unsigned int verbclass; //a bitfield

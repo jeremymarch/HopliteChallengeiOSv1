@@ -3592,6 +3592,12 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 else if (vf->mood == OPTATIVE)
                 {
                     leftShiftFromOffset(ending, 0, &elen);
+                    //accent doesn't go past syllable with iota
+                    //Hardy caught this one: see his email from 02/22/2016
+                    if (vf->person != FIRST)
+                    {
+                        ending[0] = GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI;
+                    }
                 }
                 else if (vf->mood == IMPERATIVE)
                 {
