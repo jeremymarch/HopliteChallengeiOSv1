@@ -837,12 +837,43 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
 
             //Labe/ Accent EXCEPTION H&Q page 326
             //elthe/ accent exception h&q page 383
+            
+            //them all: λαβέ ἐλθέ εἰπέ εὑρέ ἰδέ φαθί
+            
             UCS2 labe[] = { GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_BETA, GREEK_SMALL_LETTER_EPSILON } ;
             UCS2 elthe[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_THETA, GREEK_SMALL_LETTER_EPSILON } ;
             if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, labe, 4) || hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, elthe, 4)))
             {
                 ucs2StemPlusEndingBuffer[3] = GREEK_SMALL_LETTER_EPSILON_WITH_OXIA;
             }
+            //exception h&q page 376, dos when compounded is paroxytone
+            UCS2 apodos[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_FINAL_SIGMA } ;
+            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, apodos, 6) ))
+            {
+                ucs2StemPlusEndingBuffer[2] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
+            }
+            //exception h&q page 376, dos when compounded is paroxytone
+            UCS2 metados[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_FINAL_SIGMA } ;
+            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, metados, 7) ))
+            {
+                ucs2StemPlusEndingBuffer[3] = GREEK_SMALL_LETTER_ALPHA_WITH_OXIA;
+            }
+            //exception h&q page 376, dou when compounded with polysyllablic prefix is paroxytone
+            //Already done??
+            UCS2 metadou[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_UPSILON_WITH_PERISPOMENI } ;
+            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == MIDDLE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, metadou, 7) ))
+            {
+              ucs2StemPlusEndingBuffer[3] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
+              ucs2StemPlusEndingBuffer[6] = GREEK_SMALL_LETTER_UPSILON;
+            }
+            //exception h&q page 376, dou when compounded with polysyllablic prefix is paroxytone
+            UCS2 apodou[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_UPSILON_WITH_PERISPOMENI } ;
+            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == MIDDLE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, apodou, 6) ))
+            {
+                ucs2StemPlusEndingBuffer[2] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
+                ucs2StemPlusEndingBuffer[5] = GREEK_SMALL_LETTER_UPSILON;
+            }
+            
             //Step 10: add accent
             //add accent, if word does not already have one
             if (!wordIsAccented(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen))
