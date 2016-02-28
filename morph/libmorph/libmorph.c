@@ -4369,7 +4369,8 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
             return;
         }
         
-        if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "στημι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "στημι")) || !utf8HasSuffix(vf->verb->present, "στημι"))
+        
+        if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "στημι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "στημι")) || !utf8HasSuffix(vf->verb->present, "στημι"))
         {
             rightShiftFromOffset(ucs2, 0, len);
             rightShiftFromOffset(ucs2, 0, len);
@@ -4428,7 +4429,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
                 ucs2[3] = SPACE;
                 ucs2[4] = HYPHEN;
                 ucs2[5] = SPACE;
-                if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "στημι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "στημι")))
+                if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "στημι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "στημι")))
                 {
                     rightShiftFromOffset(ucs2, 6, len);
                     rightShiftFromOffset(ucs2, 6, len);
@@ -4463,7 +4464,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
             else
             {
                 //for histhmi pluperfect singular.  H&Q PAGE 378.
-                if (vf->tense == PLUPERFECT && vf->number == SINGULAR && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "στημι") )
+                if (vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "στημι") )
                 {
                     rightShiftFromOffset(ucs2, 2, len);
                     ucs2[2] = GREEK_SMALL_LETTER_EPSILON;
@@ -4484,7 +4485,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
                 rightShiftFromOffset(ucs2, 3, len);
                 rightShiftFromOffset(ucs2, 3, len);
                 rightShiftFromOffset(ucs2, 3, len);
-                if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "στημι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "στημι")))
+                if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "στημι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "στημι")))
                 {
                     rightShiftFromOffset(ucs2, 3, len);
                     rightShiftFromOffset(ucs2, 3, len);
@@ -4496,7 +4497,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
                 ucs2[4] = SPACE;
                 ucs2[5] = HYPHEN;
                 ucs2[6] = SPACE;
-                if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "στημι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "στημι")))
+                if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "στημι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "στημι")))
                 {
                     ucs2[7] = DECOMPOSED_AUGMENT_CHAR;
                     ucs2[8] = SPACE;
@@ -4532,7 +4533,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
                     ucs2[4] = COMBINING_MACRON;
                 }
                 //for histhmi pluperfect singular.  H&Q PAGE 378.
-                else if (vf->tense == PLUPERFECT && vf->number == SINGULAR && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "στημι") )
+                else if (vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "στημι") )
                 {
                     rightShiftFromOffset(ucs2, 3, len);
                     ucs2[3] = GREEK_SMALL_LETTER_EPSILON;
@@ -4563,7 +4564,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
                 ucs2[10] = SPACE;
                 ucs2[11] = HYPHEN;
                 ucs2[12] = SPACE;
-                if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "σταμαι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "σταμαι")))
+                if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "σταμαι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "σταμαι")))
                 {
                     rightShiftFromOffset(ucs2, 13, len);
                     rightShiftFromOffset(ucs2, 13, len);
@@ -4598,7 +4599,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
             else
             {
                 //for histhmi pluperfect singular.  H&Q PAGE 378.
-                if (vf->tense == PLUPERFECT && vf->number == SINGULAR && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "σταμαι") )
+                if (vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "σταμαι") )
                 {
                     rightShiftFromOffset(ucs2, 5, len);
                     ucs2[5] = GREEK_SMALL_LETTER_EPSILON;
@@ -4709,7 +4710,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
     else if (ucs2[0] == GREEK_SMALL_LETTER_EPSILON_WITH_DASIA)
     {
         //for histhmi pluperfect singular.  H&Q PAGE 378.
-        if (vf->tense == PLUPERFECT && vf->number == SINGULAR && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "στημι") )
+        if (vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "στημι") )
         {
             rightShiftFromOffset(ucs2, 0, len);
             ucs2[0] = GREEK_SMALL_LETTER_EPSILON;
