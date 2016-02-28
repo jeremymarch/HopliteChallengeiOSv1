@@ -175,7 +175,7 @@ Ending endings[NUM_ENDINGS] = {
     
     { 0, 9, 0, 0, 0, "ῶ", "ᾷς", "ᾷ", "ῶμεν", "ᾶτε", "ῶσι(ν)", "" },         //pres active indic a
     { 0, 9, 0, 0, 0, "ῶμαι", "ᾷ", "ᾶται", "ώμεθα", "ᾶσθε", "ῶνται", "" },   //pres mid/pass indic a
-    { 0, 9, 0, 0, 0, "ων", "ᾶς", "ᾶ", "ῶμεν", "ᾶτε", "ων", "" },            //impf active indic a
+    { 0, 9, 0, 0, 0, "ων", "ᾱς", "ᾱ", "ῶμεν", "ᾶτε", "ων", "" },            //impf active indic a
     { 0, 9, 0, 0, 0, "ώμην", "ῶ", "ᾶτο", "ώμεθα", "ᾶσθε", "ῶντο", "" },     //impf mid/pass indic a
     { 0, 9, 0, 0, 0, "ῶ", "ᾷς", "ᾷ", "ῶμεν", "ᾶτε", "ῶσι(ν)", "" },         //pres active subj a
     { 0, 9, 0, 0, 0, "ῶμαι", "ᾷ", "ᾶται", "ώμεθα", "ᾶσθε", "ῶνται", "" },   //pres mid/pass subj a
@@ -192,7 +192,7 @@ Ending endings[NUM_ENDINGS] = {
     { 0, 9, 0, 0, 0, "οίμην", "οῖο", "οῖτο", "οίμεθα", "οῖσθε", "οῖντο", "" },   //pres mid/ass opt e
     
     { 0, 10, 0, 0, 0, "ῶ", "οῖς", "οῖ", "οῦμεν", "οῦτε", "οῦσι(ν)", "" },         //pres active indic o
-    { 0, 10, 0, 0, 0, "οῦμαι", "οῖ", "οῖται", "οῦμεθα", "οῦσθε", "οῦνται", "" },   //pres mid/pass indic o
+    { 0, 10, 0, 0, 0, "οῦμαι", "οῖ", "οῦται", "οῦμεθα", "οῦσθε", "οῦνται", "" },   //pres mid/pass indic o
     { 0, 10, 0, 0, 0, "ουν", "ους", "ου", "οῦμεν", "οῦτε", "ουν", "" },            //impf active indic o
     { 0, 10, 0, 0, 0, "ούμην", "οῦ", "οῦτο", "ούμεθα", "οῦσθε", "οῦντο", "" },     //impf mid/pass indic o
     { 0, 10, 0, 0, 0, "ῶ", "οῖς", "οῖ", "ῶμεν", "ῶτε", "ῶσι(ν)", "" },         //pres active subj o
@@ -217,6 +217,7 @@ Ending endings[NUM_ENDINGS] = {
     { 0, 10, 0, 0, 0, "ν", "ς", "", "μεν", "τε", "σαν", "" },//mi root aorist indicative
     
     { 0, 11, 0, 0, 0, "", "οῦ", "εσθω", "", "εσθε", "εσθων", "Present Middle/Passive Imperative" }, //second aorist middle/passive imperatives
-    { 0, 5, 0, 0, 0, "ειμην", "εῖο", "εῖτο, οῖτο", "ειμεθα, οιμεθα", "εῖσθε, οῖσθε", "εῖντο, οῖντο", "Present Middle/Passive Optative Tithemi" } //Exception: H&Q page 347
+    { 0, 5, 0, 0, 0, "ειμην", "εῖο", "εῖτο, οῖτο", "ειμεθα, οιμεθα", "εῖσθε, οῖσθε", "εῖντο, οῖντο", "Present Middle/Passive Optative Tithemi" }, //Exception: H&Q page 347
+    { 0, 9, 0, 0, 0, "ον", "ες", "ε", "ομεν", "ετε", "ον", "Imperfect Active Indicative" } //this is only for contracted verbs when decomposed so the nu moveable doesn't show up
 };
 

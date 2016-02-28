@@ -422,12 +422,15 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     else if (vf->tense == FUTURE && vf->voice == MIDDLE && contractedFuture && !preContactedEndings)
         ending = PRESENT_MIDPASS_IND;
     /* CONTRACTED PRESENT AND IMPERFECT */
+    else if (vf->tense == IMPERFECT && vf->voice == ACTIVE  && (word[wordLen - 2] == GREEK_SMALL_LETTER_ALPHA || word[wordLen - 2] == GREEK_SMALL_LETTER_EPSILON|| word[wordLen - 2] == GREEK_SMALL_LETTER_OMICRON) && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA && !preContactedEndings)
+        ending = IMPERFECT_ACTIVE_CONTRACTED_DECOMPOSED;
+    
     else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == INDICATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_ALPHA && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA && preContactedEndings)
         ending = PRESENT_ACTIVE_INDIC_A_CONTRACTED;
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "άομαι")) && preContactedEndings)
         ending = PRESENT_MIDPASS_INDIC_A_CONTRACTED;
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "έομαι")) && preContactedEndings)
-        ending = PRESENT_MIDPASS_INDIC_E_CONTRACTED;
+        ending = PRESENT_MIDPASS_INDIC_E_CONTRACTED; //fix me, is this a typo? aw and eomai?
     else if (vf->tense == IMPERFECT && vf->voice == ACTIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_ALPHA && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA && preContactedEndings)
         ending = IMPERFECT_ACTIVE_INDIC_A_CONTRACTED;
     else if (vf->tense == IMPERFECT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "άομαι")) && preContactedEndings)
@@ -744,6 +747,17 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         if ( vf->voice == ACTIVE && isDeponent(vf, &ucs2Stems[stemStart], stemLen) )
         {
             continue;
+        }
+        
+        //for swzw perfect and pluperfect mid/passive with multiple stems in second person sing and pl,
+        //the forms end up being the same, so just use one
+        //fix me, what about 3rd plural?
+        if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_SIGMA_2) == CONSONANT_STEM_PERFECT_SIGMA_2 && (vf->tense == PERFECT || vf->tense == PLUPERFECT) && (vf->voice == PASSIVE || vf->voice == MIDDLE) && vf->person == SECOND)
+        {
+            if (stem > 0)
+            {
+                continue;
+            }
         }
         
         //Step 5: get appropriate ending for this stem
