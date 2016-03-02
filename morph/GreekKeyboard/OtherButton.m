@@ -149,7 +149,7 @@ enum {
             CGContextRestoreGState(context);
             CFRelease(highlightPath);
         }
-        NSLog(@"mf is pressed");
+        //NSLog(@"mf is pressed");
         if (self.mfPressed)
             [self setTitleColor:redColor forState:(UIControlStateNormal)];
         else

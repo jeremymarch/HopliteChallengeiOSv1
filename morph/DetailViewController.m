@@ -593,7 +593,17 @@ void printUCS22(UCS2 *u, int len)
 
 -(void)multipleFormsPressed
 {
-    NSLog(@"mf pressed");
+    self.MFLabel.hidden = NO;
+    self.mfPressed = YES;
+    
+    //if there are not multiple forms for the verb, mark it incorrect
+    if ([self.changedForm.text rangeOfString:@","].location == NSNotFound)
+    {
+        //this will mark form incorrect
+        [self preCheckVerbSubmit];
+        
+        return;
+    }
     
     if (self.verbQuestionType == HOPLITE_CHALLENGE)
     {
@@ -601,8 +611,6 @@ void printUCS22(UCS2 *u, int len)
         {
             CGFloat halfTime = self.HCTime / 2;
             self.startTime += halfTime;
-            self.MFLabel.hidden = NO;
-            self.mfPressed = YES;
         }
     }
     else if (self.verbQuestionType == HOPLITE_PRACTICE)
@@ -611,17 +619,8 @@ void printUCS22(UCS2 *u, int len)
         {
             CGFloat halfTime = self.HCTime / 2;
             self.startTime += halfTime;
-            self.MFLabel.hidden = NO;
-            self.mfPressed = YES;
         }
     }
-    
-    //if there are not multiple forms for the verb, mark it incorrect
-    if ([self.changedForm.text rangeOfString:@","].location == NSNotFound)
-    {
-        [self preCheckVerbSubmit];
-    }
-    //[self.timeLabel setFrame:CGRectMake(90, self.timeLabel.frame.origin.y,  self.timeLabel.frame.size.width, self.timeLabel.frame.size.height)]; //reset in case mf.
 }
 
 /* 

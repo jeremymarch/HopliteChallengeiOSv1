@@ -214,7 +214,7 @@ enum {
     if ( self->device == IPHONE)
     {
         self->windowWidth =  self.frame.size.width;// 320, 375 for 6;
-        self->width = self->windowWidth / 9.6;//32; //includes left and right padding
+        self->width = self->windowWidth / 9.5;//32; //includes left and right padding
         self->height = 50; //includes top and bottom padding
         self->hPadding = 3;
         self->vPadding = 8;
@@ -306,12 +306,20 @@ enum {
     }
     if (device == IPHONE)
     {
-        NSLog(@"w: %i, d: %i", self->windowWidth, self->deleteWidth);
-        self.deleteButton.frame = CGRectMake(self->windowWidth - self->width - 12, self->topMargin + (1 * self->height), self->deleteWidth, self->height);
+        NSInteger submitOffset = 2;
+        NSInteger submitWidthOffset = 0;
+        NSInteger deleteOffset = 12;
+        if (self->windowWidth < 375)
+        {
+            submitOffset = 4;
+            submitWidthOffset = 6;
+            deleteOffset = 15;
+        }
+        self.deleteButton.frame = CGRectMake(self->windowWidth - self->width - deleteOffset, self->topMargin + (1 * self->height), self->deleteWidth, self->height);
+
+        int x2 = ((self.bounds.size.width - ([[letterRows objectAtIndex:0] count] * self->width ) ) / 2) + ([[letterRows objectAtIndex:0] count] * self->width) + (self->width / 4 * -1) - submitOffset;
         
-        int x2 = ((self.bounds.size.width - ([[letterRows objectAtIndex:0] count] * self->width ) ) / 2) + ([[letterRows objectAtIndex:0] count] * self->width) + (self->width / 4 * -1) - 2;
-        
-        self.submitButton.frame = CGRectMake(x2, self->topMargin, 78, self->height);
+        self.submitButton.frame = CGRectMake(x2, self->topMargin, 78 - submitWidthOffset, self->height);
         
         int x3 = ((self.bounds.size.width - (([[letterRows objectAtIndex:0] count]) * self->width) ) / 2) - self->deleteWidth - 15;
         self.multipleFormsButton.frame = CGRectMake(x3, self->topMargin, self->deleteWidth + 3, self->height);
