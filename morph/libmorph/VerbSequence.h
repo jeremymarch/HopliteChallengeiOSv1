@@ -23,7 +23,7 @@ typedef struct vso {
     int units[20];
 } VerbSeqOptions;
 
-void init(char *path);
+void VerbSeqInit(const char *path);
 int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso);
 void resetVerbSeq();
 void changeFormByDegrees(VerbFormC *verbform, int degrees);

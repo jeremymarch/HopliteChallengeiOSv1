@@ -7,35 +7,88 @@
 //
 #include <stdlib.h> // For random(), RAND_MAX
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "VerbSequence.h"
+
 
 void randomAlternative(char *s, int *offset);
 
-void init(char *path)
+void VerbSeqInit(const char *path)
 {
+    return;
+    chdir(path);
+    
+     char path2[1024];
+     snprintf(path2, 1023, "%s%s", path, "/hcdata5" );
+    
+    
+    FILE *f = fopen( path2, "rwb" );
+    fseek( f, 0, SEEK_END );
+    int len = (int)ftell( f );
+    fseek( f, 0, SEEK_SET );
+    
+    //http://stackoverflow.com/questions/13425558/why-does-mmap-fail-on-ios
+    void *raw = mmap( 0, len, PROT_READ, MAP_SHARED, fileno( f ), 0 );
+    int errno;
+    if ( raw == MAP_FAILED ) {
+        printf( "MAP_FAILED. errno=%d", errno ); // Here it says 12, which is ENOMEM.
+    }
+    char *a = (char*) raw;
+    a[0] = (char)"9";
+    printf("data: %s\n", (char*)raw);
+    
+    return;
+    
     /*
-     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-     NSString *documentsDirectoryPath = [paths objectAtIndex:0];
-     NSLog(@"D: %@", documentsDirectoryPath);
-     NSLog(@"D2: %d", chdir([documentsDirectoryPath UTF8String]));
-     char path[1024];
-     snprintf(path, 1023, "%s%s", [documentsDirectoryPath UTF8String], "/hcdata" );
-     
-     void *mem = nil;
+     Using the primitive functions open, etc do not work for some reason.
+    void *mem = 0;
      int fd;// = open(path, O_RDWR | O_CREAT);
-     if ((fd = open (path, O_RDWR | O_CREAT)) < 0)
-     NSLog(@"can't create %s for writing", path);
-     
+     if ((fd = open (path2, O_RDWR | O_APPEND) < 0))
+     {
+         printf("A2: can't create %s for writing\n", path2);
+         return;
+     }
      // go to the location corresponding to the last byte
-     if (lseek (fd, 1024, SEEK_SET) == -1)
-     NSLog (@"lseek error");
-     
+     if (lseek (fd, 100, SEEK_SET) == -1)
+     {
+        printf("A3: lseek error\n");
+         close(fd);
+         return;
+     }
+
+    if (lseek (fd, 10, SEEK_SET) == -1)
+    {
+        printf("A3: lseek error\n");
+        close(fd);
+        return;
+    }
      // write a dummy byte at the last location
-     if (write (fd, "", 1) != 1)
-     NSLog (@"write error");
-     
-     mem = mmap(0, 1024, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
-     NSLog(@"D3: %d, %d", mem, fd);
+     if ((write(fd, "This will be output to testfile.txt\n", 36) != 36))
+     {
+        printf("A4: write error\n");
+         close(fd);
+         return;
+     }
+    
+    
+     mem = mmap(0, 10, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+    if (mem == MAP_FAILED)
+    {
+        printf("A4: failed\n");
+    }
+    printf("A5: %d, %d\n", (int)mem, fd);
+    
+    if (mem && munmap(mem, 10) == -1)
+    {
+        printf("Error un-mmapping the file\n");
+        //Decide here whether to close(fd) and exit() or not. Depends...
+    }
+
+    close(fd);
      */
 }
 
@@ -71,9 +124,11 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     {
         verbSeq++;
     }
-    //v = &verbs[35]; //to force a particular verb for testing purposes
     
     *seq = verbSeq;
+    
+    //for testing on specific verbs, set here
+    //vf1->verb = &verbs[13];
     vf1->verb = v;
     
     int highestUnit = 0;
@@ -169,12 +224,12 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     lastVF.verb = vf2->verb;
     
     /*
-     for testing to force form:
-    vf2->person = SECOND;
-    vf2->number = SINGULAR;
-    vf2->tense = PRESENT;
-    vf2->voice = MIDDLE;
-    vf2->mood = INDICATIVE;
+     //for testing to force form:
+    vf2->person = THIRD;
+    vf2->number = PLURAL;
+    vf2->tense = AORIST;
+    vf2->voice = ACTIVE;//PASSIVE;
+    vf2->mood = OPTATIVE;
     vf2->verb = vf1->verb;
     */
     

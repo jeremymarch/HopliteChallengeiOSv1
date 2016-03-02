@@ -23,7 +23,7 @@ enum {
     CARD_VERBS = 1,
     CARD_PRINCIPAL_PARTS,
     CARD_ENDINGS,
-        CARD_VOCAB,
+    CARD_VOCAB,
     CARD_ACCENTS
 };
 

@@ -615,9 +615,18 @@ void printUCS22(UCS2 *u, int len)
             self.mfPressed = YES;
         }
     }
+    
+    //if there are not multiple forms for the verb, mark it incorrect
+    if ([self.changedForm.text rangeOfString:@","].location == NSNotFound)
+    {
+        [self preCheckVerbSubmit];
+    }
     //[self.timeLabel setFrame:CGRectMake(90, self.timeLabel.frame.origin.y,  self.timeLabel.frame.size.width, self.timeLabel.frame.size.height)]; //reset in case mf.
 }
 
+/* 
+ called when time runs out
+ */
 -(void)preCheckVerbTimeout
 {
     self.timeLabel.text = @"0.00 sec";
@@ -627,6 +636,9 @@ void printUCS22(UCS2 *u, int len)
     [self checkVerb];
 }
 
+/* 
+ called when Enter or continue is pressed
+ */
 -(void)preCheckVerbSubmit
 {
     if (self.cardType == CARD_PRINCIPAL_PARTS)
@@ -703,7 +715,12 @@ void printUCS22(UCS2 *u, int len)
         {
             NSLog(@"correct");
             CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
-            [self.greenCheckView setFrame:CGRectMake((self.view.frame.size.width + size.width) / 2 + 15, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
+            CGFloat gvX = (self.view.frame.size.width + size.width) / 2 + 15;
+            //don't let it go off the screen
+            if (gvX > self.view.frame.size.width - 26)
+                gvX = self.view.frame.size.width - 26;
+            [self.greenCheckView setFrame:CGRectMake(gvX, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
+            
             self.greenCheckView.hidden = NO;
             
             if (!self.soundDisabled)
@@ -721,7 +738,12 @@ void printUCS22(UCS2 *u, int len)
                 offset = -8;
             else
                 offset = 15;
-            [self.redXView setFrame:CGRectMake((self.view.frame.size.width + size.width) / 2 + offset, self.redXView.frame.origin.y, self.redXView.frame.size.width,self.redXView.frame.size.height)];
+            
+            CGFloat rvX = (self.view.frame.size.width + size.width) / 2 + offset;
+            //don't let it go off the screen
+            if (rvX > self.view.frame.size.width - 26)
+                rvX = self.view.frame.size.width - 26;
+            [self.redXView setFrame:CGRectMake(rvX, self.redXView.frame.origin.y, self.redXView.frame.size.width,self.redXView.frame.size.height)];
             self.redXView.hidden = NO;
             
             if (!self.soundDisabled)
@@ -731,6 +753,7 @@ void printUCS22(UCS2 *u, int len)
             self.textfield.textColor = [UIColor grayColor];
             isCorrect = NO;
         }
+        [self.view bringSubviewToFront: self.textfield];
         
         if (!isCorrect || debug)
         {
@@ -1909,7 +1932,11 @@ if (0)//self->verbSeq == 1)
                 
                 //slide green check over
                 CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
-                [self.greenCheckView setFrame:CGRectMake((self.view.frame.size.width + size.width) / 2 + 15, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
+                CGFloat gvX = (self.view.frame.size.width + size.width) / 2 + 15;
+                //don't let it go off the screen
+                if (gvX > self.view.frame.size.width - 26)
+                    gvX = self.view.frame.size.width - 26;
+                [self.greenCheckView setFrame:CGRectMake(gvX, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
             }
             else
             {
@@ -1930,7 +1957,11 @@ if (0)//self->verbSeq == 1)
                 self.textfield.text = self.changedStr;
                 //slide green check over
                 CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
-                [self.greenCheckView setFrame:CGRectMake((self.view.frame.size.width + size.width) / 2 + 15, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
+                CGFloat gvX = (self.view.frame.size.width + size.width) / 2 + 15;
+                //don't let it go off the screen
+                if (gvX > self.view.frame.size.width - 26)
+                    gvX = self.view.frame.size.width - 26;
+                [self.greenCheckView setFrame:CGRectMake(gvX, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
             }
             else
             {
@@ -1947,6 +1978,20 @@ if (0)//self->verbSeq == 1)
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+     NSString *documentsDirectoryPath = [paths objectAtIndex:0];
+     NSLog(@"D: %@", documentsDirectoryPath);
+     //NSLog(@"D2: %d", chdir([documentsDirectoryPath UTF8String]));
+    
+    //for scoring?
+    NSString *content = @"Put this in a file please.";
+    NSData *fileContents = [content dataUsingEncoding:NSUTF8StringEncoding];
+    [[NSFileManager defaultManager] createFileAtPath:[documentsDirectoryPath stringByAppendingString:@"/hcdata5"]
+                                            contents:fileContents
+                                          attributes:nil];
+    
+    VerbSeqInit([documentsDirectoryPath UTF8String]);
     
     self.elapsedTimeLimit = 4; //upper limit in seconds for practice mode
     self.limitElapsedTime = NO; //whether to enforce an upper time limit for practice mode
@@ -2240,7 +2285,12 @@ if (0)//self->verbSeq == 1)
         offset = -8;
     else
         offset = 15;
-    [self.redXView setFrame:CGRectMake((size.width + lsize.width) / 2 + offset, self.textfield.frame.origin.y + 9, self.redXView.frame.size.width,self.redXView.frame.size.height)];
+    CGFloat rvX = (size.width + size.width) / 2 + offset;
+    //don't let it go off the screen
+    if (rvX > self.view.frame.size.width - 26)
+        rvX = self.view.frame.size.width - 26;
+    [self.redXView setFrame:CGRectMake(rvX, self.redXView.frame.origin.y, self.redXView.frame.size.width,self.redXView.frame.size.height)];
+    
     
     [self.greenCheckView setFrame:CGRectMake((size.width + lsize.width) / 2 + offset, self.textfield.frame.origin.y + 9, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
 }

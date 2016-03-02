@@ -758,6 +758,13 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             {
                 continue;
             }
+        } //skip 3rd plural also for now. fix me later?
+        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_SIGMA_2) == CONSONANT_STEM_PERFECT_SIGMA_2 && (vf->tense == PERFECT || vf->tense == PLUPERFECT) && (vf->voice == PASSIVE || vf->voice == MIDDLE) && vf->person == THIRD && vf->number == PLURAL)
+        {
+            if (stem == 0)
+            {
+                continue;
+            }
         }
         
         //Step 5: get appropriate ending for this stem
