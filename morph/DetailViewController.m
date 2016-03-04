@@ -11,11 +11,6 @@
 #import "libmorph.h"
 #import "GreekForms.h"
 #import <AudioToolbox/AudioToolbox.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-
 
 //http://stackoverflow.com/questions/1560081/how-can-i-create-a-uicolor-from-a-hex-string
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
@@ -33,6 +28,18 @@ SystemSoundID BuzzSound;
 @synthesize vocabBack, vocabFront;
 #pragma mark - Managing the detail item
 
+//for expanding uitextview
+//http://stackoverflow.com/questions/50467/how-do-i-size-a-uitextview-to-its-content?rq=1
+/*
+ - (void)textViewDidChange:(UITextView *)textView
+ {
+ CGFloat fixedWidth = textView.frame.size.width;
+ CGSize newSize = [textView sizeThatFits:CGSizeMake(fixedWidth, MAXFLOAT)];
+ CGRect newFrame = textView.frame;
+ newFrame.size = CGSizeMake(fmaxf(newSize.width, fixedWidth), newSize.height);
+ textView.frame = newFrame;
+ }
+ */
 
 UIView *flipContainer;
 UIView *frontSideTest;

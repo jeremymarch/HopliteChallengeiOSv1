@@ -242,6 +242,30 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     return VERB_SEQ_CHANGE;
 }
 
+/*
+ This is because we don't want to ask to change mid to pass/pass to mid unless its aorist or future
+ return true if the tense is not aorist or future
+ and changing from mid to pass or pass to mid.
+ false means it's ok to ask for this change, true means don't
+ */
+bool isMidToPassOrPassToMid(VerbFormC *vf, int tempTense, int tempVoice)
+{
+    //if the new tense is aorist or future then ok to change.
+    if (tempTense == AORIST || tempTense == FUTURE)
+        return false;
+    
+    if ((vf->voice == MIDDLE && tempVoice == PASSIVE) || (vf->voice == PASSIVE && tempVoice == MIDDLE))
+    {
+        printf("Hit mid to pass or pass to mid\n");
+    
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void changeFormByDegrees(VerbFormC *vf, int degrees)
 {
     unsigned char tempPerson;
@@ -308,14 +332,7 @@ void changeFormByDegrees(VerbFormC *vf, int degrees)
         }
     } //make sure form is valid and this verb has the required principal part,
     //and make sure we're not changing from mid to pass or vice versa unless the tense is aorist or future
-    while (!formIsValidReal(tempPerson, tempNumber, tempTense, tempVoice, tempMood) || getPrincipalPartForTense(vf->verb, tempTense, tempVoice)[0] == '\0' );
-    
-    /*
-     || ((tempTense != AORIST && tempTense != FUTURE) && ((vf->voice == MIDDLE && tempVoice == PASSIVE) || (vf->voice == PASSIVE && tempVoice == MIDDLE)))
-     */
-    
-    
-    
+    while (!formIsValidReal(tempPerson, tempNumber, tempTense, tempVoice, tempMood) || getPrincipalPartForTense(vf->verb, tempTense, tempVoice)[0] == '\0' || isMidToPassOrPassToMid(vf, tempTense, tempVoice));
     
     vf->person = tempPerson;
     vf->number = tempNumber;
