@@ -838,23 +838,66 @@ void printUCS22(UCS2 *u, int len)
     }
     else //if back
     {
+        if (self.changedForm.hidden == YES)
+        {
+            self.changedForm.text = self.textfield.text;
+            self.changedForm.frame = CGRectMake(self.textfield.frame.origin.x, self.textfield.frame.origin.y + 5, self.textfield.frame.size.width, self.textfield.frame.size.height);
+            [self centerLabel:self.changedForm withString:self.changedForm.text];
+            self.changedForm.hidden = NO;
+            self.textfield.hidden = YES;
+        }
+        
         self.redXView.hidden = YES;
         self.greenCheckView.hidden = YES;
-        
+
         if (1)
         {
             self.continueButton.hidden = YES;
-            [self hideTypeLabel:self.changedForm withInterval:self.typeInterval completion:^{
+            if (self.useNewAnimation && verbSeq < vsOptions.repsPerVerb)
+            {
                 [self hideTypeTextField:self.textfield withInterval:self.typeInterval completion:^{
                     [self hideTypeAttLabel:self.stemLabel withInterval:self.typeInterval completion:^{
                         [self hideTypeLabel:self.changeTo withInterval:self.typeInterval completion:^{
                             [self hideTypeLabel:self.origForm withInterval:self.typeInterval completion:^{
-                                [self loadNext];
+                                [UIView animateWithDuration:0.7f
+                                                         delay:0.5f
+                                        usingSpringWithDamping:0.6f
+                                         initialSpringVelocity:0.0f
+                                                       options:0
+                                                    animations:^{
+                                                        [self.view bringSubviewToFront:self.changedForm];
+                                                        [self.changedForm setFrame:CGRectMake(self.changedForm.frame.origin.x, self.origForm.frame.origin.y, self.changedForm.frame.size.width, self.changedForm.frame.size.height)
+                                                         ];
+                                                    }
+                                                    completion:^(BOOL finished){
+                                                        //switch
+                                                        UILabel *temp;
+                                                        temp = self.origForm;
+                                                        self.origForm = self.changedForm;
+                                                        self.changedForm = temp;
+                                                        [self loadNext];
+                                                    }];
+                                
+                                
                             }];
                         }];
                     }];
                 }];
-            }];
+            }
+            else
+            {
+                [self hideTypeLabel:self.changedForm withInterval:self.typeInterval completion:^{
+                    [self hideTypeTextField:self.textfield withInterval:self.typeInterval completion:^{
+                        [self hideTypeAttLabel:self.stemLabel withInterval:self.typeInterval completion:^{
+                            [self hideTypeLabel:self.changeTo withInterval:self.typeInterval completion:^{
+                                [self hideTypeLabel:self.origForm withInterval:self.typeInterval completion:^{
+                                    [self loadNext];
+                                }];
+                            }];
+                        }];
+                    }];
+                }];
+            }
         }
         else if (0)
         {
@@ -998,6 +1041,7 @@ void dispatchAfter(double delay, void (^block)(void))
         [self loadPrincipalPart:&vf2];
         return;
     }
+    
     getForm(&vf1, buffer, bufferLen, false, false);
     
     NSString *distractors = nil;
@@ -1195,7 +1239,8 @@ void dispatchAfter(double delay, void (^block)(void))
         if (self.verbQuestionType == HOPLITE_PRACTICE || self.verbQuestionType == HOPLITE_CHALLENGE || self.verbQuestionType == SELF_PRACTICE || self.verbQuestionType == MULTIPLE_CHOICE)
         {
             //double f = self.view.frame.size.height;
-            self.origForm.text = @"";
+            if (verbSeq == 1 || !self.useNewAnimation)
+                self.origForm.text = @"";
             self.changeTo.text = @"";
             self.changeTo.hidden = NO;
             self.stemLabel.text = @"";
@@ -1297,6 +1342,8 @@ if (0)//self->verbSeq == 1)
 }
             else
             {
+                if (verbSeq == 1 || !self.useNewAnimation)
+                {
                 dispatchAfter( 0.8, ^(void)
                 {
                     [self typeLabel:self.origForm withString:origForm withInterval:self.typeInterval completion:nil];
@@ -1304,7 +1351,7 @@ if (0)//self->verbSeq == 1)
                     dispatchAfter( 1.0, ^(void)
                     {
                         [self typeLabel:self.changeTo withString:@"Change to..." withInterval:self.typeInterval completion:nil];
-                        dispatchAfter( 1.0, ^(void)
+                        dispatchAfter( 0.8, ^(void)
                         {
                             [self hideTypeLabel:self.changeTo withInterval:self.typeInterval * 0.7 completion:nil];
                             dispatchAfter( 0.5, ^(void)
@@ -1328,6 +1375,36 @@ if (0)//self->verbSeq == 1)
                         });
                     });
                 });
+                }
+                else
+                {
+                    dispatchAfter( 0.4, ^(void)
+                    {
+                        [self typeLabel:self.changeTo withString:@"Change to..." withInterval:self.typeInterval completion:nil];
+                        dispatchAfter( 0.8, ^(void)
+                        {
+                            [self hideTypeLabel:self.changeTo withInterval:self.typeInterval * 0.7 completion:nil];
+                            dispatchAfter( 0.5, ^(void)
+                            {
+                                //[self typeLabel:self.stemLabel withString:newDescription withInterval:self.typeInterval];
+                                self.stemLabel.attributedText = nil;
+                                [self typeAttLabel:self.stemLabel withString: attDesc withInterval:self.typeInterval];
+                                    
+                                dispatchAfter( 0.7, ^(void)
+                                {
+                                    self.textfield.enabled = YES;
+                                    [self.textfield becomeFirstResponder];
+                                                                                                              
+                                    dispatchAfter( 0.4, ^(void)
+                                    {
+                                        self.timeLabel.hidden = NO;
+                                        [self startTimer];
+                                    });
+                                });
+                            });
+                        });
+                    });
+                }
             }
         }
         else
@@ -2003,6 +2080,7 @@ if (0)//self->verbSeq == 1)
     self.limitElapsedTime = NO; //whether to enforce an upper time limit for practice mode
     self.typeInterval = 0.02;
     self.autoNav = NO;//YES;  //load next automatically or stop and show nav buttons?
+    self.useNewAnimation = YES; //where the old form moves up rather than being erased
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
@@ -2054,7 +2132,6 @@ if (0)//self->verbSeq == 1)
     self.MFLabel.layer.borderWidth = 2.0f;
     
     //[self.backButton setFrame:CGRectMake(10, self.view.frame.size.height - 40, 50, 30)];
-    
     /*
      //crashes if here, so put in appdelegate
     NSLog(@"keyboard loaded1");
@@ -2191,7 +2268,10 @@ if (0)//self->verbSeq == 1)
     [self.continueButton.layer setMasksToBounds:YES];
     self.continueButton.layer.borderWidth = 6.0f;
     self.continueButton.layer.borderColor = [UIColor whiteColor].CGColor;
-    self.continueButton.backgroundColor = UIColorFromRGB(0x43609c);
+    
+    UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
+    self.continueButton.backgroundColor = blueColor;// UIColorFromRGB(0x43609c);
+    
     [self.continueButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.continueButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
     self.continueButton.layer.cornerRadius = 2.0f;

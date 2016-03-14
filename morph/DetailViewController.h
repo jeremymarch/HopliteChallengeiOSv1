@@ -40,6 +40,7 @@ enum {
 @property BOOL animationDisabled;
 @property bool animate;
 @property bool autoNav;
+@property bool  useNewAnimation;
 @property CFTimeInterval elapsedTimeLimit;
 @property bool limitElapsedTime;
 

@@ -38,8 +38,10 @@ void VerbSeqInit(const char *path)
         printf( "MAP_FAILED. errno=%d", errno ); // Here it says 12, which is ENOMEM.
     }
     char *a = (char*) raw;
+    printf("read data %c\n", a[0]);
+    
     a[0] = (char)"9";
-    printf("data: %s\n", (char*)raw);
+    printf("write data: %s\n", (char*)raw);
     
     return;
     
@@ -128,7 +130,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     *seq = verbSeq;
     
     //for testing on specific verbs, set here
-    //vf1->verb = &verbs[13];
+    //vf1->verb = &verbs[38];
     vf1->verb = v;
     
     int highestUnit = 0;
@@ -167,7 +169,6 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     }
     else
     {
-
         vf1->person = lastVF.person;
         vf1->number = lastVF.number;
         vf1->tense = lastVF.tense;
@@ -225,11 +226,11 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     
     /*
      //for testing to force form:
-    vf2->person = THIRD;
+    vf2->person = SECOND;
     vf2->number = PLURAL;
-    vf2->tense = AORIST;
-    vf2->voice = ACTIVE;//PASSIVE;
-    vf2->mood = OPTATIVE;
+    vf2->tense = PRESENT;
+    vf2->voice = PASSIVE;
+    vf2->mood = INDICATIVE;
     vf2->verb = vf1->verb;
     */
     

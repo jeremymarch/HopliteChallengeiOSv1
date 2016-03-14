@@ -288,9 +288,9 @@ alpha:1.0]
         self.SPButton.layer.borderWidth = 2.0;
         self.MCButton.layer.borderWidth = 2.0;
         */
-        
-        self.HCButton.backgroundColor = UIColorFromRGB(0x43609c);
-        self.HPButton.backgroundColor = UIColorFromRGB(0x43609c);
+        UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
+        self.HCButton.backgroundColor = blueColor;//UIColorFromRGB(0x43609c);
+        self.HPButton.backgroundColor = blueColor;//UIColorFromRGB(0x43609c);
         UIColor *textColor = [UIColor whiteColor];
         UIFont *textFont = [UIFont fontWithName:@"Helvetica" size:22.0];
         

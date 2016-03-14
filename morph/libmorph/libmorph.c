@@ -661,6 +661,18 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     {
         return 0;
     }
+    if (deponentType(vf->verb) == PASSIVE_DEPONENT && vf->voice == PASSIVE && (vf->tense == PRESENT || vf->tense == IMPERFECT || vf->tense == PERFECT || vf->tense == PLUPERFECT)) //aorist or future are ok
+    {
+        return 0;
+    }
+    //this verb has no passive (though does have an active form of perfect), is a different kind of deponent
+    //maybe better to handle this somewhere else
+    //see H&Q page 382
+    if (utf8HasSuffix(vf->verb->present, "γίγνομαι") && vf->voice == PASSIVE)
+    {
+        return 0;
+    }
+
     /*
     if (vf->mood == IMPERATIVE && vf->person == FIRST)
     {
@@ -957,7 +969,11 @@ bool utf8HasSuffix(char *s, char *suffix)
 //page 316 in h&q
 int deponentType(Verb *v)
 {
-    if ( utf8HasSuffix(v->present, "μαι") && utf8HasSuffix(v->future, "μαι") && utf8HasSuffix(v->aorist, "άμην") && v->perf[0] == '\0' && utf8HasSuffix(v->perfmid, "μαι") && v->aoristpass[0] == '\0')
+    if (utf8HasSuffix(v->present, "γίγνομαι"))
+    {
+        return DEPONENT_GIGNOMAI; //see H&Q page 382. fix me, there may be a better way to do this without separate case
+    }
+    else if ( utf8HasSuffix(v->present, "μαι") && utf8HasSuffix(v->future, "μαι") && utf8HasSuffix(v->aorist, "μην") && v->perf[0] == '\0' && utf8HasSuffix(v->perfmid, "μαι") && v->aoristpass[0] == '\0')
     {
         return MIDDLE_DEPONENT;
     }
@@ -965,7 +981,7 @@ int deponentType(Verb *v)
     {
         return PASSIVE_DEPONENT;
     }
-    else if (utf8HasSuffix(v->present, "μαι") || utf8HasSuffix(v->future, "μαι") || utf8HasSuffix(v->aorist, "άμην") )
+    else if (utf8HasSuffix(v->present, "μαι") || utf8HasSuffix(v->future, "μαι") || utf8HasSuffix(v->aorist, "μην") )
     {
         return PARTIAL_DEPONENT;
     }
@@ -1339,7 +1355,7 @@ void combiningToPrecomposed(UCS2 *ucs2String, int i, int *len)
 }
 
 /**
- * ISSUES: iPhone does not display combining acute if alpha macron breathing and subscript.  This should only affect alpha.
+ * Fix me: iPhone does not display combining acute if alpha macron breathing and subscript.  This should only affect alpha.
  */
 void accentSyllable(UCS2 *ucs2String, int i, int *len, int accent, bool toggleOff)
 {
@@ -3274,7 +3290,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             //exceptional alternates H&Q page 347
             if (vf->tense == PRESENT && vf->mood == OPTATIVE && vf->voice != ACTIVE && utf8HasSuffix(vf->verb->present, "τίθημι") && (vf->number == PLURAL || vf->person == THIRD))
             {
-                if (ending[0] == GREEK_SMALL_LETTER_OMICRON && !decompose)
+                if (ending[0] == GREEK_SMALL_LETTER_OMICRON && !decompose)// this is right
                     --(*len);
                 else if (ending[0] == GREEK_SMALL_LETTER_EPSILON)
                     leftShift(ending, &elen);
