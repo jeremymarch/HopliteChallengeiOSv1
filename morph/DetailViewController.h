@@ -31,6 +31,8 @@ enum {
 {
     VerbSeqOptions vsOptions;
     int verbSeq;
+    VerbFormC vf1;
+    VerbFormC vf2;
 }
 
 @property double typeInterval;
@@ -40,6 +42,9 @@ enum {
 @property BOOL animationDisabled;
 @property bool animate;
 @property bool autoNav;
+@property bool autoNavForCorrect;
+
+
 @property bool  useNewAnimation;
 @property CFTimeInterval elapsedTimeLimit;
 @property bool limitElapsedTime;

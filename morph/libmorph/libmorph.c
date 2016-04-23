@@ -114,7 +114,7 @@ void getStartEnd(UCS2 *w1, int w1len, int *starts, int *ends, int *numStrings)
     *numStrings = ++start;
 }
 
-bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed)
+bool compareFormsCheckMF(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed)
 {
     bool expectedHasMF = false;
     for (int i = 0; i < expectedLen; i++)

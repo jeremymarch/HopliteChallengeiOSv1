@@ -49,12 +49,6 @@ enum {
 };
 
 enum {
-    VERB_SEQ_CHANGE = 1,
-    VERB_SEQ_PP,
-    VERB_SEQ_ENDING
-};
-
-enum {
     NO_ACCENT = 0,
     ACUTE,
     CIRCUMFLEX,
@@ -248,7 +242,7 @@ enum {
     NUM_ENDINGS
 };
 
-bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed);
+bool compareFormsCheckMF(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed);
 bool compareForms(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
 bool compareWord(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
 int getForm(VerbFormC *vf, char *buffer, int bufferLen, bool includeAlternateForms, bool decompose);

@@ -13,6 +13,32 @@
 #include "libmorph.h"
 #include "GreekForms.h"
 
+enum {
+    VERB_SEQ_CHANGE = 1,
+    VERB_SEQ_CHANGE_NEW,
+    VERB_SEQ_PP,
+    VERB_SEQ_ENDING
+};
+
+typedef struct vfr VerbFormRecord;
+struct vfr {
+    time_t time;
+    int verb;
+    unsigned char person;
+    unsigned char number;
+    unsigned char tense;
+    unsigned char voice;
+    unsigned char mood;
+    bool correct;
+    char answer[100]; //needs to be more than longest answer: strlen("βλαβεῖμεν, βλαβείημεν, βλαφθεῖμεν, βλαφθείημεν") == 90
+};
+
+typedef struct da {
+    unsigned int numRecords;
+    unsigned int head;
+    VerbFormRecord vr[2000];
+} DataFormat;
+
 typedef struct vso {
     bool startOnFirstSing;
     unsigned char repsPerVerb;
@@ -20,8 +46,13 @@ typedef struct vso {
     unsigned char numUnits;
     bool askEndings;
     bool askPrincipalParts;
+    bool isHCGame; //else is practice
     int units[20];
 } VerbSeqOptions;
+
+bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed);
+void closeDataFile();
+void syncDataFile();
 
 void VerbSeqInit(const char *path);
 int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso);

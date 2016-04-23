@@ -6,6 +6,7 @@
 //  Copyright © 2016 Jeremy March. All rights reserved.
 //
 #include <stdlib.h> // For random(), RAND_MAX
+#include <time.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -14,90 +15,156 @@
 #include <unistd.h>
 #include "VerbSequence.h"
 
-
 void randomAlternative(char *s, int *offset);
+
+DataFormat *hcdata = NULL;
+size_t sizeInBytes = 0;
+bool lastAnswerCorrect = false; //initialize to false since we're "changing" verbs on start anyway
 
 void VerbSeqInit(const char *path)
 {
-    return;
-    chdir(path);
+    resetVerbSeq();
     
-     char path2[1024];
-     snprintf(path2, 1023, "%s%s", path, "/hcdata5" );
+    sizeInBytes = sizeof(DataFormat);//10*1024*1024; //10 mb
     
+    printf("Data file in verbseq: %s\n", path);
     
-    FILE *f = fopen( path2, "rwb" );
-    fseek( f, 0, SEEK_END );
-    int len = (int)ftell( f );
-    fseek( f, 0, SEEK_SET );
+    int fd = open(path, O_RDWR);
     
-    //http://stackoverflow.com/questions/13425558/why-does-mmap-fail-on-ios
-    void *raw = mmap( 0, len, PROT_READ, MAP_SHARED, fileno( f ), 0 );
-    int errno;
-    if ( raw == MAP_FAILED ) {
-        printf( "MAP_FAILED. errno=%d", errno ); // Here it says 12, which is ENOMEM.
+    struct stat st;
+    
+    fstat(fd, &st);
+    size_t size = st.st_size;
+    //printf("size: %zu\n", size);
+    
+    if (size < sizeInBytes) {
+        off_t result = lseek(fd, sizeInBytes - 1, SEEK_SET);
+        if (result == -1) {
+            close(fd);
+            printf("Error calling lseek() to 'stretch' the file");
+            return;
+        }
+        result = write(fd, "", 1);
+        if (result != 1) {
+            close(fd);
+            printf("Error writing last byte of the file");
+            return;
+        }
     }
-    char *a = (char*) raw;
-    printf("read data %c\n", a[0]);
+    fstat(fd, &st);
+    size = st.st_size;
+    //printf("size: %zu\n", size);
     
-    a[0] = (char)"9";
-    printf("write data: %s\n", (char*)raw);
+    hcdata = mmap(NULL, sizeInBytes, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     
-    return;
-    
-    /*
-     Using the primitive functions open, etc do not work for some reason.
-    void *mem = 0;
-     int fd;// = open(path, O_RDWR | O_CREAT);
-     if ((fd = open (path2, O_RDWR | O_APPEND) < 0))
-     {
-         printf("A2: can't create %s for writing\n", path2);
-         return;
-     }
-     // go to the location corresponding to the last byte
-     if (lseek (fd, 100, SEEK_SET) == -1)
-     {
-        printf("A3: lseek error\n");
-         close(fd);
-         return;
-     }
-
-    if (lseek (fd, 10, SEEK_SET) == -1)
+    if (hcdata == MAP_FAILED)
     {
-        printf("A3: lseek error\n");
-        close(fd);
+        printf("MMap failed\n");
+    } else {
+        printf("MMap success\n");
+    }
+    
+    close(fd); // we can close file now
+}
+
+void syncDataFile()
+{
+    if (hcdata)
+    {
+        msync(hcdata,sizeInBytes,MS_SYNC);
+        printf("sync file\n");
+    }
+}
+
+void closeDataFile()
+{
+    if (hcdata)
+    {
+        msync(hcdata,sizeInBytes,MS_SYNC);
+        munmap(hcdata, sizeInBytes);
+        printf("close file\n");
+        hcdata = NULL;
+    }
+}
+
+VerbFormRecord *getNextRecord()
+{
+    //VerbFormRecord *a = NULL;
+    
+    return &hcdata->vr[1];
+}
+
+VerbFormRecord *prevNextRecord()
+{
+    //VerbFormRecord *a = NULL;
+    
+    return &hcdata->vr[1];
+}
+
+void incrementHead()
+{
+    if (hcdata->head > 1000)
+        hcdata->head = 0;
+    else
+        hcdata->head++;
+}
+
+void setHeadAnswer(bool correct, char *answer)
+{
+    if (!hcdata)
         return;
-    }
-     // write a dummy byte at the last location
-     if ((write(fd, "This will be output to testfile.txt\n", 36) != 36))
-     {
-        printf("A4: write error\n");
-         close(fd);
-         return;
-     }
+    lastAnswerCorrect = correct;
     
+    time_t ltime; /* calendar time */
+    ltime = time(NULL); /* get current cal time */
     
-     mem = mmap(0, 10, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
-    if (mem == MAP_FAILED)
+    hcdata->vr[hcdata->head].time = ltime;
+    hcdata->vr[hcdata->head].correct = correct;
+    unsigned long len = strlen(answer);
+    strncpy(hcdata->vr[hcdata->head].answer, answer, (len > 199) ? 200 : len);
+    
+    //hcdata->vr[hcdata->head].answer = "222";
+    incrementHead();
+    /*
+    for (int i = 0; i < hcdata->head; i++)
     {
-        printf("A4: failed\n");
+        printf("Rec: %s %s %s %s %s: %d %s, %s\n", persons[hcdata->vr[i].person], numbers[hcdata->vr[i].number], tenses[hcdata->vr[i].tense], voices[hcdata->vr[i].voice],moods[hcdata->vr[i].mood], hcdata->vr[i].correct, hcdata->vr[i].answer, asctime( localtime(&ltime) ));
     }
-    printf("A5: %d, %d\n", (int)mem, fd);
-    
-    if (mem && munmap(mem, 10) == -1)
-    {
-        printf("Error un-mmapping the file\n");
-        //Decide here whether to close(fd) and exit() or not. Depends...
-    }
-
-    close(fd);
      */
+}
+
+void setHead(VerbFormC *vf)
+{
+    //VerbFormRecord *a = NULL;
+    if (!hcdata)
+        return;
+    
+    hcdata->vr[hcdata->head].person = vf->person;
+    hcdata->vr[hcdata->head].number = vf->number;
+    hcdata->vr[hcdata->head].tense = vf->tense;
+    hcdata->vr[hcdata->head].voice = vf->voice;
+    hcdata->vr[hcdata->head].mood = vf->mood;
+    //hcdata->vr[hcdata->head].correct = correct;
+    hcdata->vr[hcdata->head].verb = vf->verb;
+}
+
+bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed)
+{
+    char buffer[200];
+    bool ret = compareFormsCheckMF(expected, expectedLen, given, givenLen, MFPressed);
+    
+    ucs2_to_utf8_string(given, givenLen, (unsigned char*)buffer);
+    
+    setHeadAnswer(ret, buffer);
+    
+    return ret;
 }
 
 static int verbSeq = 99999; //start more than repsPerVerb so we reset
 
 void resetVerbSeq()
 {
+    lastAnswerCorrect = false;
     verbSeq = 99999;
 }
 
@@ -112,25 +179,45 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     char buffer[bufferLen];
     long degreesToChange = vso->degreesToChange;
     
-    if (verbSeq >= vso->repsPerVerb)
+    if (vso->isHCGame)
     {
-        do //so we don't ask the same verb twice in a row
+        if (!lastAnswerCorrect)
         {
-            v = getRandomVerb(vso->units, vso->numUnits);
-        } while (v == lastV);
-        lastV = v;
-        
-        verbSeq = 1;
+            do //so we don't ask the same verb twice in a row
+            {
+                v = getRandomVerb(vso->units, vso->numUnits);
+            } while (v == lastV);
+            lastV = v;
+            
+            verbSeq = 1;
+        }
+        else
+        {
+            verbSeq++;
+        }
     }
     else
     {
-        verbSeq++;
+        if (verbSeq >= vso->repsPerVerb)
+        {
+            do //so we don't ask the same verb twice in a row
+            {
+                v = getRandomVerb(vso->units, vso->numUnits);
+            } while (v == lastV);
+            lastV = v;
+            
+            verbSeq = 1;
+        }
+        else
+        {
+            verbSeq++;
+        }
     }
     
     *seq = verbSeq;
     
     //for testing on specific verbs, set here
-    //vf1->verb = &verbs[38];
+    //vf1->verb = &verbs[48];
     vf1->verb = v;
     
     int highestUnit = 0;
@@ -226,11 +313,11 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     
     /*
      //for testing to force form:
-    vf2->person = SECOND;
-    vf2->number = PLURAL;
-    vf2->tense = PRESENT;
-    vf2->voice = PASSIVE;
-    vf2->mood = INDICATIVE;
+     vf2->person = SECOND;
+     vf2->number = SINGULAR;
+     vf2->tense = PRESENT;
+     vf2->voice = PASSIVE;
+     vf2->mood = INDICATIVE;
     vf2->verb = vf1->verb;
     */
     
@@ -240,7 +327,12 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
         return VERB_SEQ_PP;
     }
     
-    return VERB_SEQ_CHANGE;
+    setHead(vf2);
+    
+    if (verbSeq == 1)
+        return VERB_SEQ_CHANGE_NEW;
+    else
+        return VERB_SEQ_CHANGE;
 }
 
 /*
