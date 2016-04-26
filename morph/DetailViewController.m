@@ -884,9 +884,8 @@ void dispatchAfter(double delay, void (^block)(void))
 
 -(void) loadMorphTraining
 {
-    
-    VerbFormC *vf1 = &self->vf1;
-    VerbFormC *vf2 = &self->vf2;
+    VerbFormC *vf1Loc = &self->vf1;
+    VerbFormC *vf2Loc = &self->vf2;
     
     int bufferLen = 1024;
     char buffer[bufferLen];
@@ -897,21 +896,21 @@ void dispatchAfter(double delay, void (^block)(void))
     {
         NSLog(@"principal parts!");
         self.cardType = CARD_PRINCIPAL_PARTS;
-        [self loadPrincipalPart:vf2];
+        [self loadPrincipalPart:vf2Loc];
         return;
     }
     
-    getForm(vf1, buffer, bufferLen, false, false);
+    getForm(vf1Loc, buffer, bufferLen, false, false);
     
     NSString *origForm = nil;
     NSString *newForm = nil;
     NSString *newDescription = nil;
     
-    self.lemma = [NSString stringWithUTF8String: (const char*)vf1->verb->present];
+    self.lemma = [NSString stringWithUTF8String: (const char*)vf1Loc->verb->present];
     if (self->verbSeq == 1 && self->vsOptions.startOnFirstSing)
     {
         //use lemma rather than a possibly contracted form
-        origForm = [NSString stringWithUTF8String: (const char*)vf1->verb->present];
+        origForm = [NSString stringWithUTF8String: (const char*)vf1Loc->verb->present];
     }
     else
     {
@@ -920,21 +919,21 @@ void dispatchAfter(double delay, void (^block)(void))
     origForm = [self selectRandomFromCSV:origForm];
     self.origStr = origForm;
     
-    getForm(vf1, buffer, bufferLen, false, true);
+    getForm(vf1Loc, buffer, bufferLen, false, true);
     self.origStrDecomposed = [NSString stringWithUTF8String: (const char*)buffer];
     self.origStrDecomposed = [self selectRandomFromCSV:self.origStrDecomposed]; //FIXME, What if not same as orig form
     
-    getAbbrevDescription(vf1, buffer, bufferLen);
+    getAbbrevDescription(vf1Loc, buffer, bufferLen);
     NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
-    getForm(vf2, buffer, bufferLen, false, false);
+    getForm(vf2Loc, buffer, bufferLen, false, false);
     newForm = [NSString stringWithUTF8String: (const char*)buffer];
     self.changedStr = newForm;
     
-    getForm(vf2, buffer, bufferLen, true, true);
+    getForm(vf2Loc, buffer, bufferLen, true, true);
     self.changedStrDecomposed = [NSString stringWithUTF8String: (const char*)buffer];
     
-    getAbbrevDescription(vf2, buffer, bufferLen);
+    getAbbrevDescription(vf2Loc, buffer, bufferLen);
     newDescription = [NSString stringWithUTF8String: (const char*)buffer];
     
     NSAttributedString *attDesc = [self attributedDescription: origDescription newDescription:newDescription];
