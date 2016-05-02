@@ -29,6 +29,13 @@
     return NO;
 }
 
+- (NSString *)writeablePathForFile:(NSString*)fileName
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    return [documentsDirectory stringByAppendingPathComponent:fileName];
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     //NSLog(@"The size of a char is: %d.", sizeof(unsigned long));
@@ -56,6 +63,27 @@
     else
     {
         self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 308.0) lang:1];  //was 1024 x 266
+    }
+    
+    NSString *dataFileName = @"hcdata";
+    NSString *dataFileWithPath = [self writeablePathForFile:dataFileName];
+    /*
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:dataFileWithPath];
+    if (!fileExists)
+    {
+        [[NSFileManager defaultManager] createFileAtPath:dataFileWithPath
+                                                contents:[[NSMutableData alloc] initWithLength:0 ] // Setting size to sizeInBytes does not make any difference on the results
+                                              attributes:nil ];
+        NSLog(@"Data file created");
+    }
+    else
+    {
+        NSLog(@"Data file exists");
+    }*/
+
+    if (!dbInit([dataFileWithPath UTF8String]))
+    {
+        NSLog(@"Couldn't load sqlite db");
     }
     
     return YES;

@@ -48,6 +48,7 @@ enum {
 @property bool  useNewAnimation;
 @property CFTimeInterval elapsedTimeLimit;
 @property bool limitElapsedTime;
+@property CFTimeInterval elapsedTimeForDB;
 
 @property (strong, nonatomic) id detailItem;
 @property NSInteger HCTime;

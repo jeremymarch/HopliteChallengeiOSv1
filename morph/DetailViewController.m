@@ -515,7 +515,9 @@ void printUCS22(UCS2 *u, int len)
         utf8_to_ucs2_string([self.textfield.text UTF8String], givenForm, &givenLen);
         utf8_to_ucs2_string([self.changedForm.text UTF8String], expectedForm, &expectedLen);
         
-        if (compareFormsCheckMFRecordResult(expectedForm, expectedLen, givenForm, givenLen, self.mfPressed))
+        NSString *eTime = [NSString stringWithFormat:@"%.02f", self.elapsedTimeForDB];
+        
+        if (compareFormsCheckMFRecordResult(expectedForm, expectedLen, givenForm, givenLen, self.mfPressed, [eTime UTF8String]))
         {
             NSLog(@"correct");
             CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
@@ -724,7 +726,7 @@ void printUCS22(UCS2 *u, int len)
 
 -(void)cleanUp: (Boolean)reset /* onComplete:(void (^)(void))onComplete */
 {
-    NSLog(@"cleanup");
+    NSLog(@"cleanup: %d", reset);
     //this means it was correct
     if (self.changedForm.hidden == YES)
     {
@@ -808,9 +810,14 @@ void printUCS22(UCS2 *u, int len)
 -(void)runTimer
 {
     CFTimeInterval elapsedTime;
+    elapsedTime = CACurrentMediaTime() - self.startTime;
+    
+    //this will be stored in db
+    self.elapsedTimeForDB = elapsedTime;
+    elapsedTime = self.HCTime - self.elapsedTimeForDB;
+    
     if (self.verbQuestionType == HOPLITE_CHALLENGE)
     {
-        elapsedTime = self.HCTime - (CACurrentMediaTime() - self.startTime);
         if (elapsedTime < 0)
         {
             self.timeLabel.text = @"0.00 sec";
@@ -823,8 +830,7 @@ void printUCS22(UCS2 *u, int len)
     }
     else
     {
-        elapsedTime = CACurrentMediaTime() - self.startTime;
-        if (self.limitElapsedTime && elapsedTime > self.elapsedTimeLimit)
+        if (self.limitElapsedTime && self.elapsedTimeForDB > self.elapsedTimeLimit)
         {
             self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", self.elapsedTimeLimit];
             [self stopTimer];
@@ -832,7 +838,7 @@ void printUCS22(UCS2 *u, int len)
         }
         else
         {
-            self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
+            self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", self.elapsedTimeForDB];
         }
     }
 }

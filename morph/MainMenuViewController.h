@@ -16,6 +16,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *HCLabel;
 @property (weak, nonatomic) IBOutlet UILabel *EOPLabel;
 
+@property (weak, nonatomic) IBOutlet UIButton *resultsButton;
+
 @property (weak, nonatomic) IBOutlet UIButton *HCButton;
 @property (weak, nonatomic) IBOutlet UIButton *HPButton;
 @property (weak, nonatomic) IBOutlet UIButton *SPButton;

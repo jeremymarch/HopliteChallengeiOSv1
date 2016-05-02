@@ -23,6 +23,7 @@ enum {
 typedef struct vfr VerbFormRecord;
 struct vfr {
     time_t time;
+    int elapsedTime;
     int verb;
     unsigned char person;
     unsigned char number;
@@ -50,10 +51,11 @@ typedef struct vso {
     int units[20];
 } VerbSeqOptions;
 
-bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed);
+bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed, char *elapsedTime);
 void closeDataFile();
 void syncDataFile();
 
+bool dbInit(const char *path);
 void VerbSeqInit(const char *path);
 int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso);
 void resetVerbSeq();

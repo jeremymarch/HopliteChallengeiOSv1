@@ -83,6 +83,24 @@ alpha:1.0]
     [self.navigationController pushViewController:dvc animated:NO];
 
 }
+
+- (void) showResults:(id)sender
+{
+    //UIButton *b = (UIButton*) sender;
+    
+    //[self performSegueWithIdentifier:@"showResults" sender:self];
+    //http://stackoverflow.com/questions/16209113/push-segue-in-xcode-with-no-animation
+    //[[self navigationController] pushViewController:[self destinationViewController] animated:NO];
+    
+    //This way doesn't call prepareForSegue
+    //DetailViewController *resultsVC = [self.storyboard instantiateViewControllerWithIdentifier:@"resultsVC"];
+    //[self.navigationController pushViewController:resultsVC animated:YES];
+    
+    UINavigationController *nvc = (UINavigationController *)self.view.window.rootViewController;
+    [[nvc.childViewControllers objectAtIndex:0] performSegueWithIdentifier:@"showResults" sender:self];
+    
+}
+
 - (void) showVerbs:(id)sender
 {
     //UIButton *b = (UIButton*) sender;
@@ -132,6 +150,9 @@ alpha:1.0]
             forControlEvents:UIControlEventTouchUpInside];
     
     [self.MCButton addTarget:self action:@selector(showGame:)
+            forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.resultsButton addTarget:self action:@selector(showResults:)
             forControlEvents:UIControlEventTouchUpInside];
     /*
     [self.MCButton addTarget:self action:@selector(showVerbs:)
