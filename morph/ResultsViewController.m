@@ -74,7 +74,7 @@ void getVerbSeq2()
     NSLog(@"query");
     char *err_msg = 0;
     [results2 removeAllObjects];
-    int rc = sqlite3_exec(db, "SELECT person,number,tense,voice,mood,verbid,incorrectAns,elapsedtime,correct FROM verbseq ORDER BY ID DESC LIMIT 100;", getVerbSeqCallback2, 0, &err_msg);
+    int rc = sqlite3_exec(db, "SELECT person,number,tense,voice,mood,verbid,incorrectAns,elapsedtime,correct FROM verbseq WHERE gameid=1 ORDER BY ID DESC LIMIT 100;", getVerbSeqCallback2, 0, &err_msg);
 }
 
 - (void)viewDidLoad {

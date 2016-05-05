@@ -51,7 +51,7 @@ typedef struct vso {
     int units[20];
 } VerbSeqOptions;
 
-bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed, char *elapsedTime);
+bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed, char *elapsedTime, int *score);
 void closeDataFile();
 void syncDataFile();
 

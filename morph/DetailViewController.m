@@ -504,6 +504,7 @@ void printUCS22(UCS2 *u, int len)
 {
     BOOL isCorrect = NO;
     BOOL debug = NO;
+    int score = -1;
     
     if (self.front)
     {
@@ -517,7 +518,7 @@ void printUCS22(UCS2 *u, int len)
         
         NSString *eTime = [NSString stringWithFormat:@"%.02f", self.elapsedTimeForDB];
         
-        if (compareFormsCheckMFRecordResult(expectedForm, expectedLen, givenForm, givenLen, self.mfPressed, [eTime UTF8String]))
+        if (compareFormsCheckMFRecordResult(expectedForm, expectedLen, givenForm, givenLen, self.mfPressed, [eTime UTF8String], &score))
         {
             NSLog(@"correct");
             CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
@@ -558,6 +559,16 @@ void printUCS22(UCS2 *u, int len)
             }
             self.textfield.textColor = [UIColor grayColor];
             isCorrect = NO;
+        }
+        NSLog(@"Score: %d", score);
+        if (score > -1)
+        {
+            self.scoreLabel.text = [NSString stringWithFormat:@"%d", score];
+            self.scoreLabel.hidden = NO;
+        }
+        else
+        {
+            self.scoreLabel.hidden = YES;
         }
         [self.view bringSubviewToFront: self.textfield];
         
@@ -1640,6 +1651,8 @@ void dispatchAfter(double delay, void (^block)(void))
                                             contents:fileContents
                                           attributes:nil];
     */
+    UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
+    
     NSString *dataFileName = @"hcdata";
     NSString *dataFileWithPath = [self writeablePathForFile:dataFileName];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:dataFileWithPath];
@@ -1706,7 +1719,13 @@ void dispatchAfter(double delay, void (^block)(void))
     self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
     [self.view addSubview:self.popup];
     
-    //self.timeLabel.font = [UIFont fontWithName:@"Menlo" size:22.0];
+    self.scoreLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:24.0];
+    self.scoreLabel.textColor = blueColor;
+    if (self.verbQuestionType == HOPLITE_CHALLENGE)
+    {
+        self.scoreLabel.text = @"0";
+        self.scoreLabel.hidden = NO;
+    }
     self.timeLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:24.0];
     self.MFLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:24.0];
     self.MFLabel.layer.borderColor = [UIColor colorWithRed:(255/255.0) green:(56/255.0) blue:(0/255.0) alpha:1.0].CGColor;
@@ -1851,7 +1870,6 @@ void dispatchAfter(double delay, void (^block)(void))
     self.continueButton.layer.borderWidth = 6.0f;
     self.continueButton.layer.borderColor = [UIColor whiteColor].CGColor;
     
-    UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
     self.continueButton.backgroundColor = blueColor;// UIColorFromRGB(0x43609c);
     
     [self.continueButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -1937,6 +1955,7 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.textfield setFrame:CGRectMake(10, f/2.1, self.view.frame.size.width - 20, fsize.height + 10)];
     [self.changedForm setFrame:CGRectMake(10, f/1.7, self.view.frame.size.width - 20, fsize.height + 10)];
     
+    [self.scoreLabel setFrame:CGRectMake(60, 6,  194, 30)];
     [self.timeLabel setFrame:CGRectMake(size.width - 200, 6,  194, 30)];
     [self.MFLabel setFrame:CGRectMake(size.width - 120 - 42, 6,  42, 30)];
     
