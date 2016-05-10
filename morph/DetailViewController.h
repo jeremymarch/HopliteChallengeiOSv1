@@ -66,6 +66,11 @@ enum {
 //@property (nonatomic, retain) Keyboard *keyboard;
 @property (retain, nonatomic) IBOutlet UITextField *textfield;
 
+@property (strong, retain) UIImageView *life1;
+@property (strong, retain) UIImageView *life2;
+@property (strong, retain) UIImageView *life3;
+@property NSInteger lives;
+
 @property (strong, retain) UIImageView *greenCheckView;
 @property (strong, retain) UIImageView *redXView;
 
@@ -112,6 +117,8 @@ enum {
 
 @property (weak, nonatomic) IBOutlet UILabel *singLabel;
 @property (weak, nonatomic) IBOutlet UILabel *pluralLabel;
+
+@property (weak, nonatomic) IBOutlet UILabel *gameOverLabel;
 
 -(void)setLevelArray: (NSMutableArray*)array;
 - (void)configureView;

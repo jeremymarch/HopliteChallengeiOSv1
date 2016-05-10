@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface ResultsViewController : UITableViewController
-
-@property NSMutableArray *results;
+@property NSInteger gameId;
+@property Boolean isGameList;
 @end

@@ -69,23 +69,30 @@ int getVerbSeqCallback2(void *NotUsed, int argc, char **argv, char **azColName) 
     return 0;
 }
 
-void getVerbSeq2()
+-(void) getVerbSeqResults:(NSInteger) gameid
 {
     NSLog(@"query");
+    char query[200];
+    snprintf(query, 200, "SELECT person,number,tense,voice,mood,verbid,incorrectAns,elapsedtime,correct FROM verbseq WHERE gameid=%ld ORDER BY ID DESC LIMIT 100;", gameid);
     char *err_msg = 0;
     [results2 removeAllObjects];
-    int rc = sqlite3_exec(db, "SELECT person,number,tense,voice,mood,verbid,incorrectAns,elapsedtime,correct FROM verbseq WHERE gameid=1 ORDER BY ID DESC LIMIT 100;", getVerbSeqCallback2, 0, &err_msg);
+    int rc = sqlite3_exec(db, query, getVerbSeqCallback2, 0, &err_msg);
+}
+
+- (void) viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    [self.navigationController setNavigationBarHidden:NO];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.navigationController setNavigationBarHidden:NO];
+    
     NSLog(@"results loaded");
-    self.results = [[NSMutableArray alloc] initWithObjects:@"1st pl aor pass ind", @"3rd sing plup mid ind", @"2nd sing pres act opt", nil];
     
     results2 = [[NSMutableArray alloc] init];
     
-    getVerbSeq2();
+    [self getVerbSeqResults:self.gameId];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -177,7 +184,6 @@ void getVerbSeq2()
     return YES;
 }
 */
-
 /*
 #pragma mark - Navigation
 
@@ -187,5 +193,19 @@ void getVerbSeq2()
     // Pass the selected object to the new view controller.
 }
 */
-
+/*
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    
+    //VerbDetailViewController *vdvc = [self.storyboard instantiateViewControllerWithIdentifier:@"vdvc"];
+    //[self.navigationController pushViewController:dvc animated:NO];
+    
+    //UINavigationController *nvc = (UINavigationController *)self.window.rootViewController;
+    //[[nvc.childViewControllers objectAtIndex:0] performSegueWithIdentifier:@"SegueToVerbsTable"sender:self];
+    
+    
+    UINavigationController *nvc = (UINavigationController *)self.view.window.rootViewController;
+    [[nvc.childViewControllers objectAtIndex:0] performSegueWithIdentifier:@"showResults" sender:self];
+}
+*/
 @end

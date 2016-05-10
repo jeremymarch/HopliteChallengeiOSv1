@@ -16,6 +16,33 @@
 #include "VerbSequence.h"
 #include "sqlite3.h"
 
+#define MAX_LAST_VF 8
+
+//these are assigned to globalGameID.
+//its practice, insipient, or 1-n = a real saved game
+enum {
+    GAME_INVALID = -1,
+    GAME_INSIPIENT = 0, //A game which is started, but not yet in the db.  We add it to the db when first item is answered
+    GAME_PRACTICE = 1 //the practice "game" has an id of 1.
+};
+
+//GLOBAL VARIABLES
+DataFormat *hcdata = NULL;
+size_t sizeInBytes = 0;
+const int sqlitePrepqueryLen = 1024;
+char sqlitePrepquery[sqlitePrepqueryLen];
+sqlite3_stmt *statement;
+sqlite3_stmt *statement2;
+sqlite3 *db;
+int globalGameId = GAME_INVALID;
+int globalScore = -1;
+bool firstVerbSeq = true;
+
+//VerbFormC recentVFArray[MAX_LAST_VF];
+//int numRecentVFArray = 0;
+
+VerbFormC lastVF;
+
 int findVerbIndexByPointer(Verb *v)
 {
     for (int i = 0; i < NUM_VERBS; i++)
@@ -27,17 +54,10 @@ int findVerbIndexByPointer(Verb *v)
 }
 
 void randomAlternative(char *s, int *offset);
+void addNewGameToDB();
+void updateGameScore();
+bool setHeadAnswer(bool correct, char *givenAnswer, char *elapsedTime);
 
-DataFormat *hcdata = NULL;
-size_t sizeInBytes = 0;
-const int sqlitePrepqueryLen = 1024;
-char sqlitePrepquery[sqlitePrepqueryLen];
-sqlite3_stmt *statement;
-sqlite3_stmt *statement2;
-sqlite3 *db;
-int globalGameId = -1;
-int globalScore = -1;
-bool firstVerbSeq = true;
 
 int getVerbSeqCallback(void *NotUsed, int argc, char **argv,
              char **azColName) {
@@ -79,154 +99,6 @@ int callback(void *NotUsed, int argc, char **argv,
     return 0;
 }
 
-bool updateDB(VerbFormC *vf)
-{
-    char *zErrMsg = 0;
-    
-    int verbIndex = findVerbIndexByPointer(vf->verb);
-    if (verbIndex < 0)
-        return false;
-    
-    //if (sqlite3_bind_int(statement, 1, wordid) != SQLITE_OK) //id
-    //    return false;
-    //long t = time(NULL);
-    //printf("Time: %s", ctime(&t));
-    if (sqlite3_bind_int64(statement, 1, time(NULL)) != SQLITE_OK) //time
-    {
-        printf("2\n");
-        return false;
-    }
-    if (sqlite3_bind_int(statement, 2, globalGameId) != SQLITE_OK) //gameid
-    {
-        printf("3\n");
-        return false;
-    }
-    if (sqlite3_bind_int(statement, 3, vf->person) != SQLITE_OK) //person
-    {
-        printf("4\n");
-        return false;
-    }
-    if (sqlite3_bind_int(statement, 4, vf->number) != SQLITE_OK) //num
-    {
-        printf("5\n");
-        return false;
-    }
-    if (sqlite3_bind_int(statement, 5, vf->tense) != SQLITE_OK) //tense
-    {
-        printf("6\n");
-        return false;
-    }
-    if (sqlite3_bind_int(statement, 6, vf->voice) != SQLITE_OK) //voice
-    {
-        printf("7\n");
-        return false;
-    }
-    if (sqlite3_bind_int(statement, 7, vf->mood) != SQLITE_OK) //mood
-    {
-        printf("8\n");
-        return false;
-    }
-    if (sqlite3_bind_int(statement, 8, verbIndex) != SQLITE_OK) //verbid
-    {
-        printf("9\n");
-        return false;
-    }
-    if (sqlite3_bind_int(statement, 9, 0) != SQLITE_OK) //correct, set to incorrect for now
-    {
-        printf("10\n");
-        return false;
-    }
-
-    //sqlite3_exec(db, "BEGIN", 0, 0, 0);
-    
-    if( sqlite3_step(statement) != SQLITE_DONE )
-    {
-        fprintf(stderr, "1SQL error: %s\nError: %s\n", zErrMsg, sqlite3_errmsg(db));
-        sqlite3_free(zErrMsg);
-        return false;
-    }
-    
-    //sqlite3_exec(db, "COMMIT", 0, 0, 0);
-    sqlite3_reset(statement);
-    
-    printf("updated db!\n");
-    
-    //char *err_msg = 0;
-    //int rc = sqlite3_exec(db, "SELECT COUNT(*) FROM verbseq;", callback, 0, &err_msg);
-    return true;
-}
-
-bool dbInit(const char *path)
-{
-    unsigned long dbpathLen = strlen(path) + 12;
-    char dbpath[dbpathLen];
-    snprintf(dbpath, dbpathLen - 1, "%sdb.sqlite", path);
-    char *zErrMsg = 0;
-    int rc = sqlite3_open(dbpath, &db);
-    if( rc ){
-        printf("Can't open database: %s\n", sqlite3_errmsg(db));
-        sqlite3_close(db);
-    }
-    else
-    {
-        printf("SQLite OK\n");
-    }
-    
-    //"DROP TABLE IF EXISTS games; DROP TABLE IF EXISTS verbseq;
-    
-    char *sql = "CREATE TABLE games (" \
-    "gameid INTEGER PRIMARY KEY NOT NULL, " \
-    "timest INT NOT NULL, " \
-    "score INT NOT NULL " \
-    "); " \
-    
-    "CREATE TABLE verbseq (" \
-    "id INTEGER PRIMARY KEY NOT NULL, " \
-    "timest INT NOT NULL, " \
-    "gameid INT NOT NULL, " \
-    "person INT1 NOT NULL, " \
-    "number INT1 NOT NULL, " \
-    "tense INT1 NOT NULL, " \
-    "voice INT1 NOT NULL, " \
-    "mood INT1 NOT NULL, " \
-    "verbid INT NOT NULL, " \
-    "correct INT1 NOT NULL, " \
-    "elapsedtime VARCHAR(255), " \
-    "incorrectAns VARCHAR(255), " \
-    "FOREIGN KEY (gameid) REFERENCES games(gameid) " \
-    "); " \
-    
-    "INSERT INTO games VALUES (1,0,-1);"; //This is the Practice Game
-    
-    rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
-    if( rc!=SQLITE_OK ){
-        fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        sqlite3_free(zErrMsg);
-    }
-    /*
-    rc = sqlite3_exec(db, "INSERT INTO abc VALUES (1);", NULL, NULL, &zErrMsg);
-    if( rc!=SQLITE_OK ){
-        fprintf(stderr, "SQL error: %s\n", zErrMsg);
-        sqlite3_free(zErrMsg);
-    }
-    */
-    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO verbseq (timest,gameid,person,number,tense,voice,mood,verbid,correct,incorrectAns) VALUES (?,?,?,?,?,?,?,?,?,?)");
-    if (sqlite3_prepare_v2(db, sqlitePrepquery, strlen(sqlitePrepquery), &statement, NULL) != SQLITE_OK)
-    {
-        printf("\nCould not prepare statement.\n");
-        return false;
-    }
-    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "UPDATE verbseq SET correct=?, elapsedtime=?, incorrectAns=? WHERE id=?;");
-    if (sqlite3_prepare_v2(db, sqlitePrepquery, strlen(sqlitePrepquery), &statement2, NULL) != SQLITE_OK)
-    {
-        printf("\nCould not prepare statement2.\n");
-        return false;
-    }
-    
-    printf("sqlite success\n");
-    
-    return true;
-}
 
 void dataFileInit(const char* path)
 {
@@ -327,98 +199,10 @@ void incrementHead()
         hcdata->head++;
 }
 
-bool setHeadAnswer(bool correct, char *answer, char *elapsedTime)
-{
-    lastAnswerCorrect = correct;
-
-    time_t ltime; /* calendar time */
-    ltime = time(NULL); /* get current cal time */
-    
-    if (hcdata)
-    {
-        hcdata->vr[hcdata->head].time = ltime;
-        hcdata->vr[hcdata->head].correct = correct;
-        unsigned long len = strlen(answer);
-        strncpy(hcdata->vr[hcdata->head].answer, answer, (len > 199) ? 200 : len);
-        
-        //hcdata->vr[hcdata->head].answer = "222";
-        incrementHead();
-    }
-
-    /*
-    for (int i = 0; i < hcdata->head; i++)
-    {
-        printf("Rec: %s %s %s %s %s: %d %s, %s\n", persons[hcdata->vr[i].person], numbers[hcdata->vr[i].number], tenses[hcdata->vr[i].tense], voices[hcdata->vr[i].voice],moods[hcdata->vr[i].mood], hcdata->vr[i].correct, hcdata->vr[i].answer, asctime( localtime(&ltime) ));
-    }
-     */
-    
-    if (db)
-    {
-        char *zErrMsg = 0;
-        int last_id = sqlite3_last_insert_rowid(db);
-        
-        if (sqlite3_bind_int(statement2, 1, correct) != SQLITE_OK) //correct
-        {
-            printf("2 1\n");
-            return false;
-        }
-        /*if (sqlite3_bind_int(statement2, 2, 1) != SQLITE_OK) //time
-        {
-            printf("2 2\n");
-            return false;
-        }*/
-        if (sqlite3_bind_text(statement2, 2, elapsedTime, -1, SQLITE_STATIC) != SQLITE_OK) //elapsed time
-        {
-            printf("2 2\n");
-            return false;
-        }
-         if (sqlite3_bind_text(statement2, 3, answer, -1, SQLITE_STATIC) != SQLITE_OK) //incorrect answer
-         {
-         printf("2 3\n");
-         return false;
-         }
-        if (sqlite3_bind_int(statement2, 4, last_id) != SQLITE_OK) //id
-        {
-            printf("2 4\n");
-            return false;
-        }
-        sqlite3_exec(db, "BEGIN", 0, 0, 0);
-        
-        if( sqlite3_step(statement2) != SQLITE_DONE )
-        {
-            fprintf(stderr, "2 1SQL error: %s\nError: %s\n", zErrMsg, sqlite3_errmsg(db));
-            sqlite3_free(zErrMsg);
-            return false;
-        }
-        
-        sqlite3_exec(db, "COMMIT", 0, 0, 0);
-        sqlite3_reset(statement2);
-        
-        printf("updated db2!\n");
-        
-    }
-    return true;
-}
-
 void setHead(VerbFormC *vf)
 {
     printf("sethead\n");
     //VerbFormRecord *a = NULL;
-    if (hcdata)
-    {
-        hcdata->vr[hcdata->head].person = vf->person;
-        hcdata->vr[hcdata->head].number = vf->number;
-        hcdata->vr[hcdata->head].tense = vf->tense;
-        hcdata->vr[hcdata->head].voice = vf->voice;
-        hcdata->vr[hcdata->head].mood = vf->mood;
-        //hcdata->vr[hcdata->head].correct = correct;
-        hcdata->vr[hcdata->head].verb = findVerbIndexByPointer(vf->verb);
-    }
-    if (db)
-    {
-        printf("setheaddb\n");
-        updateDB(vf);
-    }
 }
 
 bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed, char *elapsedTime, int *score)
@@ -428,42 +212,25 @@ bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *give
     
     ucs2_to_utf8_string(given, givenLen, (unsigned char*)buffer);
     
-    if (globalGameId > 1) //is a game
+    if(globalGameId == GAME_INSIPIENT)
     {
-        if (globalScore < 0)
+        addNewGameToDB();
+    }
+    
+    if (globalGameId > 1) //is a real game, not practice
+    {
+        if (globalScore < 0) //this should always be false
             globalScore = 0;
         
         if (isCorrect)
         {
             globalScore += 1;
         }
-     /*
-        int rc = sqlite3_prepare_v2(db, "SELECT score FROM games WHERE gameid=", -1, &res, 0);
         
-        if (rc != SQLITE_OK) {
-            
-            fprintf(stderr, "Failed to fetch data: %s\n", sqlite3_errmsg(db));
-            sqlite3_close(db);
-            
-            return 1;
-        }
-        
-        rc = sqlite3_step(res);
-        
-        if (rc == SQLITE_ROW) {
-            printf("%s\n", sqlite3_column_text(res, 0));
-        }
-        
-        sqlite3_finalize(res);
-        
-        */
-        //select score
-        //add score
-        //save score
-        //display score
-        
+        updateGameScore();
     }
     *score = globalScore;
+    lastAnswerCorrect = isCorrect; //keep track of last answer here, so we don't need to rely on the db
     
     setHeadAnswer(isCorrect, buffer, elapsedTime);
     
@@ -474,6 +241,8 @@ static int verbSeq = 99999; //start more than repsPerVerb so we reset
 
 void resetVerbSeq()
 {
+    globalGameId = GAME_INVALID;
+    globalScore = -1;
     lastAnswerCorrect = false;
     verbSeq = 99999;
     firstVerbSeq = true;
@@ -484,7 +253,6 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
 {
     static Verb *v;
     static Verb *lastV = NULL;
-    static VerbFormC lastVF;
     
     int bufferLen = 2048;
     char buffer[bufferLen];
@@ -492,27 +260,21 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     
     if (!vso->isHCGame)
     {
-        globalGameId = 1;
+        globalGameId = GAME_PRACTICE;
         globalScore = -1;
     }
     else
     {
-        char *err;
         //create new game or use current game
         if (firstVerbSeq)
         {
-            snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO games (timest,score) VALUES (%li,-1);", time(NULL));
-            int rc = sqlite3_exec(db, sqlitePrepquery, 0, 0, &err);
-            printf("error %s\n", err);
-            globalGameId = sqlite3_last_insert_rowid(db);
-            globalScore = -1;
-         
+            globalGameId = GAME_INSIPIENT; //It will be save to db when first question is answered
             firstVerbSeq = false;
         }
     }
     if (vso->isHCGame)
     {
-        if (!lastAnswerCorrect)
+        if (!lastAnswerCorrect || verbSeq > 3)
         {
             do //so we don't ask the same verb twice in a row
             {
@@ -642,6 +404,8 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     lastVF.mood = vf2->mood;
     lastVF.verb = vf2->verb;
     
+    
+    
     /*
      //for testing to force form:
      vf2->person = SECOND;
@@ -658,7 +422,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
         return VERB_SEQ_PP;
     }
     
-    setHead(vf2); //we set it here, add whether it is correct later
+    //setHead(vf2); //we set it here, add whether it is correct later
     
     if (verbSeq == 1)
         return VERB_SEQ_CHANGE_NEW;
@@ -1045,3 +809,238 @@ void getRandomEndingAsString(int *units, int numUnits, char *buffer, int bufferL
     
     snprintf(buffer, bufferLen, "%s; %s; %s; %s; %s; %s; %s", e->description, e->fs, e->ss, e->ts, e->fp, e->sp, e->tp);
 }
+
+/***********************DB**********************/
+
+bool dbInit(const char *path)
+{
+    unsigned long dbpathLen = strlen(path) + 12;
+    char dbpath[dbpathLen];
+    struct stat st;
+    
+    snprintf(dbpath, dbpathLen - 1, "%sdb.sqlite", path);
+    
+    stat(dbpath, &st);
+    off_t size = st.st_size;
+    
+    char *zErrMsg = 0;
+    int rc = sqlite3_open(dbpath, &db);
+    if( rc != SQLITE_OK )
+    {
+        printf("Can't open database: %s\n", sqlite3_errmsg(db));
+        sqlite3_close(db);
+    }
+    else
+    {
+        printf("SQLite db open, path: %s, size: %lld\n", dbpath, size);
+    }
+    
+    //"DROP TABLE IF EXISTS games; DROP TABLE IF EXISTS verbseq;
+    
+    char *sql = "CREATE TABLE games (" \
+    "gameid INTEGER PRIMARY KEY NOT NULL, " \
+    "timest INT NOT NULL, " \
+    "score INT NOT NULL " \
+    "); " \
+    
+    "CREATE TABLE verbseq (" \
+    "id INTEGER PRIMARY KEY NOT NULL, " \
+    "timest INT NOT NULL, " \
+    "gameid INT NOT NULL, " \
+    "person INT1 NOT NULL, " \
+    "number INT1 NOT NULL, " \
+    "tense INT1 NOT NULL, " \
+    "voice INT1 NOT NULL, " \
+    "mood INT1 NOT NULL, " \
+    "verbid INT NOT NULL, " \
+    "correct INT1 NOT NULL, " \
+    "elapsedtime VARCHAR(255), " \
+    "incorrectAns VARCHAR(255), " \
+    "FOREIGN KEY (gameid) REFERENCES games(gameid) " \
+    "); " \
+    
+    "INSERT INTO games VALUES (1,0,-1);"; //This is the Practice Game
+    
+    rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
+    if( rc != SQLITE_OK )
+    {
+        fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    }
+    /*
+     rc = sqlite3_exec(db, "INSERT INTO abc VALUES (1);", NULL, NULL, &zErrMsg);
+     if( rc!=SQLITE_OK ){
+     fprintf(stderr, "SQL error: %s\n", zErrMsg);
+     sqlite3_free(zErrMsg);
+     }
+     */
+    
+    /*
+    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO verbseq (timest,gameid,person,number,tense,voice,mood,verbid,correct,incorrectAns) VALUES (?,?,?,?,?,?,?,?,?,?)");
+    if (sqlite3_prepare_v2(db, sqlitePrepquery, strlen(sqlitePrepquery), &statement, NULL) != SQLITE_OK)
+    {
+        printf("\nCould not prepare statement1.\n");
+        return false;
+    }
+    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "UPDATE verbseq SET correct=?, elapsedtime=?, incorrectAns=? WHERE id=?;");
+    if (sqlite3_prepare_v2(db, sqlitePrepquery, strlen(sqlitePrepquery), &statement2, NULL) != SQLITE_OK)
+    {
+        printf("\nCould not prepare statement2.\n");
+        return false;
+    }
+    */
+    
+    printf("sqlite success\n");
+    
+    return true;
+}
+
+bool setHeadAnswer(bool correct, char *givenAnswer, char *elapsedTime)
+{
+    if (0)//hcdata)
+    {
+        hcdata->vr[hcdata->head].person = lastVF.person;
+        hcdata->vr[hcdata->head].number = lastVF.number;
+        hcdata->vr[hcdata->head].tense = lastVF.tense;
+        hcdata->vr[hcdata->head].voice = lastVF.voice;
+        hcdata->vr[hcdata->head].mood = lastVF.mood;
+        hcdata->vr[hcdata->head].correct = correct;
+        hcdata->vr[hcdata->head].verb = findVerbIndexByPointer(lastVF.verb);
+        hcdata->vr[hcdata->head].time = time(NULL);
+        hcdata->vr[hcdata->head].correct = correct;
+        unsigned long len = strlen(givenAnswer);
+        strncpy(hcdata->vr[hcdata->head].answer, givenAnswer, (len > 199) ? 200 : len);
+        
+        //hcdata->vr[hcdata->head].answer = "222";
+        incrementHead();
+
+        /*
+         for (int i = 0; i < hcdata->head; i++)
+         {
+         printf("Rec: %s %s %s %s %s: %d %s, %s\n", persons[hcdata->vr[i].person], numbers[hcdata->vr[i].number], tenses[hcdata->vr[i].tense], voices[hcdata->vr[i].voice],moods[hcdata->vr[i].mood], hcdata->vr[i].correct, hcdata->vr[i].answer, asctime( localtime(&ltime) ));
+         }
+         */
+    }
+    
+    if (db)
+    {
+        snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO verbseq VALUES (NULL,%ld,%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s');", time(NULL), globalGameId, lastVF.person, lastVF.number, lastVF.tense, lastVF.voice, lastVF.mood, findVerbIndexByPointer(lastVF.verb), correct, elapsedTime, givenAnswer);
+        char *zErrMsg = 0;
+        int rc = sqlite3_exec(db, sqlitePrepquery, 0, 0, &zErrMsg);
+        if( rc != SQLITE_OK )
+        {
+            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        }
+        //printf("Insert: %d %s\n%s\n", rc, err,sqlitePrepquery);
+    }
+    return true;
+}
+
+void addNewGameToDB()
+{
+    char *zErrMsg = 0;
+    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO games (timest,score) VALUES (%li,0);", time(NULL));
+    int rc = sqlite3_exec(db, sqlitePrepquery, 0, 0, &zErrMsg);
+    if( rc != SQLITE_OK )
+    {
+        fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    }
+
+    globalGameId = sqlite3_last_insert_rowid(db);
+    globalScore = 0;
+}
+
+void updateGameScore()
+{
+    char *zErrMsg = 0;
+    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "UPDATE games SET score=%d WHERE gameid=%d;", globalScore, globalGameId);
+    int rc = sqlite3_exec(db, sqlitePrepquery, 0, 0, &zErrMsg);
+    if( rc != SQLITE_OK )
+    {
+        fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    }
+}
+
+/*
+ bool updateDB(VerbFormC *vf)
+ {
+ char *zErrMsg = 0;
+ 
+ int verbIndex = findVerbIndexByPointer(vf->verb);
+ if (verbIndex < 0)
+ return false;
+ 
+ //if (sqlite3_bind_int(statement, 1, wordid) != SQLITE_OK) //id
+ //    return false;
+ //long t = time(NULL);
+ //printf("Time: %s", ctime(&t));
+ if (sqlite3_bind_int64(statement, 1, time(NULL)) != SQLITE_OK) //time
+ {
+ printf("2\n");
+ return false;
+ }
+ if (sqlite3_bind_int(statement, 2, globalGameId) != SQLITE_OK) //gameid
+ {
+ printf("3\n");
+ return false;
+ }
+ if (sqlite3_bind_int(statement, 3, vf->person) != SQLITE_OK) //person
+ {
+ printf("4\n");
+ return false;
+ }
+ if (sqlite3_bind_int(statement, 4, vf->number) != SQLITE_OK) //num
+ {
+ printf("5\n");
+ return false;
+ }
+ if (sqlite3_bind_int(statement, 5, vf->tense) != SQLITE_OK) //tense
+ {
+ printf("6\n");
+ return false;
+ }
+ if (sqlite3_bind_int(statement, 6, vf->voice) != SQLITE_OK) //voice
+ {
+ printf("7\n");
+ return false;
+ }
+ if (sqlite3_bind_int(statement, 7, vf->mood) != SQLITE_OK) //mood
+ {
+ printf("8\n");
+ return false;
+ }
+ if (sqlite3_bind_int(statement, 8, verbIndex) != SQLITE_OK) //verbid
+ {
+ printf("9\n");
+ return false;
+ }
+ if (sqlite3_bind_int(statement, 9, 0) != SQLITE_OK) //correct, set to incorrect for now
+ {
+ printf("10\n");
+ return false;
+ }
+ 
+ //sqlite3_exec(db, "BEGIN", 0, 0, 0);
+ 
+ if( sqlite3_step(statement) != SQLITE_DONE )
+ {
+ fprintf(stderr, "1SQL error: %s\nError: %s\n", zErrMsg, sqlite3_errmsg(db));
+ sqlite3_free(zErrMsg);
+ return false;
+ }
+ 
+ //sqlite3_exec(db, "COMMIT", 0, 0, 0);
+ sqlite3_reset(statement);
+ 
+ printf("updated db!\n");
+ 
+ //char *err_msg = 0;
+ //int rc = sqlite3_exec(db, "SELECT COUNT(*) FROM verbseq;", callback, 0, &err_msg);
+ return true;
+ }
+ */
+
+

@@ -9,6 +9,7 @@
 #import "MainMenuViewController.h"
 #import "DetailViewController.h"
 #import "VerbDetailViewController.h"
+#import "ResultsViewController.h"
 
 #define UIColorFromRGB(rgbValue) \
 [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
@@ -64,9 +65,9 @@ alpha:1.0]
 {
     UIButton *b = (UIButton*) sender;
     
-    if ([b.titleLabel.text isEqualToString:@"Hoplite Challenge"])
+    if ([b.titleLabel.text isEqualToString:@"Play"])
         self.buttonPressed = HOPLITE_CHALLENGE;
-    else if ([b.titleLabel.text isEqualToString:@"Hoplite Practice"])
+    else if ([b.titleLabel.text isEqualToString:@"Practice"])
         self.buttonPressed = HOPLITE_PRACTICE;
     else if ([b.titleLabel.text isEqualToString:@"Self Practice"])
         self.buttonPressed = SELF_PRACTICE;
@@ -98,6 +99,23 @@ alpha:1.0]
     
     UINavigationController *nvc = (UINavigationController *)self.view.window.rootViewController;
     [[nvc.childViewControllers objectAtIndex:0] performSegueWithIdentifier:@"showResults" sender:self];
+    
+}
+
+- (void) showGameResults:(id)sender
+{
+    //UIButton *b = (UIButton*) sender;
+    
+    //[self performSegueWithIdentifier:@"showResults" sender:self];
+    //http://stackoverflow.com/questions/16209113/push-segue-in-xcode-with-no-animation
+    //[[self navigationController] pushViewController:[self destinationViewController] animated:NO];
+    
+    //This way doesn't call prepareForSegue
+    //DetailViewController *resultsVC = [self.storyboard instantiateViewControllerWithIdentifier:@"resultsVC"];
+    //[self.navigationController pushViewController:resultsVC animated:YES];
+    
+    UINavigationController *nvc = (UINavigationController *)self.view.window.rootViewController;
+    [[nvc.childViewControllers objectAtIndex:0] performSegueWithIdentifier:@"showGames" sender:self];
     
 }
 
@@ -154,6 +172,8 @@ alpha:1.0]
     
     [self.resultsButton addTarget:self action:@selector(showResults:)
             forControlEvents:UIControlEventTouchUpInside];
+    [self.gamesButton addTarget:self action:@selector(showGameResults:)
+                 forControlEvents:UIControlEventTouchUpInside];
     /*
     [self.MCButton addTarget:self action:@selector(showVerbs:)
             forControlEvents:UIControlEventTouchUpInside];
@@ -291,8 +311,11 @@ alpha:1.0]
         double v2 = sh * 0.75;
         double bh = sh / 4;
         
-        [self.HCButton setFrame:CGRectMake(10, sh - 180, sw - 20, 80)];
-        [self.HPButton setFrame:CGRectMake(10, sh - 90, sw - 20, 80)];
+        [self.HCButton setFrame:CGRectMake(10, sh - 360, sw - 20, 80)];
+        [self.gamesButton setFrame:CGRectMake(10, sh - 270, sw - 20, 80)];
+        [self.HPButton setFrame:CGRectMake(10, sh - 180, sw - 20, 80)];
+        [self.resultsButton setFrame:CGRectMake(10, sh - 90, sw - 20, 80)];
+        
         self.SPButton.hidden = YES;
         self.MCButton.hidden = YES;
         //[self.SPButton setFrame:CGRectMake(0 - 2, v2, bw + 2, bh)];
@@ -310,8 +333,13 @@ alpha:1.0]
         self.MCButton.layer.borderWidth = 2.0;
         */
         UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
+        UIColor *greenColor = [UIColor colorWithRed:(0/255.0) green:(255/255.0) blue:(183/255.0) alpha:1.0];
         self.HCButton.backgroundColor = blueColor;//UIColorFromRGB(0x43609c);
         self.HPButton.backgroundColor = blueColor;//UIColorFromRGB(0x43609c);
+        
+        self.gamesButton.backgroundColor = greenColor;//UIColorFromRGB(0x43609c);
+        self.resultsButton.backgroundColor = greenColor;//UIColorFromRGB(0x43609c);
+        
         UIColor *textColor = [UIColor whiteColor];
         UIFont *textFont = [UIFont fontWithName:@"Helvetica" size:22.0];
         
@@ -319,10 +347,17 @@ alpha:1.0]
         [self.HPButton setTitleColor:textColor forState:UIControlStateNormal];
         [self.SPButton setTitleColor:textColor forState:UIControlStateNormal];
         [self.MCButton setTitleColor:textColor forState:UIControlStateNormal];
+
+        [self.gamesButton setTitleColor:textColor forState:UIControlStateNormal];
+        [self.resultsButton setTitleColor:textColor forState:UIControlStateNormal];
+        
         [self.HCButton.titleLabel setFont:textFont];
         [self.HPButton.titleLabel setFont:textFont];
         [self.SPButton.titleLabel setFont:textFont];
         [self.MCButton.titleLabel setFont:textFont];
+        
+        [self.gamesButton.titleLabel setFont:textFont];
+        [self.resultsButton.titleLabel setFont:textFont];
         
         self.HCButton.titleLabel.numberOfLines = 2;
         self.HPButton.titleLabel.numberOfLines = 2;
@@ -365,6 +400,11 @@ alpha:1.0]
     {
         DetailViewController *dvc = [segue destinationViewController];
         dvc.verbQuestionType = self.buttonPressed;
+    }
+    else if ([[segue identifier] isEqualToString:@"showResults"])
+    {
+        ResultsViewController *dvc = [segue destinationViewController];
+        dvc.gameId = 1; //practice
     }
 }
 
@@ -421,6 +461,28 @@ alpha:1.0]
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
+}
+*/
+
+/*
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+    
+    if ([segue.identifier isEqualToString:@"ShowResults"])
+    {
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        
+        NSInteger index = 0;
+        // Configure the cell...
+        for (int i = 0; i < indexPath.section; i++)
+            index += self->verbsPerSection[i];
+        
+        index += indexPath.row;
+        
+        [[segue destinationViewController] setVerbIndex: index];
+    }
 }
 */
 

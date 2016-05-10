@@ -398,7 +398,36 @@ void printUCS22(UCS2 *u, int len)
 
 -(void) backToMenu
 {
-    [self.navigationController popViewControllerAnimated:NO];
+    if (self.verbQuestionType == HOPLITE_CHALLENGE && self.lives > 0)
+    {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert"
+                                                        message:@"Are you sure you want to quit this game?"
+                                                       delegate:self
+                                              cancelButtonTitle:@"No"
+                                              otherButtonTitles:@"Yes", nil];
+        [alert show];
+        
+    }
+    else
+    {
+        [self preCheckVerbSubmit];
+        [self.navigationController popViewControllerAnimated:NO];
+    }
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    switch(buttonIndex) {
+        case 0: //"No" pressed
+            //do something?
+            break;
+        case 1: //"Yes" pressed
+            //here you pop the viewController
+            [self preCheckVerbSubmit];
+            [self.textfield resignFirstResponder];
+            [self.navigationController popViewControllerAnimated:NO];
+            break;
+    }
 }
 
 -(void)multipleFormsPressed
@@ -559,6 +588,26 @@ void printUCS22(UCS2 *u, int len)
             }
             self.textfield.textColor = [UIColor grayColor];
             isCorrect = NO;
+            if (self.verbQuestionType == HOPLITE_CHALLENGE)
+            {
+                if (self.lives == 3)
+                {
+                    self.lives = 2;
+                    self.life3.hidden = YES;
+                }
+                else if (self.lives == 2)
+                {
+                    self.lives = 1;
+                    self.life2.hidden = YES;
+                }
+                else if (self.lives == 1)
+                {
+                    self.lives = 0;
+                    self.life1.hidden = YES;
+                    self.gameOverLabel.hidden = NO;
+                    [self.continueButton setTitle:@"Play again?" forState:UIControlStateNormal];
+                }
+            }
         }
         NSLog(@"Score: %d", score);
         if (score > -1)
@@ -703,8 +752,28 @@ void printUCS22(UCS2 *u, int len)
     else //if back
     {
         //[self cleanUp:!(self.useNewAnimation && verbSeq < vsOptions.repsPerVerb)];
-        [self loadNext3];
+        if (self.verbQuestionType == HOPLITE_CHALLENGE && self.lives < 1)
+        {
+            [self resetToPlayAgain];
+        }
+        else
+        {
+            [self loadNext3];
+        }
     }
+}
+
+-(void) resetToPlayAgain
+{
+    self.life1.hidden = NO;
+    self.life2.hidden = NO;
+    self.life3.hidden = NO;
+    self.lives = 3;
+    self.scoreLabel.text = @"0";
+    resetVerbSeq();
+    [self loadNext3];
+    [self.continueButton setTitle:@"Continue" forState:UIControlStateNormal];
+    self.gameOverLabel.hidden = YES;
 }
 
 -(void) loadNext3
@@ -1719,7 +1788,7 @@ void dispatchAfter(double delay, void (^block)(void))
     self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
     [self.view addSubview:self.popup];
     
-    self.scoreLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:24.0];
+    self.scoreLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:24.0];
     self.scoreLabel.textColor = blueColor;
     if (self.verbQuestionType == HOPLITE_CHALLENGE)
     {
@@ -1757,6 +1826,8 @@ void dispatchAfter(double delay, void (^block)(void))
     self.textfield.hidden = NO;
     [self.textfield setBorderStyle:UITextBorderStyleNone];
     //self.textfield.textAlignment =
+    
+    self.gameOverLabel.frame = CGRectMake(0, self.gameOverLabel.frame.origin.y, screenSize.width, self.gameOverLabel.frame.size.height);
     
     //self.textfield.contentVerticalAlignment;
     //self.textfield.contentHorizontalAlignment = UIControlContentHorizontalAlignment.Center;
@@ -1917,6 +1988,32 @@ void dispatchAfter(double delay, void (^block)(void))
     [self setLevels];
     
     [self configureView];
+    
+    UIImage *lifeImage = [UIImage imageNamed:@"life.png"];
+    self.life1 = [[UIImageView alloc] initWithImage:lifeImage];
+    self.life2 = [[UIImageView alloc] initWithImage:lifeImage];
+    self.life3 = [[UIImageView alloc] initWithImage:lifeImage];
+    [self.view addSubview:self.life1];
+    [self.view addSubview:self.life2];
+    [self.view addSubview:self.life3];
+    [self.life1 setFrame:CGRectMake(100,6,26,26)];
+
+    [self.view bringSubviewToFront:self.life1];
+    [self.life2 setFrame:CGRectMake(126,6,26,26)];
+    
+    [self.life3 setFrame:CGRectMake(152,6,26,26)];
+    
+    if (self.verbQuestionType != HOPLITE_CHALLENGE)
+    {
+        self.life1.hidden = YES;
+        self.life2.hidden = YES;
+        self.life3.hidden = YES;
+    }
+    else
+    {
+        self.lives = 3;
+    }
+    
 }
 
 //http://stackoverflow.com/questions/26069874/what-is-the-right-way-to-handle-orientation-changes-in-ios-8

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="Dsm-rT-GJJ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="Dsm-rT-GJJ">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -22,12 +22,12 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Sk8-wS-Rda">
                                 <rect key="frame" x="20" y="131" width="151" height="88"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Hoplite Challenge"/>
+                                <state key="normal" title="Play"/>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="zdh-87-CxB">
                                 <rect key="frame" x="190" y="160" width="110" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Hoplite Practice"/>
+                                <state key="normal" title="Practice"/>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="YGz-fu-YE6">
                                 <rect key="frame" x="52" y="330" width="87" height="30"/>
@@ -70,7 +70,12 @@
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="P7S-6O-T87">
                                 <rect key="frame" x="135" y="256" width="51" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Results"/>
+                                <state key="normal" title="Practice History"/>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="DJm-kH-gKW">
+                                <rect key="frame" x="120" y="292" width="81" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Game History"/>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -84,11 +89,13 @@
                         <outlet property="LGILabel" destination="Cia-cC-DKB" id="GEZ-mv-UkH"/>
                         <outlet property="MCButton" destination="08m-Ub-bFS" id="68X-3U-I1n"/>
                         <outlet property="SPButton" destination="YGz-fu-YE6" id="AE1-yP-5HM"/>
+                        <outlet property="gamesButton" destination="DJm-kH-gKW" id="7nX-Ml-kqO"/>
                         <outlet property="menuButton" destination="BmR-Oz-8Ld" id="ezz-ci-ew9"/>
                         <outlet property="resultsButton" destination="P7S-6O-T87" id="yIz-9T-WOa"/>
                         <segue destination="Ah7-4n-0Wa" kind="push" identifier="showDetail" animates="NO" id="6Nq-Ao-Xso"/>
                         <segue destination="Cpp-Ki-VGm" kind="push" identifier="SegueToVerbsTable" id="aFi-UR-cgh"/>
                         <segue destination="iDk-79-kss" kind="push" identifier="showResults" id="FI6-vP-LTE"/>
+                        <segue destination="Kjt-ik-weL" kind="push" identifier="showGames" id="MHO-Rl-3FG"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="V6h-bW-BiZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -265,7 +272,14 @@
                                 <rect key="frame" x="46" y="73" width="101" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Game Over" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="3Ff-Sk-J2B">
+                                <rect key="frame" x="0.0" y="457" width="320" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="27"/>
+                                <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -286,6 +300,7 @@
                         <outlet property="changedForm" destination="Rqt-1p-Lvp" id="2Qg-H0-Zg8"/>
                         <outlet property="continueButton" destination="dik-Xj-1pN" id="p45-Ed-0Bv"/>
                         <outlet property="correctButton" destination="R2S-W9-Tcl" id="5MK-qC-PF4"/>
+                        <outlet property="gameOverLabel" destination="3Ff-Sk-J2B" id="ueY-ZQ-gmq"/>
                         <outlet property="incorrectButton" destination="1uz-Oh-wW1" id="FUZ-rf-i0i"/>
                         <outlet property="menuButton" destination="bx5-3M-bEI" id="yVS-yg-DYj"/>
                         <outlet property="origForm" destination="BEZ-dV-jS6" id="xTD-cr-UBS"/>
@@ -393,7 +408,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="VerbTableCell" id="wYm-0h-iaC">
-                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wYm-0h-iaC" id="dOp-UP-rZC">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -413,7 +428,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dxA-GR-SU7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="954" y="482"/>
+            <point key="canvasLocation" x="738" y="582"/>
         </scene>
         <!--Verb Detail View Controller-->
         <scene sceneID="Czp-Zv-Mox">
@@ -428,7 +443,66 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="r0Y-dV-Crt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1499" y="524"/>
+            <point key="canvasLocation" x="1153" y="582"/>
+        </scene>
+        <!--Games Table View Controller-->
+        <scene sceneID="lLX-Bk-YR8">
+            <objects>
+                <tableViewController id="Kjt-ik-weL" customClass="GamesTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Lsg-VV-Exm">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="GameResultsCell" id="e7T-Vo-xt2">
+                                <rect key="frame" x="0.0" y="28" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="e7T-Vo-xt2" id="DrU-2W-BJO">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="98" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="GameTitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="m3Y-v2-3Va">
+                                            <rect key="frame" x="8" y="8" width="250" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="99" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Score" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="SL7-so-WIA">
+                                            <rect key="frame" x="241" y="8" width="71" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="Kjt-ik-weL" id="tky-8Z-TFb"/>
+                            <outlet property="delegate" destination="Kjt-ik-weL" id="1qh-0I-CEW"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="SED-1z-LR7"/>
+                    <connections>
+                        <segue destination="iDk-79-kss" kind="push" identifier="GamesToResultsSegue" id="EUt-yu-PMh"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DD0-kh-iF7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1946" y="-18"/>
+        </scene>
+        <!--Page View Controller-->
+        <scene sceneID="wcb-Iy-5w3">
+            <objects>
+                <pageViewController autoresizesArchivedViewToFullSize="NO" transitionStyle="pageCurl" navigationOrientation="horizontal" spineLocation="min" id="LNa-dX-jO1" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6Vi-ZK-djp" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1342" y="1139"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="FI6-vP-LTE"/>
+    </inferredMetricsTieBreakers>
 </document>
