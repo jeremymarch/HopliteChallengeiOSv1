@@ -44,12 +44,18 @@ alpha:1.0]
         double v2 = sh * 0.75;
         double bh = sh / 4;
         
-        [self.HCButton setFrame:CGRectMake(10, sh - 180, sw - 20, 80)];
-        [self.HPButton setFrame:CGRectMake(10, sh - 90, sw - 20, 80)];
+        [self.HCButton setFrame:CGRectMake(10, sh - 360, sw - 20, 80)];
+        [self.gamesButton setFrame:CGRectMake(10, sh - 270, sw - 20, 80)];
+        [self.HPButton setFrame:CGRectMake(10, sh - 180, sw - 20, 80)];
+        [self.resultsButton setFrame:CGRectMake(10, sh - 90, sw - 20, 80)];
+        
+        
+        
         [self.HCLabel setFrame:CGRectMake(0, 120, self.view.bounds.size.width, self.HCLabel.frame.size.height)];
         [self.menuButton setFrame:CGRectMake(sw - 70 - 6, 24, 70, 36)];
         
         [self.popup setFrame:CGRectMake (0, size.height + 200, size.width, size.height)];
+        [self.popup.table setFrame:CGRectMake (0, size.height + 200, size.width, size.height)];
         
 
         

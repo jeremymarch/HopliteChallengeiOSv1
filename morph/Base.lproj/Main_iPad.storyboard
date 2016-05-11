@@ -274,6 +274,13 @@
                                 <color key="textColor" red="1" green="0.2274509804" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Score" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hEk-Nx-mPA">
+                                <rect key="frame" x="148" y="81" width="45" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -297,6 +304,7 @@
                         <outlet property="menuButton" destination="6qc-en-dyg" id="F4O-ae-iaW"/>
                         <outlet property="origForm" destination="NTC-zX-NtT" id="QSd-gd-RKk"/>
                         <outlet property="pluralLabel" destination="gQL-1M-Bgr" id="9lA-ff-CY0"/>
+                        <outlet property="scoreLabel" destination="hEk-Nx-mPA" id="jLg-Hf-akh"/>
                         <outlet property="singLabel" destination="FzM-pH-BxN" id="aAZ-LN-MmN"/>
                         <outlet property="stemLabel" destination="ZNm-iL-CdR" id="f1N-uj-RJx"/>
                         <outlet property="textfield" destination="Zq7-9c-g4j" id="E5h-Lv-JCm"/>

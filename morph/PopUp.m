@@ -104,6 +104,17 @@ enum {
         self.table = [self makeTableView];
         [self addSubview:self.table];
         
+        /*
+        UILayoutGuide *margins = self.layoutMarginsGuide;// view.layoutMarginsGuide
+        
+        // Pin the leading edge of myView to the margin's leading edge
+        [self.leadingAnchor constraintEqualToAnchor:margins.leadingAnchor].active = YES;
+        
+        // Pin the trailing edge of myView to the margin's trailing edge
+        //self.table.trailingAnchor.constraintEqualToAnchor(margins.trailingAnchor).active = true
+        [self.leadingAnchor constraintEqualToAnchor:margins.trailingAnchor].active = YES;
+        */
+        
         self.table.delegate = self;
         self.table.dataSource = self;
         //[self.table reloadData];

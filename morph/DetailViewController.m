@@ -2047,6 +2047,9 @@ void dispatchAfter(double delay, void (^block)(void))
     
     [self.origForm setFrame:CGRectMake(0, f/6, self.view.frame.size.width, fsize.height + 10)];
     //[self.changeTo setFrame:CGRectMake(0, f/3.4, self.view.frame.size.width, fsizeS.height + 10)];
+    
+    [self.gameOverLabel setFrame:CGRectMake(0, f/4, self.view.frame.size.width, fsizeS.height + 10)];
+    
     [self.changeTo setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, fsizeS.height + 10)];
     [self.stemLabel setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, fsizeS.height + 10)];
     [self.textfield setFrame:CGRectMake(10, f/2.1, self.view.frame.size.width - 20, fsize.height + 10)];
