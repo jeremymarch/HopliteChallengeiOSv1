@@ -1308,29 +1308,6 @@ void dispatchAfter(double delay, void (^block)(void))
     self.startTime = CACurrentMediaTime();
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    CGRect screenBound = [[UIScreen mainScreen] bounds];
-    CGSize screenSize = screenBound.size;
-    if ( [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait )
-    {
-        [self.stemLabel setFrame:CGRectMake(20, (screenSize.height - 240)/2, screenSize.width - 40, 240.0)];
-        [self.backLabel setFrame:CGRectMake(20, (screenSize.height - 240)/2, screenSize.width - 40, 240.0)];
-        
-        [self.singLabel setFrame:CGRectMake((screenSize.width * 1/3) - 50, (screenSize.height - 240)/2, screenSize.width /2, 240.0)];
-        [self.pluralLabel setFrame:CGRectMake((screenSize.width * 2/3) - 46, (screenSize.height - 240)/2, screenSize.width /2, 240.0)];
-    }
-    else
-    {
-        [self.stemLabel setFrame:CGRectMake(20, (screenSize.width - 240)/2, screenSize.height - 40, 240.0)];
-        [self.backLabel setFrame:CGRectMake(20, (screenSize.width - 240)/2, screenSize.height - 40, 240.0)];
-        
-        [self.singLabel setFrame:CGRectMake((screenSize.height * 1/3) - 20,50,  screenSize.height - 40, 240.0)];
-        [self.pluralLabel setFrame:CGRectMake((screenSize.height * 2/3) - 50,50
-                                              ,  screenSize.height - 40, 240.0)];
-    }
-}
-
 - (void)setDetailItem:(id)newDetailItem
 {
     if (_detailItem != newDetailItem) {
@@ -2016,11 +1993,35 @@ void dispatchAfter(double delay, void (^block)(void))
     
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    NSLog(@"did rotateeeeee");
+    CGRect screenBound = [[UIScreen mainScreen] bounds];
+    CGSize screenSize = screenBound.size;
+    if ( [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationPortrait )
+    {
+        [self.stemLabel setFrame:CGRectMake(20, (screenSize.height - 240)/2, screenSize.width - 40, 240.0)];
+        [self.backLabel setFrame:CGRectMake(20, (screenSize.height - 240)/2, screenSize.width - 40, 240.0)];
+        
+        [self.singLabel setFrame:CGRectMake((screenSize.width * 1/3) - 50, (screenSize.height - 240)/2, screenSize.width /2, 240.0)];
+        [self.pluralLabel setFrame:CGRectMake((screenSize.width * 2/3) - 46, (screenSize.height - 240)/2, screenSize.width /2, 240.0)];
+    }
+    else
+    {
+        [self.stemLabel setFrame:CGRectMake(20, (screenSize.width - 240)/2, screenSize.height - 40, 240.0)];
+        [self.backLabel setFrame:CGRectMake(20, (screenSize.width - 240)/2, screenSize.height - 40, 240.0)];
+        
+        [self.singLabel setFrame:CGRectMake((screenSize.height * 1/3) - 20,50,  screenSize.height - 40, 240.0)];
+        [self.pluralLabel setFrame:CGRectMake((screenSize.height * 2/3) - 50,50
+                                              ,  screenSize.height - 40, 240.0)];
+    }
+}
+
 //http://stackoverflow.com/questions/26069874/what-is-the-right-way-to-handle-orientation-changes-in-ios-8
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    
+    NSLog(@"did resizeeee");
     // Code here will execute before the rotation begins.
     // Equivalent to placing it in the deprecated method -[willRotateToInterfaceOrientation:duration:]
     
@@ -2072,14 +2073,14 @@ void dispatchAfter(double delay, void (^block)(void))
         offset = -8;
     else
         offset = 15;
-    CGFloat rvX = (size.width + size.width) / 2 + offset;
+    CGFloat rvX = (size.width + lsize.width) / 2 + offset;
     //don't let it go off the screen
     if (rvX > self.view.frame.size.width - 26)
         rvX = self.view.frame.size.width - 26;
-    [self.redXView setFrame:CGRectMake(rvX, self.redXView.frame.origin.y, self.redXView.frame.size.width,self.redXView.frame.size.height)];
+    [self.redXView setFrame:CGRectMake(rvX, self.textfield.frame.origin.y + 9, self.redXView.frame.size.width,self.redXView.frame.size.height)];
     
     
-    [self.greenCheckView setFrame:CGRectMake((size.width + lsize.width) / 2 + offset, self.textfield.frame.origin.y + 9, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
+    [self.greenCheckView setFrame:CGRectMake(rvX, self.textfield.frame.origin.y + 9, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
 }
 
 - (void)didReceiveMemoryWarning

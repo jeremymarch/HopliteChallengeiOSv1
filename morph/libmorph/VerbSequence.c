@@ -16,7 +16,7 @@
 #include "VerbSequence.h"
 #include "sqlite3.h"
 
-#define MAX_LAST_VF 8
+#define MAX_RECENT_VF 20
 
 //these are assigned to globalGameID.
 //its practice, insipient, or 1-n = a real saved game
@@ -38,8 +38,63 @@ int globalGameId = GAME_INVALID;
 int globalScore = -1;
 bool firstVerbSeq = true;
 
-//VerbFormC recentVFArray[MAX_LAST_VF];
-//int numRecentVFArray = 0;
+
+VerbFormC recentVFArray[MAX_RECENT_VF];
+int numRecentVFArray = 0;
+int recentVFArrayHead = -1;
+
+//true for same, false for different
+bool compareVF(VerbFormC *vf1, VerbFormC *vf2)
+{
+    if (vf1->person != vf2->person)
+        return false;
+    if (vf1->number != vf2->number)
+        return false;
+    if (vf1->tense != vf2->tense)
+        return false;
+    if (vf1->voice != vf2->voice)
+        return false;
+    if (vf1->mood != vf2->mood)
+        return false;
+    if (vf1->verb != vf2->verb)
+        return false;
+    
+    return true;
+}
+
+bool inRecentVFArray(VerbFormC *vf)
+{
+    for (int i = 0; i < numRecentVFArray; i++)
+    {
+        if (compareVF(vf, &recentVFArray[i]))
+        {
+            printf("Recent VF Array hit\n");
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+void addToRecentVFArray(VerbFormC *vf)
+{
+    if (numRecentVFArray < MAX_RECENT_VF)
+        numRecentVFArray++;
+    
+    if (recentVFArrayHead == MAX_RECENT_VF - 1)
+        recentVFArrayHead = 0;
+    else
+        recentVFArrayHead++;
+    
+    recentVFArray[recentVFArrayHead].person = vf->person;
+    recentVFArray[recentVFArrayHead].number = vf->number;
+    recentVFArray[recentVFArrayHead].tense = vf->tense;
+    recentVFArray[recentVFArrayHead].voice = vf->voice;
+    recentVFArray[recentVFArrayHead].mood = vf->mood;
+    recentVFArray[recentVFArrayHead].verb = vf->verb;
+}
+ 
+
 
 VerbFormC lastVF;
 
@@ -338,6 +393,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
             vf1->voice = MIDDLE;
             getForm(vf1, buffer, bufferLen, false, false); //do we need this?
         }
+        addToRecentVFArray(vf1);
     }
     else if (verbSeq == 1)
     {
@@ -346,6 +402,8 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
              generateForm(vf1);
          
          } while (!getForm(vf1, buffer, bufferLen, false, false) || !isValidFormForUnit(vf1, highestUnit) || !strncmp(buffer, "—", 1));
+        
+        addToRecentVFArray(vf1);
     }
     else
     {
@@ -395,7 +453,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
         vf2->verb = vf1->verb;
         
         changeFormByDegrees(vf2, degreesToChange);
-    } while (!getForm(vf2, buffer, bufferLen, true, false) || !isValidFormForUnit(vf2, highestUnit) || !strncmp(buffer, "—", 1));
+    } while (!getForm(vf2, buffer, bufferLen, true, false) || !isValidFormForUnit(vf2, highestUnit) || !strncmp(buffer, "—", 1) || inRecentVFArray(vf2));
     
     lastVF.person = vf2->person;
     lastVF.number = vf2->number;
@@ -403,6 +461,8 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     lastVF.voice = vf2->voice;
     lastVF.mood = vf2->mood;
     lastVF.verb = vf2->verb;
+    
+    addToRecentVFArray(vf2);
     
     
     
