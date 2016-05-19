@@ -1804,7 +1804,8 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.textfield setBorderStyle:UITextBorderStyleNone];
     //self.textfield.textAlignment =
     
-    self.gameOverLabel.frame = CGRectMake(0, self.gameOverLabel.frame.origin.y, screenSize.width, self.gameOverLabel.frame.size.height);
+    //self.gameOverLabel.frame = CGRectMake(0, self.gameOverLabel.frame.origin.y, screenSize.width, self.gameOverLabel.frame.size.height);
+    [self.gameOverLabel setFrame:CGRectMake(0, 32, self.view.frame.size.width - 10, self.gameOverLabel.frame.size.height)];
     
     //self.textfield.contentVerticalAlignment;
     //self.textfield.contentHorizontalAlignment = UIControlContentHorizontalAlignment.Center;
@@ -1973,12 +1974,12 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.view addSubview:self.life1];
     [self.view addSubview:self.life2];
     [self.view addSubview:self.life3];
-    [self.life1 setFrame:CGRectMake(100,6,26,26)];
-
+    [self.life1 setFrame:CGRectMake(screenSize.width - 26,38,25,25)];
+    [self.life2 setFrame:CGRectMake(screenSize.width - 52,38,25,25)];
+    [self.life3 setFrame:CGRectMake(screenSize.width - 78,38,25,25)];
     [self.view bringSubviewToFront:self.life1];
-    [self.life2 setFrame:CGRectMake(126,6,26,26)];
-    
-    [self.life3 setFrame:CGRectMake(152,6,26,26)];
+    [self.view bringSubviewToFront:self.life2];
+    [self.view bringSubviewToFront:self.life3];
     
     if (self.verbQuestionType != HOPLITE_CHALLENGE)
     {
@@ -1990,7 +1991,7 @@ void dispatchAfter(double delay, void (^block)(void))
     {
         self.lives = 3;
     }
-    
+    [self positionWidgetsToSize:self.view.frame.size];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
@@ -2049,7 +2050,10 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.origForm setFrame:CGRectMake(0, f/6, self.view.frame.size.width, fsize.height + 10)];
     //[self.changeTo setFrame:CGRectMake(0, f/3.4, self.view.frame.size.width, fsizeS.height + 10)];
     
-    [self.gameOverLabel setFrame:CGRectMake(0, f/4, self.view.frame.size.width, fsizeS.height + 10)];
+    [self.life1 setFrame:CGRectMake(size.width - 27,6,25,25)];
+    [self.life2 setFrame:CGRectMake(size.width - 53,6,25,25)];
+    [self.life3 setFrame:CGRectMake(size.width - 79,6,25,25)];
+    [self.gameOverLabel setFrame:CGRectMake(0, 0, size.width - 6, fsizeS.height)];
     
     [self.changeTo setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, fsizeS.height + 10)];
     [self.stemLabel setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, fsizeS.height + 10)];
@@ -2057,7 +2061,14 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.changedForm setFrame:CGRectMake(10, f/1.7, self.view.frame.size.width - 20, fsize.height + 10)];
     
     [self.scoreLabel setFrame:CGRectMake(60, 6,  194, 30)];
-    [self.timeLabel setFrame:CGRectMake(size.width - 200, 6,  194, 30)];
+    if (self.verbQuestionType == HOPLITE_CHALLENGE)
+    {
+        [self.timeLabel setFrame:CGRectMake(size.width - 200, 28,  194, 30)];
+    }
+    else
+    {
+        [self.timeLabel setFrame:CGRectMake(size.width - 200, 6,  194, 30)];
+    }
     [self.MFLabel setFrame:CGRectMake(size.width - 120 - 42, 6,  42, 30)];
     
     [self centerLabel:self.origForm withString:self.origForm.text ];
