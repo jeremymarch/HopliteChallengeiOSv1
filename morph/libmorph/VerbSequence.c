@@ -16,7 +16,8 @@
 #include "VerbSequence.h"
 #include "sqlite3.h"
 
-#define MAX_RECENT_VF 20
+#define MAX_RECENT_VF 30
+#define HC_VERBS_PER_SET 4
 
 //these are assigned to globalGameID.
 //its practice, insipient, or 1-n = a real saved game
@@ -37,6 +38,10 @@ sqlite3 *db;
 int globalGameId = GAME_INVALID;
 int globalScore = -1;
 bool firstVerbSeq = true;
+
+static int verbSeq = 99999; //start more than repsPerVerb so we reset
+int pointsPerForm = 1; //this is set in getRandomVerbFromUnit
+int bonusPointsMultiple = 2;
 
 
 VerbFormC recentVFArray[MAX_RECENT_VF];
@@ -279,7 +284,10 @@ bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *give
         
         if (isCorrect)
         {
-            globalScore += 1;
+            if (verbSeq >= HC_VERBS_PER_SET)
+                globalScore += (pointsPerForm * bonusPointsMultiple); //add bonus here
+            else
+                globalScore += pointsPerForm;
         }
         
         updateGameScore();
@@ -291,8 +299,6 @@ bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *give
     
     return isCorrect;
 }
-
-static int verbSeq = 99999; //start more than repsPerVerb so we reset
 
 void resetVerbSeq()
 {
@@ -329,11 +335,13 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     }
     if (vso->isHCGame)
     {
-        if (!lastAnswerCorrect || verbSeq > 3)
+        if (!lastAnswerCorrect || verbSeq >= HC_VERBS_PER_SET)
         {
             do //so we don't ask the same verb twice in a row
             {
-                v = getRandomVerb(vso->units, vso->numUnits);
+                //for the game we can select any verb under and including highest unit selected.
+                v = getRandomVerbFromUnit(vso->units, vso->numUnits);
+                //v = getRandomVerb(vso->units, vso->numUnits);
             } while (v == lastV);
             lastV = v;
             
@@ -839,6 +847,31 @@ Verb *getRandomVerb(int *units, int numUnits)
     return &verbs[ verbsToChooseFrom[verb] ];
 }
 
+Verb *getRandomVerbFromUnit(int *units, int numUnits)
+{
+    int u;
+    int highestUnit = 1;
+    for (u = 0; u < numUnits; u++)
+    {
+        if (units[u] > highestUnit)
+            highestUnit = units[u];
+    }
+    pointsPerForm = highestUnit;
+    int v;
+    int verbsToChooseFrom[NUM_VERBS];
+    int numVerbsToChooseFrom = 0;
+    for (v = 0; v < NUM_VERBS; v++)
+    {
+        if (verbs[v].hq <= highestUnit)
+        {
+            verbsToChooseFrom[numVerbsToChooseFrom] = v;
+            numVerbsToChooseFrom++;
+        }
+    }
+    int verb = (int)randWithMax(numVerbsToChooseFrom);
+    return &verbs[ verbsToChooseFrom[verb] ];
+}
+
 Ending *getRandomEnding(int *units, int numUnits)
 {
     int u, e;
@@ -1007,8 +1040,10 @@ void addNewGameToDB()
         fprintf(stderr, "SQL error: %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
     }
-
-    globalGameId = sqlite3_last_insert_rowid(db);
+    else
+    {
+        globalGameId = sqlite3_last_insert_rowid(db);
+    }
     globalScore = 0;
 }
 

@@ -65,6 +65,8 @@ void getDistractorsForChange(VerbFormC *orig, VerbFormC *new, int numDistractors
 bool isValidFormForUnit(VerbFormC *vf, int unit);
 
 Verb *getRandomVerb(int *units, int numUnits);
+Verb *getRandomVerbFromUnit(int *units, int numUnits);
+
 Ending *getRandomEnding(int *units, int numUnits);
 void getRandomEndingAsString(int *units, int numUnits, char *buffer, int bufferLen);
 
