@@ -400,13 +400,40 @@ void printUCS22(UCS2 *u, int len)
 {
     if (self.verbQuestionType == HOPLITE_CHALLENGE && self.lives > 0)
     {
+        /*
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert"
                                                         message:@"Are you sure you want to quit this game?"
                                                        delegate:self
                                               cancelButtonTitle:@"No"
                                               otherButtonTitles:@"Yes", nil];
         [alert show];
+        */
+        //http://stackoverflow.com/questions/30498972/keyboard-will-appeared-automatically-in-ios-8-3-while-displaying-alertview-or-al
+        Boolean isF = [self.textfield isFirstResponder];
+        [self.textfield resignFirstResponder];
         
+        UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"Alert"
+                                                                                  message:@"Are you sure you want to quit this game?"
+                                                                           preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction * noAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction *action) {if (isF)
+                                    {
+                                        [self.textfield becomeFirstResponder];
+                                    }}];
+        
+        UIAlertAction * yesAction = [UIAlertAction actionWithTitle:@"Yes"
+                                                                style:UIAlertActionStyleDefault
+                                                              handler:^(UIAlertAction *action) {
+                                                                  [self preCheckVerbSubmit];
+                                                                  [self.navigationController popViewControllerAnimated:NO];
+                                                              }];
+        
+        [alertController addAction:yesAction];
+        [alertController addAction:noAction];
+        
+        [self presentViewController:alertController animated:YES completion:nil];
     }
     else
     {

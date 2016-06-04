@@ -10,6 +10,7 @@
 #import "DetailViewController.h"
 #import "VerbDetailViewController.h"
 #import "ResultsViewController.h"
+#import "TutorialPageViewController.h"
 
 #define UIColorFromRGB(rgbValue) \
 [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
@@ -39,17 +40,12 @@ alpha:1.0]
         double sw = size.width;
         double sh = size.height;
         
-        double bw = sw * 0.5;//150;
-        double v1 = sh * 0.5;
-        double v2 = sh * 0.75;
-        double bh = sh / 4;
-        
         [self.HCButton setFrame:CGRectMake(10, sh - 360, sw - 20, 80)];
         [self.gamesButton setFrame:CGRectMake(10, sh - 270, sw - 20, 80)];
         [self.HPButton setFrame:CGRectMake(10, sh - 180, sw - 20, 80)];
         [self.resultsButton setFrame:CGRectMake(10, sh - 90, sw - 20, 80)];
         
-        
+        NSLog(@"Rotate menu: %f", size.width);
         
         [self.HCLabel setFrame:CGRectMake(0, 120, self.view.bounds.size.width, self.HCLabel.frame.size.height)];
         [self.menuButton setFrame:CGRectMake(sw - 70 - 6, 24, 70, 36)];
@@ -65,6 +61,16 @@ alpha:1.0]
         // Equivalent to placing it in the deprecated method -[didRotateFromInterfaceOrientation:]
         //NSLog(@"size w: %f, h: %f", size.width, size.height);
     }];
+}
+
+- (void) showAbout:(id)sender
+{
+    NSLog(@"showabout1");
+    //TutorialPageViewController *dvc = [self.storyboard instantiateViewControllerWithIdentifier:@"tutorialvc"];
+    [self performSegueWithIdentifier:@"showTutorialSegue" sender:self];
+
+    //[self.navigationController pushViewController:dvc animated:YES];
+    NSLog(@"showabout2");
 }
 
 - (void) showGame:(id)sender
@@ -180,6 +186,9 @@ alpha:1.0]
             forControlEvents:UIControlEventTouchUpInside];
     [self.gamesButton addTarget:self action:@selector(showGameResults:)
                  forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.aboutButton addTarget:self action:@selector(showAbout:)
+            forControlEvents:UIControlEventTouchUpInside];
     /*
     [self.MCButton addTarget:self action:@selector(showVerbs:)
             forControlEvents:UIControlEventTouchUpInside];

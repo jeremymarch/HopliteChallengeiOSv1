@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="YhB-gj-J1x">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="YhB-gj-J1x">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -77,6 +77,11 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Game History"/>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="69T-LP-FYq">
+                                <rect key="frame" x="46" y="235" width="42" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="About"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -90,6 +95,7 @@
                         <outlet property="LGILabel" destination="xWr-Mp-9Z0" id="Rgf-df-qih"/>
                         <outlet property="MCButton" destination="WJw-eB-BFm" id="YmB-rb-uWO"/>
                         <outlet property="SPButton" destination="6dq-wM-xKz" id="Qfd-7F-5zy"/>
+                        <outlet property="aboutButton" destination="69T-LP-FYq" id="viW-0a-sct"/>
                         <outlet property="gamesButton" destination="Fs1-1h-cex" id="nOo-6F-RpI"/>
                         <outlet property="menuButton" destination="C9J-8Q-NQ7" id="d51-w1-jhI"/>
                         <outlet property="resultsButton" destination="Ylf-LZ-heN" id="WQJ-zV-xl8"/>
@@ -97,6 +103,7 @@
                         <segue destination="RyW-Db-Afe" kind="push" identifier="SegueToVerbsTable" id="Xs9-sC-eCL"/>
                         <segue destination="8Jn-TB-CAn" kind="push" identifier="showGames" id="bd4-17-IUQ"/>
                         <segue destination="n0a-Rs-FJQ" kind="push" identifier="showResults" id="ndU-lc-p6t"/>
+                        <segue destination="qVi-e7-gtl" kind="push" id="NLy-mO-rBb"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sP5-51-8gt" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -391,7 +398,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="GameResultsCell" id="I1q-Eb-xLt">
-                                <rect key="frame" x="0.0" y="28" width="768" height="44"/>
+                                <rect key="frame" x="0.0" y="92" width="768" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="I1q-Eb-xLt" id="9h2-MP-TOW">
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>
@@ -439,7 +446,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ResultsCell" rowHeight="80" id="2KX-I9-Lp3">
-                                <rect key="frame" x="0.0" y="28" width="768" height="80"/>
+                                <rect key="frame" x="0.0" y="92" width="768" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2KX-I9-Lp3" id="Bkh-LM-Uhm">
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="79"/>
@@ -491,6 +498,198 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="80F-Hw-lps" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3154" y="-1749"/>
+        </scene>
+        <!--Tutorial Child View Controller-->
+        <scene sceneID="Sw3-pH-cex">
+            <objects>
+                <viewController storyboardIdentifier="tutorialchild" id="dvM-4X-J3J" customClass="TutorialChildViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="JvQ-qD-LRE">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hoplite Challenge" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Hrg-o6-UIG">
+                                <rect key="frame" x="92" y="53" width="136" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="1jY-rX-o02" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-694" y="558"/>
+        </scene>
+        <!--Tutorial Page View Controller-->
+        <scene sceneID="uhp-MZ-2Zp">
+            <objects>
+                <pageViewController storyboardIdentifier="tutorialvc" autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="qVi-e7-gtl" customClass="TutorialPageViewController" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="Ifl-LH-oHK"/>
+                </pageViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vZT-EI-LHc" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-338" y="518"/>
+        </scene>
+        <!--tutorialintro-->
+        <scene sceneID="6f4-gL-PJU">
+            <objects>
+                <viewController storyboardIdentifier="tutorialIntro" title="tutorialintro" id="1Lz-Xz-Rn0" customClass="TutorialChildViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="lyZ-0n-hbb">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" id="TeN-PF-wwk">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="webView" destination="TeN-PF-wwk" id="kF5-vc-kxx"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WRg-he-0EZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1497" y="548"/>
+        </scene>
+        <!--Tutorial Keyboard View Controller-->
+        <scene sceneID="0y8-cp-is5">
+            <objects>
+                <viewController storyboardIdentifier="tutorialchild2" id="Zcy-p6-vuG" customClass="TutorialKeyboardViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Btb-Iy-KmZ">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Using the Keyboard" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Uub-wD-pnY">
+                                <rect key="frame" x="85" y="74" width="151" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" id="Bdq-GQ-mi8">
+                                <rect key="frame" x="0.0" y="193" width="320" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="● Diacritics may be typed before or after the vowel" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="UFY-jk-zky">
+                                <rect key="frame" x="0.0" y="60" width="320" height="145"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="textfield" destination="Bdq-GQ-mi8" id="3s1-fb-eb4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HZ8-Ec-ytu" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1074" y="558"/>
+        </scene>
+        <!--tutorialKeyboard-->
+        <scene sceneID="LPs-ju-EEb">
+            <objects>
+                <viewController storyboardIdentifier="tutorialKeyboard" title="tutorialKeyboard" id="xlO-V3-L7Z" customClass="TutorialChildViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="3LT-uE-6X7">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" id="jLA-u2-UvT">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="webView" destination="jLA-u2-UvT" id="GAD-cL-5cZ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pRw-6m-0ao" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1844" y="548"/>
+        </scene>
+        <!--tutorialGamePlay-->
+        <scene sceneID="GzK-bK-3Wq">
+            <objects>
+                <viewController storyboardIdentifier="tutorialGamePlay" title="tutorialGamePlay" id="glt-fj-cIF" customClass="TutorialChildViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Rfh-K9-RLD">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" id="6qq-kb-97p">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="webView" destination="6qq-kb-97p" id="vV6-5N-j9k"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HG2-b2-LAD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2177" y="548"/>
+        </scene>
+        <!--tutorialPinch-->
+        <scene sceneID="gCr-Tb-Y6Q">
+            <objects>
+                <viewController storyboardIdentifier="tutorialPinch" title="tutorialPinch" id="Qrd-zQ-Dab" customClass="TutorialChildViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="NP8-KE-EtW">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" id="oj0-U8-hQ6">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="webView" destination="oj0-U8-hQ6" id="eA2-cs-JPI"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VAA-Mh-GMI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2527" y="548"/>
+        </scene>
+        <!--tutorialAcknowledgements-->
+        <scene sceneID="Fmb-UG-3xM">
+            <objects>
+                <viewController storyboardIdentifier="tutorialAcknowledgements" title="tutorialAcknowledgements" id="beH-L6-yun" customClass="TutorialChildViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="J7S-fV-F5z">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" id="cBg-8H-Hj1">
+                                <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="deviceRGB"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="webView" destination="cBg-8H-Hj1" id="fuS-9s-Gul"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xFJ-nh-SXD" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2870" y="548"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

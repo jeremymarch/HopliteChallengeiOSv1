@@ -31,7 +31,7 @@ enum {
 DataFormat *hcdata = NULL;
 size_t sizeInBytes = 0;
 const int sqlitePrepqueryLen = 1024;
-char sqlitePrepquery[sqlitePrepqueryLen];
+char sqlitePrepquery[1024];
 sqlite3_stmt *statement;
 sqlite3_stmt *statement2;
 sqlite3 *db;
