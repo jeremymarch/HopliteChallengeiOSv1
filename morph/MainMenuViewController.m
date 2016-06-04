@@ -187,6 +187,14 @@ alpha:1.0]
     [self.gamesButton addTarget:self action:@selector(showGameResults:)
                  forControlEvents:UIControlEventTouchUpInside];
     
+    
+    [self.aboutButton setFrame:CGRectMake(6, 24, 70, 36)];
+    self.aboutButton.layer.borderWidth = 2.0;
+    [self.aboutButton setTitle:@"About" forState:UIControlStateNormal];
+    [self.aboutButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+    self.aboutButton.layer.borderColor = [UIColor grayColor].CGColor;
+    self.aboutButton.layer.borderWidth = 2.0f;
+    self.aboutButton.layer.cornerRadius = 8;
     [self.aboutButton addTarget:self action:@selector(showAbout:)
             forControlEvents:UIControlEventTouchUpInside];
     /*

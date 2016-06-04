@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface TutorialChildViewController : UIViewController
+@interface TutorialChildViewController : UIViewController <UIWebViewDelegate>
 @property (assign, nonatomic) NSInteger index;
 @property (strong, nonatomic) IBOutlet UILabel *screenNumber;
 @property (strong, nonatomic) IBOutlet UIWebView *webView;

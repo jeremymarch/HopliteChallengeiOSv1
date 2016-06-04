@@ -12,4 +12,5 @@
 @property (assign, nonatomic) NSInteger numPages;
 @property (assign, nonatomic) NSInteger index;
 @property (strong, nonatomic) NSArray *pageNames;
+@property (weak, nonatomic) UIButton *closeButton;
 @end

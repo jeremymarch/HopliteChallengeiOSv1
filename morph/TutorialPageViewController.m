@@ -40,16 +40,19 @@
     
     [self didMoveToParentViewController:self];
     
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [button addTarget:self action:@selector(closeTutorial:) forControlEvents:UIControlEventTouchUpInside];
-    [button setTitle:@"Close" forState:UIControlStateNormal];
-    button.frame = CGRectMake(self.view.frame.size.width - 70 - 6, 24, 70, 36);
-    button.layer.borderWidth = 2.0;
-    [button setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-    button.layer.borderColor = [UIColor grayColor].CGColor;
-    button.layer.borderWidth = 2.0f;
-    button.layer.cornerRadius = 8;
-    [self.view addSubview: button];
+    self.view.backgroundColor = [UIColor blackColor];
+    
+    self.closeButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [self.closeButton addTarget:self action:@selector(closeTutorial:) forControlEvents:UIControlEventTouchUpInside];
+    [self.closeButton setTitle:@"Close" forState:UIControlStateNormal];
+    self.closeButton.frame = CGRectMake(self.view.frame.size.width - 70 - 6, 24, 70, 36);
+    self.closeButton.layer.borderWidth = 2.0;
+    [self.closeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+    self.closeButton.layer.borderColor = [UIColor grayColor].CGColor;
+    self.closeButton.backgroundColor = [UIColor whiteColor];
+    self.closeButton.layer.borderWidth = 2.0f;
+    self.closeButton.layer.cornerRadius = 8;
+    [self.view addSubview: self.closeButton];
 }
 
 - (void) closeTutorial:(id)sender
@@ -123,6 +126,30 @@
 - (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController {
     // The selected item reflected in the page indicator.
     return 0;
+}
+
+//http://stackoverflow.com/questions/26069874/what-is-the-right-way-to-handle-orientation-changes-in-ios-8
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    // Code here will execute before the rotation begins.
+    // Equivalent to placing it in the deprecated method -[willRotateToInterfaceOrientation:duration:]
+    
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        
+        // Place code here to perform animations during the rotation.
+        // You can pass nil or leave this block empty if not necessary.
+        
+        self.closeButton.frame = CGRectMake(size.width - 70 - 6, 24, 70, 36);
+        
+        
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        
+        // Code here will execute after the rotation has finished.
+        // Equivalent to placing it in the deprecated method -[didRotateFromInterfaceOrientation:]
+        //NSLog(@"size w: %f, h: %f", size.width, size.height);
+    }];
 }
 
 /*

@@ -50,7 +50,18 @@
         [self.webView loadHTMLString:htmlString baseURL:nil];
     }
     
+    self.webView.delegate = self;
+    
     // Do any additional setup after loading the view.
+}
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    if (navigationType == UIWebViewNavigationTypeLinkClicked ) {
+        [[UIApplication sharedApplication] openURL:[request URL]];
+        return NO;
+    }
+    
+    return YES;
 }
 
 - (void)didReceiveMemoryWarning {
