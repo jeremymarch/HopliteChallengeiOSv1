@@ -41,18 +41,22 @@
     [self didMoveToParentViewController:self];
     
     self.view.backgroundColor = [UIColor blackColor];
-    
+
     self.closeButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [self.closeButton addTarget:self action:@selector(closeTutorial:) forControlEvents:UIControlEventTouchUpInside];
     [self.closeButton setTitle:@"Close" forState:UIControlStateNormal];
-    self.closeButton.frame = CGRectMake(self.view.frame.size.width - 70 - 6, 24, 70, 36);
+    self.closeButton.frame = CGRectMake(6.0, 24.0, 70.0, 36.0);
+    self.closeButton.backgroundColor = [UIColor whiteColor];
+
     self.closeButton.layer.borderWidth = 2.0;
     [self.closeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
     self.closeButton.layer.borderColor = [UIColor grayColor].CGColor;
     self.closeButton.backgroundColor = [UIColor whiteColor];
     self.closeButton.layer.borderWidth = 2.0f;
     self.closeButton.layer.cornerRadius = 8;
+
     [self.view addSubview: self.closeButton];
+
 }
 
 - (void) closeTutorial:(id)sender
@@ -90,7 +94,7 @@
         page.index = 0;
     }
     */
-    NSLog([self.pageNames objectAtIndex:index]);
+    //NSLog([self.pageNames objectAtIndex:index]);
     
     page = [self.storyboard instantiateViewControllerWithIdentifier: [self.pageNames objectAtIndex:index] ];
     page.index =  index;
@@ -132,7 +136,7 @@
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    
+
     // Code here will execute before the rotation begins.
     // Equivalent to placing it in the deprecated method -[willRotateToInterfaceOrientation:duration:]
     
@@ -141,7 +145,7 @@
         // Place code here to perform animations during the rotation.
         // You can pass nil or leave this block empty if not necessary.
         
-        self.closeButton.frame = CGRectMake(size.width - 70 - 6, 24, 70, 36);
+        self.closeButton.frame = CGRectMake(6, 24, 70, 36);
         
         
     } completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {

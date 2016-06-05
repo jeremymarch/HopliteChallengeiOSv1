@@ -73,6 +73,17 @@ alpha:1.0]
     NSLog(@"showabout2");
 }
 
+- (void) showSettings:(id)sender
+{
+    //TutorialPageViewController *dvc = [self.storyboard instantiateViewControllerWithIdentifier:@"tutorialvc"];
+    [self performSegueWithIdentifier:@"showSettingsTableSegue" sender:self];
+    
+    //[self.navigationController pushViewController:dvc animated:YES];
+
+}
+
+
+
 - (void) showGame:(id)sender
 {
     UIButton *b = (UIButton*) sender;
@@ -167,10 +178,14 @@ alpha:1.0]
     self.popupShown = FALSE;
     self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
     [self.view addSubview:self.popup];
-    
+    /*
     [self.menuButton addTarget:self
                         action:@selector(animatePopUpShow:)
+              forControlEvents:UIControlEventTouchUpInside]; */
+    [self.menuButton addTarget:self
+                        action:@selector(showSettings:)
               forControlEvents:UIControlEventTouchUpInside];
+    
     
     [self.HCButton addTarget:self action:@selector(showGame:)
             forControlEvents:UIControlEventTouchUpInside];

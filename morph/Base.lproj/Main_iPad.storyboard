@@ -11,6 +11,37 @@
         </mutableArray>
     </customFonts>
     <scenes>
+        <!--Settings Table Table View Controller-->
+        <scene sceneID="bBQ-G5-aki">
+            <objects>
+                <tableViewController id="Gj5-Ey-Sfy" customClass="SettingsTableTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="l4C-Bz-Pjt">
+                        <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SimpleTableItem" id="AYf-8W-8eO">
+                                <rect key="frame" x="0.0" y="28" width="768" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="AYf-8W-8eO" id="kCD-gU-cem">
+                                    <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="Gj5-Ey-Sfy" id="Q04-st-HTO"/>
+                            <outlet property="delegate" destination="Gj5-Ey-Sfy" id="mKp-gw-dyB"/>
+                        </connections>
+                    </tableView>
+                    <connections>
+                        <segue destination="RyW-Db-Afe" kind="push" identifier="SegueToVerbsTable" id="js6-r9-a78"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SM7-iR-AMZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="442" y="-2343"/>
+        </scene>
         <!--Main Menu View Controller-->
         <scene sceneID="Ni4-AW-taz">
             <objects>
@@ -100,10 +131,10 @@
                         <outlet property="menuButton" destination="C9J-8Q-NQ7" id="d51-w1-jhI"/>
                         <outlet property="resultsButton" destination="Ylf-LZ-heN" id="WQJ-zV-xl8"/>
                         <segue destination="WFZ-F6-Key" kind="push" identifier="showDetail" animates="NO" id="esu-lW-N4F"/>
-                        <segue destination="RyW-Db-Afe" kind="push" identifier="SegueToVerbsTable" id="Xs9-sC-eCL"/>
                         <segue destination="8Jn-TB-CAn" kind="push" identifier="showGames" id="bd4-17-IUQ"/>
                         <segue destination="n0a-Rs-FJQ" kind="push" identifier="showResults" id="ndU-lc-p6t"/>
                         <segue destination="qVi-e7-gtl" kind="modal" identifier="showTutorialSegue" id="NLy-mO-rBb"/>
+                        <segue destination="Gj5-Ey-Sfy" kind="modal" identifier="showSettingsTableSegue" id="RQt-R2-3sJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sP5-51-8gt" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -351,7 +382,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="VerbTableCell" id="d4g-0l-2RZ">
-                                <rect key="frame" x="0.0" y="86" width="768" height="44"/>
+                                <rect key="frame" x="0.0" y="22" width="768" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="d4g-0l-2RZ" id="PiK-iX-ptr">
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>
@@ -371,7 +402,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kjd-10-G1r" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="954" y="482"/>
+            <point key="canvasLocation" x="1600" y="-2278"/>
         </scene>
         <!--Verb Detail View Controller-->
         <scene sceneID="VqR-gv-t8H">
@@ -386,7 +417,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3pq-Jk-ezd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2395" y="836"/>
+            <point key="canvasLocation" x="2755" y="-3012"/>
         </scene>
         <!--Games Table View Controller-->
         <scene sceneID="SNS-UL-vGE">
@@ -398,7 +429,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="GameResultsCell" id="I1q-Eb-xLt">
-                                <rect key="frame" x="0.0" y="28" width="768" height="44"/>
+                                <rect key="frame" x="0.0" y="92" width="768" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="I1q-Eb-xLt" id="9h2-MP-TOW">
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>
@@ -446,7 +477,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ResultsCell" rowHeight="80" id="2KX-I9-Lp3">
-                                <rect key="frame" x="0.0" y="28" width="768" height="80"/>
+                                <rect key="frame" x="0.0" y="92" width="768" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2KX-I9-Lp3" id="Bkh-LM-Uhm">
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="79"/>
