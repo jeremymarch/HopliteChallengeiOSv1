@@ -79,7 +79,6 @@ alpha:1.0]
     [self performSegueWithIdentifier:@"showSettingsTableSegue" sender:self];
     
     //[self.navigationController pushViewController:dvc animated:YES];
-
 }
 
 
@@ -87,7 +86,7 @@ alpha:1.0]
 - (void) showGame:(id)sender
 {
     UIButton *b = (UIButton*) sender;
-    
+
     if ([b.titleLabel.text isEqualToString:@"Play"])
         self.buttonPressed = HOPLITE_CHALLENGE;
     else if ([b.titleLabel.text isEqualToString:@"Practice"])
@@ -105,7 +104,6 @@ alpha:1.0]
     DetailViewController *dvc = [self.storyboard instantiateViewControllerWithIdentifier:@"dvc"];
     dvc.verbQuestionType = self.buttonPressed;
     [self.navigationController pushViewController:dvc animated:NO];
-
 }
 
 - (void) showResults:(id)sender
@@ -178,13 +176,6 @@ alpha:1.0]
     self.popupShown = FALSE;
     self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
     [self.view addSubview:self.popup];
-    /*
-    [self.menuButton addTarget:self
-                        action:@selector(animatePopUpShow:)
-              forControlEvents:UIControlEventTouchUpInside]; */
-    [self.menuButton addTarget:self
-                        action:@selector(showSettings:)
-              forControlEvents:UIControlEventTouchUpInside];
     
     
     [self.HCButton addTarget:self action:@selector(showGame:)
@@ -201,6 +192,14 @@ alpha:1.0]
             forControlEvents:UIControlEventTouchUpInside];
     [self.gamesButton addTarget:self action:@selector(showGameResults:)
                  forControlEvents:UIControlEventTouchUpInside];
+    
+    /*
+     [self.menuButton addTarget:self
+     action:@selector(animatePopUpShow:)
+     forControlEvents:UIControlEventTouchUpInside]; 
+     */
+    [self.menuButton addTarget:self action:@selector(showSettings:)
+              forControlEvents:UIControlEventTouchUpInside];
     
     
     [self.aboutButton setFrame:CGRectMake(6, 24, 70, 36)];

@@ -23,9 +23,6 @@
                                 <rect key="frame" x="20" y="131" width="151" height="88"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Play"/>
-                                <connections>
-                                    <segue destination="CzJ-UQ-b20" kind="modal" identifier="showSettingsTableSegue" id="QKj-Hd-WAv"/>
-                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="zdh-87-CxB">
                                 <rect key="frame" x="190" y="160" width="110" height="30"/>
@@ -105,6 +102,7 @@
                         <segue destination="iDk-79-kss" kind="push" identifier="showResults" id="FI6-vP-LTE"/>
                         <segue destination="Kjt-ik-weL" kind="push" identifier="showGames" id="MHO-Rl-3FG"/>
                         <segue destination="v2G-Fm-Bs0" kind="modal" identifier="showTutorialSegue" id="ku0-MH-vFT"/>
+                        <segue destination="CzJ-UQ-b20" kind="modal" identifier="showSettingsTableSegue" id="mpy-TE-uGg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="V6h-bW-BiZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -497,7 +495,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="GameResultsCell" id="e7T-Vo-xt2">
-                                <rect key="frame" x="0.0" y="92" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="28" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="e7T-Vo-xt2" id="DrU-2W-BJO">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -589,7 +587,7 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="● Diacritics may be typed before or after the vowel" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="J6k-xh-teD">
-                                <rect key="frame" x="0.0" y="60" width="320" height="145"/>
+                                <rect key="frame" x="0.0" y="60" width="320" height="245"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>

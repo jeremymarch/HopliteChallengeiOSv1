@@ -36,6 +36,7 @@ enum {
 }
 
 @property double typeInterval;
+@property double greekFontSize;
 @property BOOL expanded;
 @property BOOL mfPressed;
 @property BOOL soundDisabled;

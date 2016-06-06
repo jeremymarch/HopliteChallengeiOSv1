@@ -169,7 +169,7 @@ SystemSoundID BuzzSound;
     return [myArr objectAtIndex:randomIndex];
 }
 
--(void)centerLabel:(UILabel*)l withString:(NSString*)string
+-(void)centerLabel:(UILabel*)l withString:(NSString*)string setHeight:(Boolean)setHeight
 {
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
@@ -186,8 +186,13 @@ SystemSoundID BuzzSound;
     }
     
     CGSize adjustedSize = CGSizeMake(ceilf(size.width), ceilf(size.height));
+    double newHeight;
+    if (setHeight)
+        newHeight = adjustedSize.height + 14;
+    else
+        newHeight = l.frame.size.height;
     
-    [l setFrame: CGRectMake((screenSize.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, adjustedSize.height)];
+    [l setFrame: CGRectMake((screenSize.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, newHeight)];
 }
 
 -(void)centerLabel:(UILabel*)l withAttributedString:(NSAttributedString*)string withSize:(CGSize)size
@@ -210,7 +215,7 @@ SystemSoundID BuzzSound;
     
     CGSize adjustedSize = CGSizeMake(ceilf(lsize.width), ceilf(lsize.height));
     
-    [l setFrame: CGRectMake((size.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, adjustedSize.height)];
+    [l setFrame: CGRectMake((size.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, l.frame.size.height)];
 }
 
 //http://stackoverflow.com/questions/11686642/letter-by-letter-animation-for-uilabel
@@ -221,7 +226,7 @@ SystemSoundID BuzzSound;
 //http://stackoverflow.com/questions/29938707/animate-a-uiview-using-cadisplaylink-combined-with-camediatimingfunction-to
 //http://netcetera.org/camtf-playground.html
 
--(void)typeLabel:(UILabel*)l withString:(NSString*)string withInterval:(double)interval completion:(void (^)(void))done
+-(void)typeLabel:(UILabel*)l withString:(NSString*)string withInterval:(double)interval setHeight:(Boolean)setHeight completion:(void (^)(void))done
 {
     if ([string length] < 1)
     {
@@ -229,7 +234,7 @@ SystemSoundID BuzzSound;
         return;
     }
 
-    [self centerLabel:l withString:string];
+    [self centerLabel:l withString:string setHeight:setHeight];
     
     NSInteger i = 0;
     NSInteger j = 0;
@@ -607,6 +612,7 @@ void printUCS22(UCS2 *u, int len)
             if (rvX > self.view.frame.size.width - 26)
                 rvX = self.view.frame.size.width - 26;
             [self.redXView setFrame:CGRectMake(rvX, self.redXView.frame.origin.y, self.redXView.frame.size.width,self.redXView.frame.size.height)];
+            NSLog(@"redx show2: %f", self.redXView.frame.origin.y);
             self.redXView.hidden = NO;
             
             if (!self.soundDisabled)
@@ -668,7 +674,7 @@ void printUCS22(UCS2 *u, int len)
                 
                 dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC));
                 dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-                    [self typeLabel:self.changedForm withString:temp withInterval:self.typeInterval completion:nil];
+                    [self typeLabel:self.changedForm withString:temp withInterval:self.typeInterval setHeight:YES completion:nil];
                     
                     dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC));
                     dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
@@ -715,7 +721,7 @@ void printUCS22(UCS2 *u, int len)
             {
                 self.changedForm.text = self.textfield.text;
                 self.changedForm.frame = CGRectMake(self.textfield.frame.origin.x, self.textfield.frame.origin.y + 5, self.textfield.frame.size.width, self.textfield.frame.size.height);
-                [self centerLabel:self.changedForm withString:self.changedForm.text];
+                [self centerLabel:self.changedForm withString:self.changedForm.text setHeight:YES];
                 self.changedForm.hidden = NO;
                 self.textfield.hidden = YES;
                 dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC));
@@ -837,9 +843,10 @@ void printUCS22(UCS2 *u, int len)
     //this means it was correct
     if (self.changedForm.hidden == YES)
     {
+        
         self.changedForm.text = self.textfield.text;
-        self.changedForm.frame = CGRectMake(self.textfield.frame.origin.x, self.textfield.frame.origin.y + 5, self.textfield.frame.size.width, self.textfield.frame.size.height);
-        [self centerLabel:self.changedForm withString:self.changedForm.text];
+        self.changedForm.frame = CGRectMake(self.textfield.frame.origin.x, self.textfield.frame.origin.y, self.textfield.frame.size.width, self.textfield.frame.size.height);
+        [self centerLabel:self.changedForm withString:self.changedForm.text setHeight:NO];
         self.changedForm.hidden = NO;
         self.textfield.hidden = YES;
     }
@@ -863,7 +870,7 @@ void printUCS22(UCS2 *u, int len)
                                             options:UIViewAnimationOptionCurveEaseIn
                                          animations:^{
                                              [self.view bringSubviewToFront:self.changedForm];
-                                             [self.changedForm setFrame:CGRectMake(self.changedForm.frame.origin.x, self.origForm.frame.origin.y, self.changedForm.frame.size.width, self.changedForm.frame.size.height)
+                                             [self.changedForm setFrame:CGRectMake(self.changedForm.frame.origin.x, self.origForm.frame.origin.y, self.changedForm.frame.size.width, self.origForm.frame.size.height)
                                               ];
                                          }
                                          completion:^(BOOL finished){
@@ -1129,7 +1136,7 @@ void dispatchAfter(double delay, void (^block)(void))
     {
         dispatchAfter( 0.8, ^(void)
                       {
-                          [self typeLabel:self.origForm withString:origForm withInterval:self.typeInterval completion:nil];
+                          [self typeLabel:self.origForm withString:origForm withInterval:self.typeInterval setHeight:NO completion:nil];
                           
                           dispatchAfter( 1.0, ^(void)
                                         {
@@ -1300,8 +1307,8 @@ void dispatchAfter(double delay, void (^block)(void))
     }
     self.origForm.text = @"";
     self.origForm.hidden = NO;
-    [self centerLabel:self.origForm withString:frontForm];
-    [self typeLabel:self.origForm withString:frontForm withInterval:self.typeInterval completion:nil];
+    [self centerLabel:self.origForm withString:frontForm setHeight:NO];
+    [self typeLabel:self.origForm withString:frontForm withInterval:self.typeInterval setHeight:NO completion:nil];
     //self.backLabel.text = self.backCard;
     self.backLabel.attributedText = attrString;
     
@@ -1376,7 +1383,7 @@ void dispatchAfter(double delay, void (^block)(void))
     ///Users/jeremy/Dropbox/Code/cocoa/morphv5/morph/DetailViewController.mNSString *font = @"Kailasa";
     //NSString *font = @"ArialMT";
     
-    UIFont *greekFont = [UIFont fontWithName:self.greekFont size:36.0];
+    UIFont *greekFont = [UIFont fontWithName:self.greekFont size:self.greekFontSize];
     
     self.origForm.font = greekFont;
     self.changedForm.font = greekFont;
@@ -1388,7 +1395,7 @@ void dispatchAfter(double delay, void (^block)(void))
     
     self.stemLabel.font = [UIFont fontWithName:self.systemFont size:self.fontSize];
     self.changeTo.font = [UIFont fontWithName:self.systemFont size:self.fontSize];
-    self.backLabel.font = [UIFont fontWithName:self.greekFont size:36.0];
+    self.backLabel.font = [UIFont fontWithName:self.greekFont size:self.greekFontSize];
     self.singLabel.font = [UIFont fontWithName:self.greekFont size:self.fontSize];
     self.pluralLabel.font = [UIFont fontWithName:self.greekFont size:self.fontSize];
     
@@ -1666,11 +1673,11 @@ void dispatchAfter(double delay, void (^block)(void))
             else
             {
                 self.changedForm.text = self.changedStrDecomposed;
-                [self centerLabel:self.changedForm withString:self.changedStrDecomposed];
+                [self centerLabel:self.changedForm withString:self.changedStrDecomposed setHeight:YES];
             }
             self.expanded = YES;
             self.origForm.text = self.origStrDecomposed;
-            [self centerLabel:self.origForm withString:self.origStrDecomposed];
+            [self centerLabel:self.origForm withString:self.origStrDecomposed setHeight:NO];
         }
     }
     else if (pinch.velocity < -thresholdVelocity)
@@ -1691,11 +1698,11 @@ void dispatchAfter(double delay, void (^block)(void))
             else
             {
                 self.changedForm.text = self.changedStr;
-                [self centerLabel:self.changedForm withString:self.changedStr];
+                [self centerLabel:self.changedForm withString:self.changedStr setHeight:YES];
             }
             self.expanded = NO;
             self.origForm.text = self.origStr;
-            [self centerLabel:self.origForm withString:self.origStr];
+            [self centerLabel:self.origForm withString:self.origStr setHeight:NO];
         }
     }
 }
@@ -1710,6 +1717,8 @@ void dispatchAfter(double delay, void (^block)(void))
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    
     /*
      NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
      NSString *documentsDirectoryPath = [paths objectAtIndex:0];
@@ -1769,6 +1778,12 @@ void dispatchAfter(double delay, void (^block)(void))
     
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
+
+    NSLog(@"screensize: %f x %f", screenSize.width, screenSize.height);
+    if (screenSize.height > 569)
+        self.greekFontSize = 36.0;
+    else
+        self.greekFontSize = 32.0;
     
     //self.changedForm.layer.borderColor = [UIColor blackColor];
     self.changedForm.lineBreakMode = NSLineBreakByWordWrapping;
@@ -1825,7 +1840,7 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.textfield setInputView: [(AppDelegate*)[[UIApplication sharedApplication] delegate] keyboard]];
     //[self.textfield setInputView: self.keyboard];
     
-    self.textfield.font = [UIFont fontWithName:self.greekFont size:36.0];
+    self.textfield.font = [UIFont fontWithName:self.greekFont size:self.greekFontSize];
     self.textfield.frame = CGRectMake(10, self.textfield.frame.origin.y, screenSize.width - 20, 54.0);
     self.textfield.hidden = NO;
     [self.textfield setBorderStyle:UITextBorderStyleNone];
@@ -2071,10 +2086,11 @@ void dispatchAfter(double delay, void (^block)(void))
 -(void) positionWidgetsToSize:(CGSize)size
 {
     double f = size.height;
+    double w = size.width;
     CGSize fsize = [@"ξφψΑΒ" sizeWithAttributes:@{NSFontAttributeName: self.origForm.font }];
     CGSize fsizeS = [@"ABCD" sizeWithAttributes:@{NSFontAttributeName: self.stemLabel.font }];
     
-    [self.origForm setFrame:CGRectMake(0, f/6, self.view.frame.size.width, fsize.height + 10)];
+    [self.origForm setFrame:CGRectMake(self.origForm.frame.origin.x, f/6, self.view.frame.size.width, fsize.height + 10)];
     //[self.changeTo setFrame:CGRectMake(0, f/3.4, self.view.frame.size.width, fsizeS.height + 10)];
     
     [self.life1 setFrame:CGRectMake(size.width - 27,6,25,25)];
@@ -2098,12 +2114,48 @@ void dispatchAfter(double delay, void (^block)(void))
     }
     [self.MFLabel setFrame:CGRectMake(size.width - 120 - 42, 6,  42, 30)];
     
-    [self centerLabel:self.origForm withString:self.origForm.text ];
-    [self centerLabel:self.changeTo withString:self.changeTo.text ];
+    [self centerLabel:self.origForm withString:self.origForm.text setHeight:NO];
+    [self centerLabel:self.changeTo withString:self.changeTo.text setHeight:NO];
     [self centerLabel:self.stemLabel withAttributedString:self.stemLabel.attributedText withSize:size];
-    [self centerLabel:self.changedForm withString:self.changedForm.text ];
+    [self centerLabel:self.changedForm withString:self.changedForm.text setHeight:YES];
     
     [self.continueButton setFrame:CGRectMake(0, size.height - 70, (size.width), 70)];
+    
+    
+    //new testing
+    int topmargin = 54;
+    int stemHeight = 38;
+    int keyboardHeight = 206;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+    {
+        keyboardHeight = 206;
+    }
+    else
+    {
+        keyboardHeight = 308;
+    }
+    int origandtextfieldheight = (self.view.frame.size.height - (topmargin *2) - keyboardHeight - stemHeight) / 2;
+    //[self.changeTo setFrame:CGRectMake(0, f/3.4+34, w, fsizeS.height + 10)];
+    [self.origForm setFrame:CGRectMake(self.origForm.frame.origin.x, topmargin, w, origandtextfieldheight)];
+    [self.stemLabel setFrame:CGRectMake(self.stemLabel.frame.origin.x, topmargin + origandtextfieldheight, w, stemHeight)];
+    [self.textfield setFrame:CGRectMake(0, topmargin + origandtextfieldheight + stemHeight, w, origandtextfieldheight)];
+    [self.changedForm setFrame:CGRectMake(0, topmargin + (origandtextfieldheight * 2) + stemHeight, w, origandtextfieldheight)];
+    
+    
+    self.origForm.textAlignment = UIControlContentVerticalAlignmentCenter;
+    self.textfield.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    self.changedForm.textAlignment = UIControlContentVerticalAlignmentTop;
+    /*
+    self.origForm.layer.borderWidth = 1.0;
+    self.origForm.layer.borderColor = [UIColor redColor].CGColor;
+    self.changedForm.layer.borderWidth = 1.0;
+    self.changedForm.layer.borderColor = [UIColor redColor].CGColor;
+    self.stemLabel.layer.borderWidth = 1.0;
+    self.stemLabel.layer.borderColor = [UIColor blueColor].CGColor;
+    
+    self.textfield.layer.borderWidth = 1.0;
+    self.textfield.layer.borderColor = [UIColor greenColor].CGColor;
+    */
     
     CGSize lsize = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
     int offset;
@@ -2115,10 +2167,14 @@ void dispatchAfter(double delay, void (^block)(void))
     //don't let it go off the screen
     if (rvX > self.view.frame.size.width - 26)
         rvX = self.view.frame.size.width - 26;
-    [self.redXView setFrame:CGRectMake(rvX, self.textfield.frame.origin.y + 9, self.redXView.frame.size.width,self.redXView.frame.size.height)];
     
+    double yy = self.textfield.frame.origin.y + ((self.textfield.frame.size.height - self.redXView.frame.size.height) /2);
+
+    [self.redXView setFrame:CGRectMake(rvX, yy, self.redXView.frame.size.width,self.redXView.frame.size.height)];
     
-    [self.greenCheckView setFrame:CGRectMake(rvX, self.textfield.frame.origin.y + 9, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
+    double yy2 = self.textfield.frame.origin.y + ((self.textfield.frame.size.height - self.greenCheckView.frame.size.height) /2);
+    [self.greenCheckView setFrame:CGRectMake(rvX, yy2, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
+    
 }
 
 - (void)didReceiveMemoryWarning

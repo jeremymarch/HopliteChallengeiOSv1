@@ -372,9 +372,12 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     
     *seq = verbSeq;
     
-    //for testing on specific verbs, set here
-    //vf1->verb = &verbs[48];
-    vf1->verb = v;
+    vf1->verb = v; //THIS IS THE VERB WE'E USING
+    
+    //***************OVERRIDE for testing on specific verbs, set here*******************************
+    //vf1->verb = &verbs[13];
+    //***************for testing on specific verbs*****************************************
+    
     
     int highestUnit = 0;
     for (int i = 0; i < vso->numUnits; i++)
@@ -463,6 +466,18 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
         changeFormByDegrees(vf2, degreesToChange);
     } while (!getForm(vf2, buffer, bufferLen, true, false) || !isValidFormForUnit(vf2, highestUnit) || !strncmp(buffer, "—", 1) || inRecentVFArray(vf2));
     
+    
+    /*
+     //**************for testing to force form****************************
+     vf2->person = FIRST;
+     vf2->number = PLURAL;
+     vf2->tense = AORIST;
+     vf2->voice = PASSIVE;
+     vf2->mood = OPTATIVE;
+     vf2->verb = vf1->verb;
+     //**************for testing to force form****************************
+    */
+    
     lastVF.person = vf2->person;
     lastVF.number = vf2->number;
     lastVF.tense = vf2->tense;
@@ -471,18 +486,6 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     lastVF.verb = vf2->verb;
     
     addToRecentVFArray(vf2);
-    
-    
-    
-    /*
-     //for testing to force form:
-     vf2->person = SECOND;
-     vf2->number = SINGULAR;
-     vf2->tense = PRESENT;
-     vf2->voice = PASSIVE;
-     vf2->mood = INDICATIVE;
-    vf2->verb = vf1->verb;
-    */
     
     //temp
     if(verbSeq == 2 && vso->askPrincipalParts && !vso->isHCGame)
