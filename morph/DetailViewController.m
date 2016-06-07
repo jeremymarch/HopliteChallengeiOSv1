@@ -465,11 +465,11 @@ void printUCS22(UCS2 *u, int len)
 -(void)multipleFormsPressed
 {
     self.MFLabel.hidden = NO;
-    self.mfPressed = YES;
     
     //if there are not multiple forms for the verb, mark it incorrect
     if ([self.changedForm.text rangeOfString:@","].location == NSNotFound)
     {
+        self.mfPressed = YES;
         //this will mark form incorrect
         [self preCheckVerbSubmit];
         
@@ -480,7 +480,7 @@ void printUCS22(UCS2 *u, int len)
     {
         if (!self.mfPressed)
         {
-            CGFloat halfTime = self.HCTime / 2;
+            double halfTime = self.HCTime / 2;
             self.startTime += halfTime;
         }
     }
@@ -492,6 +492,7 @@ void printUCS22(UCS2 *u, int len)
             self.startTime += halfTime;
         }
     }
+    self.mfPressed = YES;
 }
 
 /* 
@@ -589,6 +590,9 @@ void printUCS22(UCS2 *u, int len)
                 gvX = self.view.frame.size.width - 26;
             [self.greenCheckView setFrame:CGRectMake(gvX, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
             
+            //[self.view bringSubviewToFront:self.greenCheckView];
+            self.greenCheckView.layer.zPosition = 100;
+            
             self.greenCheckView.hidden = NO;
             
             if (!self.soundDisabled)
@@ -612,8 +616,15 @@ void printUCS22(UCS2 *u, int len)
             if (rvX > self.view.frame.size.width - 26)
                 rvX = self.view.frame.size.width - 26;
             [self.redXView setFrame:CGRectMake(rvX, self.redXView.frame.origin.y, self.redXView.frame.size.width,self.redXView.frame.size.height)];
-            NSLog(@"redx show2: %f", self.redXView.frame.origin.y);
+            
+            //[self.view bringSubviewToFront:self.redXView];
+            //[self.view sendSubviewToBack:self.textfield];
+            //[self.redXView setFrame:CGRectMake(20, 250, self.redXView.frame.size.width,self.redXView.frame.size.height)];
+            //[self.textfield addSubview:self.redXView];
+            self.redXView.layer.zPosition = 100;
+
             self.redXView.hidden = NO;
+            
             
             if (!self.soundDisabled)
             {
@@ -780,7 +791,7 @@ void printUCS22(UCS2 *u, int len)
         }
         
         self.front = false;
-        self.textfield.enabled = false;
+        self.textfield.userInteractionEnabled = NO;
     }
     else //if back
     {
@@ -1147,7 +1158,7 @@ void dispatchAfter(double delay, void (^block)(void))
                                             dispatchAfter( 0.7, ^(void)
                                                           {
                                                               self.textfield.text = @"";
-                                                              self.textfield.enabled = YES;
+                                                              self.textfield.userInteractionEnabled = YES;
                                                               self.textfield.hidden = NO;
                                                               [self.textfield becomeFirstResponder];
                                                               
@@ -1171,7 +1182,7 @@ void dispatchAfter(double delay, void (^block)(void))
                           dispatchAfter( 0.7, ^(void)
                                         {
                                             self.textfield.text = @"";
-                                            self.textfield.enabled = YES;
+                                            self.textfield.userInteractionEnabled = YES;
                                             self.textfield.hidden = NO;
                                             
                                             [self.textfield becomeFirstResponder];
@@ -1544,12 +1555,28 @@ void dispatchAfter(double delay, void (^block)(void))
 {
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
+    
+    //http://stackoverflow.com/questions/12591192/center-text-vertically-in-a-uitextview
+    //see below
+    [self.textfield addObserver:self forKeyPath:@"contentSize" options:(NSKeyValueObservingOptionNew) context:NULL];
+}
+
+//http://stackoverflow.com/questions/12591192/center-text-vertically-in-a-uitextview
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    UITextView *tv = object;
+    CGFloat topCorrect = ([tv bounds].size.height - [tv contentSize].height * [tv zoomScale])/2.0;
+    topCorrect = ( topCorrect < 0.0 ? 0.0 : topCorrect );
+    NSLog(@"content: %f, %f, %f", topCorrect, [tv bounds].size.height, [tv contentSize].height);
+    [tv setContentInset:UIEdgeInsetsMake(topCorrect,0,0,0)];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
+    
+    [self.textfield removeObserver:self forKeyPath:@"contentSize" context:NULL];
 }
 
 - (void) animatePopUpShow:(id)sender
@@ -1718,7 +1745,6 @@ void dispatchAfter(double delay, void (^block)(void))
 {
     [super viewDidLoad];
     
-    
     /*
      NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
      NSString *documentsDirectoryPath = [paths objectAtIndex:0];
@@ -1843,7 +1869,8 @@ void dispatchAfter(double delay, void (^block)(void))
     self.textfield.font = [UIFont fontWithName:self.greekFont size:self.greekFontSize];
     self.textfield.frame = CGRectMake(10, self.textfield.frame.origin.y, screenSize.width - 20, 54.0);
     self.textfield.hidden = NO;
-    [self.textfield setBorderStyle:UITextBorderStyleNone];
+    //fix me add border to textview
+    //[self.textfield setBorderStyle:UITextBorderStyleNone];
     //self.textfield.textAlignment =
     
     //self.gameOverLabel.frame = CGRectMake(0, self.gameOverLabel.frame.origin.y, screenSize.width, self.gameOverLabel.frame.size.height);
@@ -1852,7 +1879,8 @@ void dispatchAfter(double delay, void (^block)(void))
     //self.textfield.contentVerticalAlignment;
     //self.textfield.contentHorizontalAlignment = UIControlContentHorizontalAlignment.Center;
     self.textfield.textAlignment = NSTextAlignmentCenter;
-    self.textfield.adjustsFontSizeToFitWidth = true;
+    //fix me removed this
+    //self.textfield.adjustsFontSizeToFitWidth = true;
     
     //sets focus and raises keyboard
     //[self.textfield becomeFirstResponder];
@@ -2009,16 +2037,16 @@ void dispatchAfter(double delay, void (^block)(void))
     
     [self configureView];
     
-    UIImage *lifeImage = [UIImage imageNamed:@"life.png"];
+    UIImage *lifeImage = [UIImage imageNamed:@"Life4X.png"];
     self.life1 = [[UIImageView alloc] initWithImage:lifeImage];
     self.life2 = [[UIImageView alloc] initWithImage:lifeImage];
     self.life3 = [[UIImageView alloc] initWithImage:lifeImage];
     [self.view addSubview:self.life1];
     [self.view addSubview:self.life2];
     [self.view addSubview:self.life3];
-    [self.life1 setFrame:CGRectMake(screenSize.width - 26,38,25,25)];
-    [self.life2 setFrame:CGRectMake(screenSize.width - 52,38,25,25)];
-    [self.life3 setFrame:CGRectMake(screenSize.width - 78,38,25,25)];
+    [self.life1 setFrame:CGRectMake(screenSize.width - 26,38,20,20)];
+    [self.life2 setFrame:CGRectMake(screenSize.width - 52,38,20,20)];
+    [self.life3 setFrame:CGRectMake(screenSize.width - 78,38,20,20)];
     [self.view bringSubviewToFront:self.life1];
     [self.view bringSubviewToFront:self.life2];
     [self.view bringSubviewToFront:self.life3];
@@ -2093,9 +2121,9 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.origForm setFrame:CGRectMake(self.origForm.frame.origin.x, f/6, self.view.frame.size.width, fsize.height + 10)];
     //[self.changeTo setFrame:CGRectMake(0, f/3.4, self.view.frame.size.width, fsizeS.height + 10)];
     
-    [self.life1 setFrame:CGRectMake(size.width - 27,6,25,25)];
-    [self.life2 setFrame:CGRectMake(size.width - 53,6,25,25)];
-    [self.life3 setFrame:CGRectMake(size.width - 79,6,25,25)];
+    [self.life1 setFrame:CGRectMake(size.width - 27,6,20,20)];
+    [self.life2 setFrame:CGRectMake(size.width - 53,6,20,20)];
+    [self.life3 setFrame:CGRectMake(size.width - 79,6,20,20)];
     [self.gameOverLabel setFrame:CGRectMake(0, 0, size.width - 6, fsizeS.height)];
     
     [self.changeTo setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, fsizeS.height + 10)];
@@ -2121,9 +2149,8 @@ void dispatchAfter(double delay, void (^block)(void))
     
     [self.continueButton setFrame:CGRectMake(0, size.height - 70, (size.width), 70)];
     
-    
     //new testing
-    int topmargin = 54;
+    int topmargin = 52;
     int stemHeight = 38;
     int keyboardHeight = 206;
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
@@ -2134,7 +2161,13 @@ void dispatchAfter(double delay, void (^block)(void))
     {
         keyboardHeight = 308;
     }
-    int origandtextfieldheight = (self.view.frame.size.height - (topmargin *2) - keyboardHeight - stemHeight) / 2;
+    double heightFactor;
+    if (f > 568)
+        heightFactor = 1.7;
+    else
+        heightFactor = 1.1;
+    
+    int origandtextfieldheight = (self.view.frame.size.height - (topmargin * heightFactor) - keyboardHeight - stemHeight) / 2;
     //[self.changeTo setFrame:CGRectMake(0, f/3.4+34, w, fsizeS.height + 10)];
     [self.origForm setFrame:CGRectMake(self.origForm.frame.origin.x, topmargin, w, origandtextfieldheight)];
     [self.stemLabel setFrame:CGRectMake(self.stemLabel.frame.origin.x, topmargin + origandtextfieldheight, w, stemHeight)];
@@ -2143,7 +2176,8 @@ void dispatchAfter(double delay, void (^block)(void))
     
     
     self.origForm.textAlignment = UIControlContentVerticalAlignmentCenter;
-    self.textfield.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    //fix me need to center text vertically
+    //self.textfield.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     self.changedForm.textAlignment = UIControlContentVerticalAlignmentTop;
     /*
     self.origForm.layer.borderWidth = 1.0;

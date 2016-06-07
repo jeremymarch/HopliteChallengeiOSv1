@@ -65,7 +65,7 @@ enum {
 @property CFTimeInterval startTime;
 @property NSInteger menuItem;
 //@property (nonatomic, retain) Keyboard *keyboard;
-@property (retain, nonatomic) IBOutlet UITextField *textfield;
+@property (retain, nonatomic) IBOutlet UITextView *textfield;
 
 @property (strong, retain) UIImageView *life1;
 @property (strong, retain) UIImageView *life2;
