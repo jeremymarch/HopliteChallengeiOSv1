@@ -336,7 +336,7 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     /* MI */
     if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == INDICATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
         ending = PRESENT_ACTIVE_INDICATIVE_MI;
-    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι")))
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι") || utf8HasSuffix(vf->verb->present, "νυμαι")))
         ending = PERFECT_MIDPASS_IND;
     
     else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == SUBJUNCTIVE  && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA && (!preContactedEndings || word[wordLen - 3] == COMBINING_MACRON))
@@ -3239,7 +3239,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         ucs2[(*len) + 1] = GREEK_SMALL_LETTER_SIGMA;
         (*len) += 2; //parens required here fyi
     }
-    else if (vf->tense == PRESENT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι"))) //mi verbs, present tense
+    else if (vf->tense == PRESENT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι") || utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs, present tense
     {
         if (vf->voice != ACTIVE || vf->number == PLURAL || vf->mood == OPTATIVE || vf->mood == IMPERATIVE || vf->mood == SUBJUNCTIVE)
         {
@@ -3288,7 +3288,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_EPSILON;
             }
         }
-        if (vf->mood == OPTATIVE && !utf8HasSuffix(vf->verb->present, "ῡμι"))
+        if (vf->mood == OPTATIVE && !utf8HasSuffix(vf->verb->present, "ῡμι") && !utf8HasSuffix(vf->verb->present, "νυμαι"))
         {
             //exceptional alternates H&Q page 347
             if (vf->tense == PRESENT && vf->mood == OPTATIVE && vf->voice != ACTIVE && utf8HasSuffix(vf->verb->present, "τίθημι") && (vf->number == PLURAL || vf->person == THIRD))
@@ -3357,7 +3357,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                         ending[1] = GREEK_SMALL_LETTER_OMICRON;
                     }
                 }
-                else if ( utf8HasSuffix(vf->verb->present, "ῡμι"))
+                else if ( utf8HasSuffix(vf->verb->present, "ῡμι") || utf8HasSuffix(vf->verb->present, "νυμαι"))
                 {
                     if (vf->voice == ACTIVE)
                     {
@@ -3380,7 +3380,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             
         }
     }
-    else if (vf->tense == IMPERFECT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι"))) //mi verbs
+    else if (vf->tense == IMPERFECT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι") || utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs
     {
         if ( utf8HasSuffix(vf->verb->present, "δίδωμι") && vf->voice == ACTIVE)
         {
@@ -3983,6 +3983,8 @@ void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, uns
     UCS2 presMi[2] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_IOTA };
     UCS2 presMiDeponent[4] = { GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
     
+    UCS2 presNumiDeponent[5] = { GREEK_SMALL_LETTER_NU, GREEK_SMALL_LETTER_UPSILON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
+    
     UCS2 presDeponent[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
     UCS2 aoristDeponent[4] = { GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
     
@@ -3993,7 +3995,10 @@ void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, uns
 
     UCS2 futureDeponentContracted[5] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_UPSILON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
     
-    if ((tense == PRESENT || tense == IMPERFECT) && hasSuffix(stem, *len, presMiDeponent, 4)) //μαι
+    
+    if ((tense == PRESENT || tense == IMPERFECT) && hasSuffix(stem, *len, presNumiDeponent, 5)) //νυμαι
+        *len -= 3;
+    else if ((tense == PRESENT || tense == IMPERFECT) && hasSuffix(stem, *len, presMiDeponent, 4)) //μαι
         *len -= 3;
     else if ((tense == PRESENT || tense == IMPERFECT) && hasSuffix(stem, *len, presMi, 2)) //μι
         *len -= 2;
@@ -4039,7 +4044,8 @@ void decomposePrefixes(VerbFormC *vf, UCS2 *ucs2, int *len)
     UCS2 kata[] = { GREEK_SMALL_LETTER_KAPPA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA };
     UCS2 meta[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA };
     UCS2 metan[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
-        UCS2 metana[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU, GREEK_SMALL_LETTER_ALPHA };
+    UCS2 metana[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU, GREEK_SMALL_LETTER_ALPHA };
+    UCS2 epan[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
     
     if (hasPrefix(ucs2, *len, apo, 3))
     {
@@ -4133,6 +4139,38 @@ void decomposePrefixes(VerbFormC *vf, UCS2 *ucs2, int *len)
             ucs2[13] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
         }
     }
+    else if (hasPrefix(ucs2, *len, epan, 4))
+    {
+        rightShiftFromOffset(ucs2, 1, len);
+        rightShiftFromOffset(ucs2, 1, len);
+        rightShiftFromOffset(ucs2, 1, len);
+        rightShiftFromOffset(ucs2, 1, len);
+        rightShiftFromOffset(ucs2, 1, len);
+        rightShiftFromOffset(ucs2, 1, len);
+        rightShiftFromOffset(ucs2, 1, len);
+        if (ucs2[11] == GREEK_SMALL_LETTER_IOTA || ucs2[11] == GREEK_SMALL_LETTER_EPSILON)
+        {
+            rightShiftFromOffset(ucs2, 4, len);
+        }
+        ucs2[2] = GREEK_SMALL_LETTER_IOTA;
+        ucs2[3] = SPACE;
+        ucs2[4] = HYPHEN;
+        ucs2[5] = SPACE;
+        ucs2[6] = GREEK_SMALL_LETTER_ALPHA;
+        ucs2[7] = GREEK_SMALL_LETTER_NU;
+        ucs2[8] = GREEK_SMALL_LETTER_ALPHA;
+        ucs2[9] = SPACE;
+        ucs2[10] = HYPHEN;
+        ucs2[11] = SPACE;
+        if (ucs2[12] == GREEK_SMALL_LETTER_IOTA)
+        {
+            ucs2[12] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA;
+        }
+        else if (ucs2[12] == GREEK_SMALL_LETTER_EPSILON)
+        {
+            ucs2[12] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
+        }
+    }
     else if (hasPrefix(ucs2, *len, meta, 4))
     {
         rightShiftFromOffset(ucs2, 4, len);
@@ -4155,6 +4193,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
         UCS2 meta[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA };
         UCS2 mete[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_EPSILON };
         UCS2 metan[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
+        UCS2 epan[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
         
         if (hasPrefix(ucs2, *len, apo, 3))
         {
@@ -4323,6 +4362,57 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
                 ucs2[5] = GREEK_SMALL_LETTER_ALPHA;
             }
         }
+        else if (hasPrefix(ucs2, *len, epan, 4))
+        {
+            if (decompose)
+            {
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                
+                ucs2[2] = GREEK_SMALL_LETTER_IOTA;
+                ucs2[3] = SPACE;
+                ucs2[4] = HYPHEN;
+                ucs2[5] = SPACE;
+                ucs2[6] = GREEK_SMALL_LETTER_ALPHA;
+                ucs2[7] = GREEK_SMALL_LETTER_NU;
+                ucs2[8] = GREEK_SMALL_LETTER_ALPHA;
+                ucs2[9] = SPACE;
+                ucs2[10] = HYPHEN;
+                ucs2[11] = SPACE;
+                
+                if (vf->tense == AORIST && vf->mood == INDICATIVE)
+                {
+                    rightShiftFromOffset(ucs2, 12, len);
+                    rightShiftFromOffset(ucs2, 12, len);
+                    rightShiftFromOffset(ucs2, 12, len);
+                    rightShiftFromOffset(ucs2, 12, len);
+                    ucs2[12] = DECOMPOSED_AUGMENT_CHAR;
+                    ucs2[13] = SPACE;
+                    ucs2[14] = HYPHEN;
+                    ucs2[15] = SPACE;
+                    if (ucs2[16] == GREEK_SMALL_LETTER_IOTA)
+                    {
+                        ucs2[16] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA;
+                    }
+                }
+                else
+                {
+                    if (ucs2[12] == GREEK_SMALL_LETTER_IOTA)
+                    {
+                        ucs2[12] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA;
+                    }
+                }
+            }
+            else
+            {
+                ucs2[4] = GREEK_SMALL_LETTER_ALPHA;
+            }
+        }
         else if (hasPrefix(ucs2, *len, meta, 4))
         {
             if (decompose)
@@ -4464,8 +4554,34 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
         UCS2 kath[] = { GREEK_SMALL_LETTER_KAPPA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_THETA };
         UCS2 meta[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA };
         UCS2 metan[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
-        
-        if (hasPrefix(ucs2, *len, apo, 3))
+        UCS2 epi[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_IOTA };
+        UCS2 epan[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
+
+        if (hasPrefix(ucs2, *len, epi, 3))
+        {
+            if ( decompose)
+            {
+                rightShiftFromOffset(ucs2, 3, len);
+                rightShiftFromOffset(ucs2, 3, len);
+                rightShiftFromOffset(ucs2, 3, len);
+                rightShiftFromOffset(ucs2, 3, len);
+                rightShiftFromOffset(ucs2, 3, len);
+                rightShiftFromOffset(ucs2, 3, len);
+                rightShiftFromOffset(ucs2, 3, len);
+                ucs2[3] = SPACE;
+                ucs2[4] = HYPHEN;
+                ucs2[5] = SPACE;
+                ucs2[6] = DECOMPOSED_AUGMENT_CHAR;
+                ucs2[7] = SPACE;
+                ucs2[8] = HYPHEN;
+                ucs2[9] = SPACE;
+            }
+            else
+            {
+                ucs2[2] = GREEK_SMALL_LETTER_EPSILON;
+            }
+        }
+        else if (hasPrefix(ucs2, *len, apo, 3))
         {
             if ( decompose)
             {
@@ -4682,6 +4798,77 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
                 {
                     rightShiftFromOffset(ucs2, 6, len);
                     ucs2[6] = COMBINING_MACRON;
+                }
+            }
+        }
+        else if (hasPrefix(ucs2, *len, epan, 4))
+        {
+            if (decompose)
+            {
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                rightShiftFromOffset(ucs2, 1, len);
+                
+                ucs2[2] = GREEK_SMALL_LETTER_IOTA;
+                ucs2[3] = SPACE;
+                ucs2[4] = HYPHEN;
+                ucs2[5] = SPACE;
+                ucs2[6] = GREEK_SMALL_LETTER_ALPHA;
+                ucs2[7] = GREEK_SMALL_LETTER_NU;
+                ucs2[8] = GREEK_SMALL_LETTER_ALPHA;
+                ucs2[9] = SPACE;
+                ucs2[10] = HYPHEN;
+                ucs2[11] = SPACE;
+                if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "σταμαι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "σταμαι")))
+                {
+                    rightShiftFromOffset(ucs2, 12, len);
+                    rightShiftFromOffset(ucs2, 12, len);
+                    rightShiftFromOffset(ucs2, 12, len);
+                    rightShiftFromOffset(ucs2, 12, len);
+                    ucs2[12] = DECOMPOSED_AUGMENT_CHAR;
+                    ucs2[13] = SPACE;
+                    ucs2[14] = HYPHEN;
+                    ucs2[15] = SPACE;
+                    
+                    if (ucs2[16] == GREEK_SMALL_LETTER_IOTA)
+                    {
+                        ucs2[16] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA;
+                    }
+                    else if (ucs2[16] == GREEK_SMALL_LETTER_EPSILON)
+                    {
+                        ucs2[16] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
+                    }
+                }
+                else
+                {
+                    if (ucs2[12] == GREEK_SMALL_LETTER_IOTA)
+                    {
+                        ucs2[12] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA;
+                    }
+                    else if (ucs2[12] == GREEK_SMALL_LETTER_EPSILON)
+                    {
+                        ucs2[12] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
+                    }
+                }
+            }
+            else
+            {
+                //for histhmi pluperfect singular.  H&Q PAGE 378.
+                if (vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "σταμαι") )
+                {
+                    rightShiftFromOffset(ucs2, 4, len);
+                    ucs2[4] = GREEK_SMALL_LETTER_EPSILON;
+                    ucs2[5] = GREEK_SMALL_LETTER_IOTA;
+                }
+                else if (ucs2[4] == GREEK_SMALL_LETTER_IOTA)
+                {
+                    rightShiftFromOffset(ucs2, 5, len);
+                    ucs2[5] = COMBINING_MACRON;
                 }
             }
         }
