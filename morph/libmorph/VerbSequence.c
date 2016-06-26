@@ -42,7 +42,7 @@ bool firstVerbSeq = true;
 static int verbSeq = 99999; //start more than repsPerVerb so we reset
 int pointsPerForm = 1; //this is set in getRandomVerbFromUnit
 int bonusPointsMultiple = 2;
-
+int highestUnit = 1;
 
 VerbFormC recentVFArray[MAX_RECENT_VF];
 int numRecentVFArray = 0;
@@ -309,6 +309,7 @@ void resetVerbSeq()
     firstVerbSeq = true;
 }
 
+bool once = true;
 long lastInitialDegreesToChange = 0;
 int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
 {
@@ -466,8 +467,9 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
         changeFormByDegrees(vf2, degreesToChange);
     } while (!getForm(vf2, buffer, bufferLen, true, false) || !isValidFormForUnit(vf2, highestUnit) || !strncmp(buffer, "—", 1) || inRecentVFArray(vf2));
     
-    
     /*
+    if (once)
+    {
      //**************for testing to force form****************************
      vf2->person = FIRST;
      vf2->number = PLURAL;
@@ -476,8 +478,9 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
      vf2->mood = OPTATIVE;
      vf2->verb = vf1->verb;
      //**************for testing to force form****************************
+        once = false;
+    }
     */
-    
     lastVF.person = vf2->person;
     lastVF.number = vf2->number;
     lastVF.tense = vf2->tense;
@@ -850,10 +853,11 @@ Verb *getRandomVerb(int *units, int numUnits)
     return &verbs[ verbsToChooseFrom[verb] ];
 }
 
+
 Verb *getRandomVerbFromUnit(int *units, int numUnits)
 {
     int u;
-    int highestUnit = 1;
+    highestUnit = 1;
     for (u = 0; u < numUnits; u++)
     {
         if (units[u] > highestUnit)
@@ -914,7 +918,7 @@ bool dbInit(const char *path)
     char dbpath[dbpathLen];
     struct stat st;
     
-    snprintf(dbpath, dbpathLen - 1, "%sdb.sqlite", path);
+    snprintf(dbpath, dbpathLen - 1, "%s", path);
     
     stat(dbpath, &st);
     off_t size = st.st_size;
@@ -936,7 +940,9 @@ bool dbInit(const char *path)
     char *sql = "CREATE TABLE games (" \
     "gameid INTEGER PRIMARY KEY NOT NULL, " \
     "timest INT NOT NULL, " \
-    "score INT NOT NULL " \
+    "score INT NOT NULL, " \
+    "topUnit INT NOT NULL, " \
+    "lives INT NOT NULL " \
     "); " \
     
     "CREATE TABLE verbseq (" \
@@ -955,7 +961,7 @@ bool dbInit(const char *path)
     "FOREIGN KEY (gameid) REFERENCES games(gameid) " \
     "); " \
     
-    "INSERT INTO games VALUES (1,0,-1);"; //This is the Practice Game
+    "INSERT INTO games VALUES (1,0,-1,0,0);"; //This is the Practice Game
     
     rc = sqlite3_exec(db, sql, NULL, NULL, &zErrMsg);
     if( rc != SQLITE_OK )
@@ -1036,7 +1042,8 @@ bool setHeadAnswer(bool correct, char *givenAnswer, char *elapsedTime)
 void addNewGameToDB()
 {
     char *zErrMsg = 0;
-    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO games (timest,score) VALUES (%li,0);", time(NULL));
+    
+    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO games (timest,score,topUnit,lives) VALUES (%li,0, %d,0);", time(NULL), highestUnit);
     int rc = sqlite3_exec(db, sqlitePrepquery, 0, 0, &zErrMsg);
     if( rc != SQLITE_OK )
     {

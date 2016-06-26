@@ -11,6 +11,7 @@
 #import "VerbDetailViewController.h"
 #import "ResultsViewController.h"
 #import "TutorialPageViewController.h"
+#import "VerbsTableViewController.h"
 
 #define UIColorFromRGB(rgbValue) \
 [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
@@ -140,6 +141,20 @@ alpha:1.0]
     
 }
 
+-(void)segToVerbs
+{
+    /*
+    NSLog(@"open verbs table1");
+    VerbsTableViewController *vdvc = [self.storyboard instantiateViewControllerWithIdentifier:@"vtvc"];
+    [self.navigationController pushViewController:vdvc animated:NO];
+    
+    //UINavigationController *nvc = (UINavigationController *)self.navigationController;
+    //[[nvc.childViewControllers objectAtIndex:0] performSegueWithIdentifier:@"SegueToVerbsTable"sender:self];
+    NSLog(@"open verbs table2");
+    */
+    [self performSegueWithIdentifier:@"SegueToVerbsTable"sender:self];
+}
+
 - (void) showVerbs:(id)sender
 {
     //UIButton *b = (UIButton*) sender;
@@ -211,10 +226,10 @@ alpha:1.0]
     self.aboutButton.layer.cornerRadius = 8;
     [self.aboutButton addTarget:self action:@selector(showAbout:)
             forControlEvents:UIControlEventTouchUpInside];
-    /*
-    [self.MCButton addTarget:self action:@selector(showVerbs:)
+    
+    [self.tempFormsButton addTarget:self action:@selector(showVerbs:)
             forControlEvents:UIControlEventTouchUpInside];
-    */
+    
     if (0)
     {
         double corner = 15.0;
@@ -430,6 +445,7 @@ alpha:1.0]
     
     // Do any additional setup after loading the view.
 }
+
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {

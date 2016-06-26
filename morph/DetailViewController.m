@@ -820,6 +820,20 @@ void printUCS22(UCS2 *u, int len)
     self.gameOverLabel.hidden = YES;
 }
 
+- (BOOL)isAcceptableTextLength:(NSUInteger)length {
+    return length <= 50;
+}
+//http://stackoverflow.com/questions/9144593/how-do-i-limit-characters-in-uitextview
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)string {
+    return [self isAcceptableTextLength:self.textfield.text.length + string.length - range.length];
+}
+
+-(IBAction)checkIfCorrectLength:(id)sender{
+    if (![self isAcceptableTextLength:self.textfield.text.length]) {
+        // do something to make text shorter
+    }
+}
+
 -(void) loadNext3
 {
     NSLog(@"next3");
@@ -829,9 +843,9 @@ void printUCS22(UCS2 *u, int len)
     self.MFLabel.hidden = YES;
     self.front = true;
     bool newGame = (self->verbSeq < 0) ? true : false;
-    
+    NSLog(@"next3a ");
     int type = nextVerbSeq(&self->verbSeq, &self->vf1, &self->vf2, &self->vsOptions);
-    
+    NSLog(@"next3b");
     if (type == VERB_SEQ_PP)
     {
         NSLog(@"principal parts!");
@@ -841,11 +855,13 @@ void printUCS22(UCS2 *u, int len)
     }
     else if (type == VERB_SEQ_CHANGE || type == VERB_SEQ_CHANGE_NEW)
     {
+        NSLog(@"next3c");
         if (newGame)
             [self loadMorphTraining];
         else
             [self cleanUp:(type == VERB_SEQ_CHANGE_NEW)];
     }
+    NSLog(@"next3d");
 }
 
 -(void)cleanUp: (Boolean)reset /* onComplete:(void (^)(void))onComplete */
@@ -1744,6 +1760,7 @@ void dispatchAfter(double delay, void (^block)(void))
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.textfield.delegate = self;
     
     /*
      NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -2173,6 +2190,13 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.stemLabel setFrame:CGRectMake(self.stemLabel.frame.origin.x, topmargin + origandtextfieldheight, w, stemHeight)];
     [self.textfield setFrame:CGRectMake(0, topmargin + origandtextfieldheight + stemHeight, w, origandtextfieldheight)];
     [self.changedForm setFrame:CGRectMake(0, topmargin + (origandtextfieldheight * 2) + stemHeight, w, origandtextfieldheight)];
+    
+    
+    //make text in uitextview vertically centered
+    CGFloat topCorrect = ([self.textfield bounds].size.height - [self.textfield contentSize].height * [self.textfield zoomScale])/2.0;
+    topCorrect = ( topCorrect < 0.0 ? 0.0 : topCorrect );
+    //NSLog(@"content: %f, %f, %f", topCorrect, [self.textfield bounds].size.height, [tv contentSize].height);
+    [self.textfield setContentInset:UIEdgeInsetsMake(topCorrect,0,0,0)];
     
     
     self.origForm.textAlignment = UIControlContentVerticalAlignmentCenter;

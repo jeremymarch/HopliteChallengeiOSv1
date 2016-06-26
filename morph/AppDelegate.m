@@ -65,7 +65,7 @@
         self.keyboard = [[Keyboard alloc] initWithFrame:CGRectMake(0.0, 0.0,  1024.0, 308.0) lang:1];  //was 1024 x 266
     }
     
-    NSString *dataFileName = @"hcdata";
+    NSString *dataFileName = @"hcdatadb.sqlite";
     NSString *dataFileWithPath = [self writeablePathForFile:dataFileName];
     /*
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:dataFileWithPath];

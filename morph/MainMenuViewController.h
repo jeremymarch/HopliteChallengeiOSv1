@@ -25,6 +25,9 @@
 @property (weak, nonatomic) IBOutlet UIButton *MCButton;
 @property (weak, nonatomic) IBOutlet UIButton *menuButton;
 @property (weak, nonatomic) IBOutlet UIButton *aboutButton;
+
+@property (weak, nonatomic) IBOutlet UIButton *tempFormsButton;
+
 @property NSInteger buttonPressed;
 @property BOOL popupShown;
 @property (nonatomic, retain) IBOutlet PopUp *popup;

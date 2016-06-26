@@ -11,6 +11,7 @@
 #import "keyboard.h"
 #import "libmorph.h"
 #import "VerbSequence.h"
+#import "HCTextView.h"
 
 enum {
     HOPLITE_CHALLENGE = 0,
@@ -27,7 +28,7 @@ enum {
     CARD_ACCENTS
 };
 
-@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, vc2delegate, UIGestureRecognizerDelegate>
+@interface DetailViewController : UIViewController <UISplitViewControllerDelegate, vc2delegate, UIGestureRecognizerDelegate, UITextViewDelegate>
 {
     VerbSeqOptions vsOptions;
     int verbSeq;
@@ -65,7 +66,7 @@ enum {
 @property CFTimeInterval startTime;
 @property NSInteger menuItem;
 //@property (nonatomic, retain) Keyboard *keyboard;
-@property (retain, nonatomic) IBOutlet UITextView *textfield;
+@property (retain, nonatomic) IBOutlet HCTextView *textfield;
 
 @property (strong, retain) UIImageView *life1;
 @property (strong, retain) UIImageView *life2;
