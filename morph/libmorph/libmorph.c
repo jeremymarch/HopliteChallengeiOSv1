@@ -4076,8 +4076,18 @@ void decomposePrefixes(VerbFormC *vf, UCS2 *ucs2, int *len)
     UCS2 metan[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
     UCS2 metana[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU, GREEK_SMALL_LETTER_ALPHA };
     UCS2 epan[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
+    UCS2 epi[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_IOTA };
     
     if (hasPrefix(ucs2, *len, apo, 3))
+    {
+        rightShiftFromOffset(ucs2, 3, len);
+        rightShiftFromOffset(ucs2, 3, len);
+        rightShiftFromOffset(ucs2, 3, len);
+        ucs2[3] = SPACE;
+        ucs2[4] = HYPHEN;
+        ucs2[5] = SPACE;
+    }
+    else if (hasPrefix(ucs2, *len, epi, 3))
     {
         rightShiftFromOffset(ucs2, 3, len);
         rightShiftFromOffset(ucs2, 3, len);
