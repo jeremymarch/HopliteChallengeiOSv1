@@ -10,7 +10,7 @@
 #import "VerbDetailViewController.h"
 #import "GreekForms.h"
 
-#define NUM_LEVELS 14
+#define NUM_LEVELS 15
 
 @interface VerbsTableViewController ()
 
