@@ -4136,7 +4136,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         {
             if (vf->person == THIRD && vf->number == PLURAL)
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_ALPHA;
-            else if (vf->person == SECOND && vf->number == SINGULAR)
+            else if (vf->person == SECOND && vf->number == SINGULAR && !utf8HasSuffix(vf->verb->present, "βαίνω"))
                 ending[0] = GREEK_SMALL_LETTER_TAU; //disimilation of aspirates here, right? fix me?
         }
     }
@@ -5183,7 +5183,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
             leftShift(ucs2, len);
             ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
         }
-        if (ucs2[0] == GREEK_SMALL_LETTER_EPSILON && ucs2[1] == GREEK_SMALL_LETTER_IOTA_WITH_PSILI && utf8HasSuffix(vf->verb->aorist, "εἶδον")) //ei)
+        else if (ucs2[0] == GREEK_SMALL_LETTER_EPSILON && ucs2[1] == GREEK_SMALL_LETTER_IOTA_WITH_PSILI && utf8HasSuffix(vf->verb->aorist, "εἶδον")) //ei)
         {
             leftShift(ucs2, len);
         }
