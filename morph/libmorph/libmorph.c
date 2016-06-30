@@ -983,7 +983,12 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     {
         return 0;
     }
-
+    else if (utf8HasSuffix(vf->verb->present, "φημί") && vf->voice != ACTIVE)
+    {
+        return 0;
+    }
+    
+    
     /*
     if (vf->mood == IMPERATIVE && vf->person == FIRST)
     {
@@ -1096,6 +1101,20 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         
         //convert any tonos into oxia, just in case.
         tonosToOxia(ucs2Endings, ucs2EndingsLen);
+        
+        //phhmi/
+        if (vf->person == SECOND && vf->number == SINGULAR && vf->tense == IMPERFECT && vf->voice == ACTIVE && vf->mood == INDICATIVE && utf8HasSuffix(vf->verb->present, "φημί"))
+        {
+            ucs2Endings[0] = GREEK_SMALL_LETTER_ETA;
+            ucs2Endings[1] = GREEK_SMALL_LETTER_SIGMA;
+            ucs2Endings[2] = GREEK_SMALL_LETTER_THETA;
+            ucs2Endings[3] = GREEK_SMALL_LETTER_ALPHA;
+            ucs2Endings[4] = COMMA;
+            ucs2Endings[5] = SPACE;
+            ucs2Endings[6] = GREEK_SMALL_LETTER_ETA;
+            ucs2Endings[7] = GREEK_SMALL_LETTER_FINAL_SIGMA;
+            ucs2EndingsLen = 8;
+        }
         
         int endingStarts[5] = { 0,0,0,0,0 };  //we leave space for up to five alternate endings
         int numEndings = 1;
@@ -1216,6 +1235,11 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             {
                 ucs2StemPlusEndingBuffer[2] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
                 ucs2StemPlusEndingBuffer[5] = GREEK_SMALL_LETTER_UPSILON;
+            }
+            
+            if (vf->tense == PRESENT && vf->mood == INDICATIVE && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "φημί"))
+            {
+                accentWord(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, ULTIMA, ACUTE);
             }
             
             //Step 10: add accent
@@ -3550,13 +3574,13 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         ucs2[(*len) + 1] = GREEK_SMALL_LETTER_SIGMA;
         (*len) += 2; //parens required here fyi
     }
-    else if (vf->tense == PRESENT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι") || utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs, present tense
+    else if (vf->tense == PRESENT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "φημί") || utf8HasSuffix(vf->verb->present, "σταμαι") || utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs, present tense
     {
         if (vf->voice != ACTIVE || vf->number == PLURAL || vf->mood == OPTATIVE || vf->mood == IMPERATIVE || vf->mood == SUBJUNCTIVE)
         {
             if (ucs2[*len - 1] == GREEK_SMALL_LETTER_OMEGA)
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_OMICRON;
-            else if (ucs2[*len - 1] == GREEK_SMALL_LETTER_ETA && ucs2[*len - 2] == GREEK_SMALL_LETTER_TAU)
+            else if (ucs2[*len - 1] == GREEK_SMALL_LETTER_ETA && (ucs2[*len - 2] == GREEK_SMALL_LETTER_TAU || ucs2[*len - 2] == GREEK_SMALL_LETTER_PHI))
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_ALPHA;
             else if (ucs2[*len - 1] == GREEK_SMALL_LETTER_ETA)
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_EPSILON;
@@ -3571,6 +3595,19 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 --(*len);
                 leftShift(ending, &elen);
                 ending[0] = GREEK_SMALL_LETTER_ALPHA_WITH_PERISPOMENI;
+            }
+        }
+        else if (vf->person == THIRD && vf->number == PLURAL && vf->mood == INDICATIVE && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "φημί"))
+        {
+            if (!decompose)
+            {
+                --(*len);
+                //leftShift(ending, &elen);
+                
+                //rightShiftFromOffset(ending, 1, &elen);
+                //ending[0] = GREEK_SMALL_LETTER_ALPHA;
+                //ending[1] = COMBINING_MACRON;
+                
             }
         }
         if (vf->mood == SUBJUNCTIVE)
@@ -3594,7 +3631,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                         ending[0] = GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI;
                 }
             }
-            if (( utf8HasSuffix(vf->verb->present, "στημι") || utf8HasSuffix(vf->verb->present, "σταμαι")) && decompose)
+            if (( utf8HasSuffix(vf->verb->present, "στημι") || utf8HasSuffix(vf->verb->present, "σταμαι") || utf8HasSuffix(vf->verb->present, "φημί")) && decompose)
             {
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_EPSILON;
             }
@@ -3683,15 +3720,20 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                         ending[1] = GREEK_SMALL_LETTER_OMICRON;
                     }
                 }
+                else if (utf8HasSuffix(vf->verb->present, "φημί"))
+                {
+                    ending[0] = GREEK_SMALL_LETTER_THETA;
+                    ending[1] = GREEK_SMALL_LETTER_IOTA;
+                    elen = 2;
+                }
             }
             else
             {
                 leftShift(ending, &elen);
             }
-            
         }
     }
-    else if (vf->tense == IMPERFECT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι") || utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs
+    else if (vf->tense == IMPERFECT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι") || utf8HasSuffix(vf->verb->present, "φημί") || utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs
     {
         if ( utf8HasSuffix(vf->verb->present, "δίδωμι") && vf->voice == ACTIVE)
         {
@@ -3725,6 +3767,25 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             }
         }
         else if ( utf8HasSuffix(vf->verb->present, "στημι") && vf->voice == ACTIVE)
+        {
+            //shorten stem vowel
+            if (vf->number == PLURAL)
+                ucs2[*len - 1] = GREEK_SMALL_LETTER_ALPHA;
+            
+            leftShift(ending, &elen);
+            if (vf->person == THIRD && vf->number == SINGULAR)
+            {
+                elen -= 3;
+            }
+            if (vf->person == THIRD && vf->number == PLURAL)
+            {
+                ending[0] = GREEK_SMALL_LETTER_SIGMA;
+                ending[1] = GREEK_SMALL_LETTER_ALPHA;
+                ending[2] = GREEK_SMALL_LETTER_NU;
+                elen += 2;
+            }
+        }
+        else if ( utf8HasSuffix(vf->verb->present, "φημί") && vf->voice == ACTIVE)
         {
             //shorten stem vowel
             if (vf->number == PLURAL)
