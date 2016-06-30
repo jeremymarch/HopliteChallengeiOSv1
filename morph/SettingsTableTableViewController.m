@@ -33,7 +33,7 @@
         //[self.buttonStates insertObject:[NSNumber numberWithBool:NO] atIndex:i];
     }
     
-    self.optionLabels = @[@"Hoplite Challenge Timeout", @"Disable Sound", @"Verbs"];
+    self.optionLabels = @[@"Disable Sound"];
     
     
     self.viewHeader = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 100)];
@@ -154,7 +154,7 @@
     
     if (self->useSwitch)
     {
-        if (self->unitsOrOptions == OPTIONS && indexPath.row == 0)
+        /*if (self->unitsOrOptions == OPTIONS && indexPath.row == 0)
         {
             self.HCTimeField = [[UITextField alloc] initWithFrame:CGRectMake(-10, 0, 50, 40)];
             self.HCTimeField.font = [UIFont fontWithName:@"Helvetica" size:16.0];
@@ -193,7 +193,7 @@
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         else
-        {
+        { */
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             UISwitch *switchView = [[UISwitch alloc] initWithFrame:CGRectZero];
             cell.accessoryView = switchView;
@@ -222,7 +222,7 @@
             //else
             [switchView setOn:b animated:NO];
             [switchView addTarget:self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
-        }
+        //}
     }
     else
     {

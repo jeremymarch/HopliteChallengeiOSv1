@@ -34,9 +34,6 @@
                             <outlet property="delegate" destination="Gj5-Ey-Sfy" id="mKp-gw-dyB"/>
                         </connections>
                     </tableView>
-                    <connections>
-                        <segue destination="RyW-Db-Afe" kind="push" identifier="SegueToVerbsTable" id="js6-r9-a78"/>
-                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SM7-iR-AMZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -113,6 +110,11 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="About"/>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="TKA-64-eLH">
+                                <rect key="frame" x="331" y="628" width="79" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Verb Forms"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -130,11 +132,13 @@
                         <outlet property="gamesButton" destination="Fs1-1h-cex" id="nOo-6F-RpI"/>
                         <outlet property="menuButton" destination="C9J-8Q-NQ7" id="d51-w1-jhI"/>
                         <outlet property="resultsButton" destination="Ylf-LZ-heN" id="WQJ-zV-xl8"/>
+                        <outlet property="tempFormsButton" destination="TKA-64-eLH" id="VAw-nQ-qNa"/>
                         <segue destination="WFZ-F6-Key" kind="push" identifier="showDetail" animates="NO" id="esu-lW-N4F"/>
                         <segue destination="8Jn-TB-CAn" kind="push" identifier="showGames" id="bd4-17-IUQ"/>
                         <segue destination="n0a-Rs-FJQ" kind="push" identifier="showResults" id="ndU-lc-p6t"/>
                         <segue destination="qVi-e7-gtl" kind="modal" identifier="showTutorialSegue" id="NLy-mO-rBb"/>
                         <segue destination="Gj5-Ey-Sfy" kind="modal" identifier="showSettingsTableSegue" id="RQt-R2-3sJ"/>
+                        <segue destination="RyW-Db-Afe" kind="push" identifier="SegueToVerbsTable" id="Aj7-Hc-YqJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sP5-51-8gt" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -384,7 +388,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="VerbTableCell" id="d4g-0l-2RZ">
-                                <rect key="frame" x="0.0" y="22" width="768" height="44"/>
+                                <rect key="frame" x="0.0" y="86" width="768" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="d4g-0l-2RZ" id="PiK-iX-ptr">
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>

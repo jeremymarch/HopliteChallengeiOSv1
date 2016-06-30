@@ -9,12 +9,13 @@
 #import <UIKit/UIKit.h>
 
 enum {
-    HC_TIMEOUT = 0,
-    DISABLE_SOUND = 1,
+    
+    DISABLE_SOUND = 0,
+    HC_TIMEOUT = 1,
     VERBS_ROW = 2
 };
 
-#define NUM_LEVELS 13
+#define NUM_LEVELS 16
 
 enum {
     UNITS = 0,

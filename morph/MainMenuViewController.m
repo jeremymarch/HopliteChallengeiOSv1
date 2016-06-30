@@ -40,11 +40,23 @@ alpha:1.0]
         
         double sw = size.width;
         double sh = size.height;
+
+        /*
+         [self.HCButton setFrame:CGRectMake(10, sh - 360, sw - 20, 80)];
+         [self.gamesButton setFrame:CGRectMake(10, sh - 270, sw - 20, 80)];
+         [self.HPButton setFrame:CGRectMake(10, sh - 180, sw - 20, 80)];
+         [self.resultsButton setFrame:CGRectMake(10, sh - 90, sw - 20, 80)];
+         
+         [self.tempFormsButton setFrame:CGRectMake(10, sh - 90, sw - 20, 80)];
+         */
         
-        [self.HCButton setFrame:CGRectMake(10, sh - 360, sw - 20, 80)];
-        [self.gamesButton setFrame:CGRectMake(10, sh - 270, sw - 20, 80)];
-        [self.HPButton setFrame:CGRectMake(10, sh - 180, sw - 20, 80)];
-        [self.resultsButton setFrame:CGRectMake(10, sh - 90, sw - 20, 80)];
+        [self.HCButton setFrame:CGRectMake(10, sh - 400, sw - 20, 70)];
+        [self.gamesButton setFrame:CGRectMake(10, sh - 320, sw - 20, 70)];
+        [self.HPButton setFrame:CGRectMake(10, sh - 240, sw - 20, 70)];
+        [self.resultsButton setFrame:CGRectMake(10, sh - 160, sw - 20, 70)];
+        [self.tempFormsButton setFrame:CGRectMake(10, sh - 80, sw - 20, 70)];
+        
+        
         
         NSLog(@"Rotate menu: %f", size.width);
         
@@ -65,13 +77,14 @@ alpha:1.0]
 }
 
 - (void) showAbout:(id)sender
-{
+{/*
     NSLog(@"showabout1");
     //TutorialPageViewController *dvc = [self.storyboard instantiateViewControllerWithIdentifier:@"tutorialvc"];
     [self performSegueWithIdentifier:@"showTutorialSegue" sender:self];
 
     //[self.navigationController pushViewController:dvc animated:YES];
     NSLog(@"showabout2");
+  */
 }
 
 - (void) showSettings:(id)sender
@@ -81,8 +94,6 @@ alpha:1.0]
     
     //[self.navigationController pushViewController:dvc animated:YES];
 }
-
-
 
 - (void) showGame:(id)sender
 {
@@ -226,9 +237,12 @@ alpha:1.0]
     self.aboutButton.layer.cornerRadius = 8;
     [self.aboutButton addTarget:self action:@selector(showAbout:)
             forControlEvents:UIControlEventTouchUpInside];
-    
+    self.aboutButton.hidden = YES;
     [self.tempFormsButton addTarget:self action:@selector(showVerbs:)
             forControlEvents:UIControlEventTouchUpInside];
+    
+    self.tempFormsButton.layer.borderColor = [UIColor blackColor].CGColor;
+    self.tempFormsButton.layer.borderWidth = 2.0;
     
     if (0)
     {
@@ -363,10 +377,11 @@ alpha:1.0]
         double v2 = sh * 0.75;
         double bh = sh / 4;
         
-        [self.HCButton setFrame:CGRectMake(10, sh - 360, sw - 20, 80)];
-        [self.gamesButton setFrame:CGRectMake(10, sh - 270, sw - 20, 80)];
-        [self.HPButton setFrame:CGRectMake(10, sh - 180, sw - 20, 80)];
-        [self.resultsButton setFrame:CGRectMake(10, sh - 90, sw - 20, 80)];
+        [self.HCButton setFrame:CGRectMake(10, sh - 400, sw - 20, 70)];
+        [self.gamesButton setFrame:CGRectMake(10, sh - 320, sw - 20, 70)];
+        [self.HPButton setFrame:CGRectMake(10, sh - 240, sw - 20, 70)];
+        [self.resultsButton setFrame:CGRectMake(10, sh - 160, sw - 20, 70)];
+        [self.tempFormsButton setFrame:CGRectMake(10, sh - 80, sw - 20, 70)];
         
         self.SPButton.hidden = YES;
         self.MCButton.hidden = YES;

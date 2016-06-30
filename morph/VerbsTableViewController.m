@@ -18,6 +18,12 @@
 
 @implementation VerbsTableViewController
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
