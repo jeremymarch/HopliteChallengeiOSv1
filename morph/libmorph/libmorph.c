@@ -336,7 +336,7 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     /* MI */
     if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == INDICATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
         ending = PRESENT_ACTIVE_INDICATIVE_MI;
-    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι") || utf8HasSuffix(vf->verb->present, "νυμαι")))
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "αμαι") || utf8HasSuffix(vf->verb->present, "νυμαι")))
         ending = PERFECT_MIDPASS_IND;
     
     else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == SUBJUNCTIVE  && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA && (!preContactedEndings || word[wordLen - 3] == COMBINING_MACRON))
@@ -347,7 +347,7 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == SUBJUNCTIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA && (!preContactedEndings || word[wordLen - 3] == COMBINING_MACRON))
         ending = PRESENT_MIDPASS_SUBJ;
-    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == SUBJUNCTIVE && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι")) && preContactedEndings)
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == SUBJUNCTIVE && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "αμαι")) && preContactedEndings)
         ending = PRESENT_MIDPASS_SUBJ_E_CONTRACTED;
     
     
@@ -357,7 +357,7 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == OPTATIVE && utf8HasSuffix(vf->verb->present, "τίθημι"))
         ending = PRESENT_MIDPASS_OPT_TITHHMI; //Exception: H&Q page 347
     
-    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == OPTATIVE && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι")))
+    else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == OPTATIVE && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "αμαι")))
         ending = PRESENT_MIDPASS_OPT;
     
     /* isthmi root aorist */
@@ -414,14 +414,20 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     /* end MI verbs */
     
     /* CONTRACTED FUTURES */
-    else if (vf->tense == FUTURE && vf->voice == ACTIVE && contractedFuture && preContactedEndings)
+    else if (vf->tense == FUTURE && vf->voice == ACTIVE && contractedFuture && preContactedEndings && (vf->verb->verbclass & CONTRACTED_FUTURE_ALPHA) != CONTRACTED_FUTURE_ALPHA)
         ending = PRESENT_ACTIVE_INDIC_E_CONTRACTED;
     else if (vf->tense == FUTURE && vf->voice == ACTIVE && contractedFuture && !preContactedEndings)
         ending = PRESENT_ACTIVE_IND;
-    else if (vf->tense == FUTURE && vf->voice == MIDDLE && contractedFuture && preContactedEndings)
+    else if (vf->tense == FUTURE && vf->voice == MIDDLE && contractedFuture && preContactedEndings && (vf->verb->verbclass & CONTRACTED_FUTURE_ALPHA) != CONTRACTED_FUTURE_ALPHA)
         ending = PRESENT_MIDPASS_INDIC_E_CONTRACTED;
     else if (vf->tense == FUTURE && vf->voice == MIDDLE && contractedFuture && !preContactedEndings)
         ending = PRESENT_MIDPASS_IND;
+    /* ALPHA CONTRACTED */
+    else if (vf->tense == FUTURE && vf->voice == ACTIVE && contractedFuture && preContactedEndings && (vf->verb->verbclass & CONTRACTED_FUTURE_ALPHA) == CONTRACTED_FUTURE_ALPHA)
+        ending = PRESENT_ACTIVE_INDIC_A_CONTRACTED;
+    else if (vf->tense == FUTURE && vf->voice == MIDDLE && contractedFuture && preContactedEndings && (vf->verb->verbclass & CONTRACTED_FUTURE_ALPHA) == CONTRACTED_FUTURE_ALPHA)
+        ending = PRESENT_MIDPASS_INDIC_A_CONTRACTED;
+
     /* CONTRACTED PRESENT AND IMPERFECT */
     else if (vf->tense == IMPERFECT && vf->voice == ACTIVE  && (word[wordLen - 2] == GREEK_SMALL_LETTER_ALPHA || word[wordLen - 2] == GREEK_SMALL_LETTER_EPSILON|| word[wordLen - 2] == GREEK_SMALL_LETTER_OMICRON) && word[wordLen - 1] == GREEK_SMALL_LETTER_OMEGA && !preContactedEndings)
         ending = IMPERFECT_ACTIVE_CONTRACTED_DECOMPOSED;
@@ -3058,7 +3064,10 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
 {
     if (decompose && contractedFuture)
     {
-        ucs2[*len] = GREEK_SMALL_LETTER_EPSILON;
+        if ((vf->verb->verbclass & CONTRACTED_FUTURE_ALPHA) == CONTRACTED_FUTURE_ALPHA)
+            ucs2[*len] = GREEK_SMALL_LETTER_ALPHA;
+        else
+            ucs2[*len] = GREEK_SMALL_LETTER_EPSILON;
         ++(*len);
     }
     else if (!decompose && (vf->tense == PRESENT || vf->tense == IMPERFECT) && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "άομαι")))
@@ -3574,7 +3583,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         ucs2[(*len) + 1] = GREEK_SMALL_LETTER_SIGMA;
         (*len) += 2; //parens required here fyi
     }
-    else if (vf->tense == PRESENT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "φημί") || utf8HasSuffix(vf->verb->present, "σταμαι") || utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs, present tense
+    else if (vf->tense == PRESENT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "φημί") || utf8HasSuffix(vf->verb->present, "αμαι") || utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs, present tense
     {
         if (vf->voice != ACTIVE || vf->number == PLURAL || vf->mood == OPTATIVE || vf->mood == IMPERATIVE || vf->mood == SUBJUNCTIVE)
         {
@@ -3631,7 +3640,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                         ending[0] = GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI;
                 }
             }
-            if (( utf8HasSuffix(vf->verb->present, "στημι") || utf8HasSuffix(vf->verb->present, "σταμαι") || utf8HasSuffix(vf->verb->present, "φημί")) && decompose)
+            if (( utf8HasSuffix(vf->verb->present, "στημι") || utf8HasSuffix(vf->verb->present, "αμαι") || utf8HasSuffix(vf->verb->present, "φημί")) && decompose)
             {
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_EPSILON;
             }
@@ -3674,7 +3683,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                         ending[1] = GREEK_SMALL_LETTER_OMICRON;
                     }
                 }
-                else if ( ( utf8HasSuffix(vf->verb->present, "στημι") || utf8HasSuffix(vf->verb->present, "σταμαι")))
+                else if ( ( utf8HasSuffix(vf->verb->present, "στημι") || utf8HasSuffix(vf->verb->present, "αμαι")))
                 {
                     if (vf->voice == ACTIVE)
                     {
@@ -3733,7 +3742,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             }
         }
     }
-    else if (vf->tense == IMPERFECT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "σταμαι") || utf8HasSuffix(vf->verb->present, "φημί") || utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs
+    else if (vf->tense == IMPERFECT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "αμαι") || utf8HasSuffix(vf->verb->present, "φημί") || utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs
     {
         if ( utf8HasSuffix(vf->verb->present, "δίδωμι") && vf->voice == ACTIVE)
         {
@@ -3880,9 +3889,19 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             leftShift(ending, &elen);
             if (vf->person == SECOND && vf->number == SINGULAR)
             {
-                ending[0] = GREEK_SMALL_LETTER_SIGMA;
-                ending[1] = GREEK_SMALL_LETTER_OMICRON;
-                elen = 2;
+                if (utf8HasSuffix(vf->verb->present, "δύναμαι"))
+                {
+                    //h&q page 503
+                    --(*len);
+                    ending[0] = GREEK_SMALL_LETTER_OMEGA;
+                    elen = 1;
+                }
+                else
+                {
+                    ending[0] = GREEK_SMALL_LETTER_SIGMA;
+                    ending[1] = GREEK_SMALL_LETTER_OMICRON;
+                    elen = 2;
+                }
             }
         }
     }
@@ -5207,6 +5226,15 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
             else if (presentStemInitial == GREEK_SMALL_LETTER_PHI)//for phero
                 ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_PSILI;
         }
+        else if (ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_DASIA )
+        {
+            if (presentStemInitial == GREEK_SMALL_LETTER_ALPHA_WITH_DASIA)
+                ucs2[0] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA;
+            else if (presentStemInitial == GREEK_SMALL_LETTER_EPSILON_WITH_DASIA)
+                ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
+            else if (presentStemInitial == GREEK_SMALL_LETTER_PHI)//for phero
+                ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
+        }
         else if (ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_DASIA_AND_YPOGEGRAMMENI) //hi(
         {
             rightShiftFromOffset(ucs2, 0, len);
@@ -5250,6 +5278,15 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
                 ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_PSILI;
             else if (presentStemInitial == GREEK_SMALL_LETTER_PHI)//for phero
                 ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_PSILI;
+        }
+        else if (ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_DASIA )
+        {
+            if (presentStemInitial == GREEK_SMALL_LETTER_ALPHA_WITH_DASIA)
+                ucs2[0] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA;
+            else if (presentStemInitial == GREEK_SMALL_LETTER_EPSILON_WITH_DASIA)
+                ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
+            else if (presentStemInitial == GREEK_SMALL_LETTER_PHI)//for phero
+                ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
         }
         else if (ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_DASIA_AND_YPOGEGRAMMENI)
         {
