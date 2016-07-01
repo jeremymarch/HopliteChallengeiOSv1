@@ -4732,7 +4732,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
         UCS2 mete[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_EPSILON };
         UCS2 metan[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
         UCS2 epan[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
-        
+
         if (hasPrefix(ucs2, *len, ex, 2))
         {
             if (decompose)
@@ -5197,7 +5197,11 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
     }
     else if (vf->tense == AORIST)//removing this because of decompose option.  we already check these things before this is called. && (mood == SUBJUNCTIVE || mood == OPTATIVE || mood == IMPERATIVE))
     {
-        if (ucs2[0] == GREEK_SMALL_LETTER_EPSILON && ucs2[1] == GREEK_SMALL_LETTER_IOTA_WITH_DASIA) //ei(
+        if (ucs2[0] == '-')
+        {
+            leftShiftFromOffset(ucs2, 1, len);
+        }
+        else if (ucs2[0] == GREEK_SMALL_LETTER_EPSILON && ucs2[1] == GREEK_SMALL_LETTER_IOTA_WITH_DASIA) //ei(
         {
             leftShift(ucs2, len);
             ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
@@ -5254,7 +5258,11 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
     }
     else if (vf->tense == FUTURE && vf->voice == PASSIVE)
     {
-        if (ucs2[0] == GREEK_SMALL_LETTER_EPSILON && ucs2[1] == GREEK_SMALL_LETTER_IOTA_WITH_DASIA)
+        if (ucs2[0] == '-')
+        {
+            leftShiftFromOffset(ucs2, 1, len);
+        }
+        else if (ucs2[0] == GREEK_SMALL_LETTER_EPSILON && ucs2[1] == GREEK_SMALL_LETTER_IOTA_WITH_DASIA)
         {
             leftShift(ucs2, len);
             ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
@@ -5308,14 +5316,30 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
     
     if (vf->tense == AORIST && vf->mood == INDICATIVE && decompose && (vf->verb->verbclass & PREFIXED) != PREFIXED)
     {
-        rightShiftFromOffset(ucs2, 0, len);
-        rightShiftFromOffset(ucs2, 0, len);
-        rightShiftFromOffset(ucs2, 0, len);
-        rightShiftFromOffset(ucs2, 0, len);
-        ucs2[0] = DECOMPOSED_AUGMENT_CHAR;
-        ucs2[1] = SPACE;
-        ucs2[2] = HYPHEN;
-        ucs2[3] = SPACE;
+        if (ucs2[0] == '-')
+        {
+            rightShiftFromOffset(ucs2, 1, len);
+            rightShiftFromOffset(ucs2, 1, len);
+            rightShiftFromOffset(ucs2, 1, len);
+            rightShiftFromOffset(ucs2, 1, len);
+            rightShiftFromOffset(ucs2, 1, len);
+            ucs2[1] = SPACE;
+            ucs2[2] = DECOMPOSED_AUGMENT_CHAR;
+            ucs2[3] = SPACE;
+            ucs2[4] = HYPHEN;
+            ucs2[5] = SPACE;
+        }
+        else
+        {
+            rightShiftFromOffset(ucs2, 0, len);
+            rightShiftFromOffset(ucs2, 0, len);
+            rightShiftFromOffset(ucs2, 0, len);
+            rightShiftFromOffset(ucs2, 0, len);
+            ucs2[0] = DECOMPOSED_AUGMENT_CHAR;
+            ucs2[1] = SPACE;
+            ucs2[2] = HYPHEN;
+            ucs2[3] = SPACE;
+        }
     }
 }
 
@@ -5329,7 +5353,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
         
          H&Q page 326.  "In most verbs when principal part iv or v begins with e) or ei), the pluperfect is unaugmented."
          */
-        if (vf->tense == PLUPERFECT && (ucs2[0] == GREEK_SMALL_LETTER_EPSILON_WITH_PSILI || (ucs2[0] == GREEK_SMALL_LETTER_EPSILON && ucs2[1] == GREEK_SMALL_LETTER_IOTA_WITH_PSILI) || ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_PSILI || ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_DASIA_AND_YPOGEGRAMMENI || ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_PSILI_AND_YPOGEGRAMMENI ))
+        if (vf->tense == PLUPERFECT && (ucs2[0] == GREEK_SMALL_LETTER_EPSILON_WITH_PSILI || (ucs2[0] == GREEK_SMALL_LETTER_EPSILON && ucs2[1] == GREEK_SMALL_LETTER_IOTA_WITH_PSILI) || ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_PSILI || ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_DASIA || ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_DASIA_AND_YPOGEGRAMMENI || ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_PSILI_AND_YPOGEGRAMMENI ))
         {
             return;
         }
@@ -5337,6 +5361,10 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
         
         if ((vf->tense == PLUPERFECT && vf->number == SINGULAR && utf8HasSuffix(vf->verb->present, "στημι")) || (vf->tense != PLUPERFECT && utf8HasSuffix(vf->verb->present, "στημι")) || !utf8HasSuffix(vf->verb->present, "στημι"))
         {
+            //pluperfect of elau/nw herehere
+            if (ucs2[0] == '-' && ucs2[1] == GREEK_SMALL_LETTER_EPSILON_WITH_PSILI)
+                return;
+            
             rightShiftFromOffset(ucs2, 0, len);
             rightShiftFromOffset(ucs2, 0, len);
             rightShiftFromOffset(ucs2, 0, len);
