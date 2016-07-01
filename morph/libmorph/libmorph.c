@@ -333,8 +333,14 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     UCS2 isthmi2[4] = { GREEK_SMALL_LETTER_SIGMA, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
     UCS2 deponent[] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
     int ending = 0;
+
+    ////echw h&q page 504
+    if (utf8HasSuffix(vf->verb->present, "ἔχω") && vf->tense == AORIST && vf->voice == ACTIVE && vf->mood == SUBJUNCTIVE)
+        ending = AORIST_PASSIVE_SUBJ;
+    else if (utf8HasSuffix(vf->verb->present, "ἔχω") && vf->tense == AORIST && vf->voice == ACTIVE && vf->mood == OPTATIVE && vf->number == SINGULAR)
+        ending = AORIST_PASSIVE_OPT;
     /* MI */
-    if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == INDICATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
+    else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == INDICATIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA)
         ending = PRESENT_ACTIVE_INDICATIVE_MI;
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == INDICATIVE && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "αμαι") || utf8HasSuffix(vf->verb->present, "νυμαι")))
         ending = PERFECT_MIDPASS_IND;
@@ -4244,6 +4250,15 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
     {
         leftShiftFromOffset(ending, 0, &elen);
     }
+    else if (utf8HasSuffix(vf->verb->present, "ἔχω") && vf->number == SINGULAR && vf->tense == AORIST && vf->voice == ACTIVE && vf->mood == OPTATIVE)
+    {   //h&q page 504
+        ending[0] = GREEK_SMALL_LETTER_OMICRON;
+    }
+    else if (utf8HasSuffix(vf->verb->present, "ἔχω") && vf->person == SECOND && vf->number == SINGULAR && vf->tense == AORIST && vf->voice == ACTIVE && vf->mood == IMPERATIVE)
+    {   //h&q page 504
+        elen++;
+        ending[1] = GREEK_SMALL_LETTER_FINAL_SIGMA;
+    }
     if (vf->person == SECOND && vf->number == SINGULAR && vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == IMPERATIVE && !decompose)
     {
         //decide which aorist passive imperative ending
@@ -5914,7 +5929,16 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
         /*
          H&Q page 326.  "In most verbs when principal part iv or v begins with e) or ei), the pluperfect is unaugmented."
          */
-        ucs2[0] = GREEK_SMALL_LETTER_ETA_WITH_PSILI;
+        if (utf8HasSuffix(vf->verb->present, "ἔχω"))
+        {
+            rightShiftFromOffset(ucs2, 1, len);
+            ucs2[0] = GREEK_SMALL_LETTER_EPSILON;
+            ucs2[1] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+        }
+        else
+        {
+            ucs2[0] = GREEK_SMALL_LETTER_ETA_WITH_PSILI;
+        }
     }
     else if (ucs2[0] == GREEK_SMALL_LETTER_EPSILON_WITH_DASIA)
     {
