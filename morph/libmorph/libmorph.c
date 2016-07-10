@@ -4871,6 +4871,7 @@ void decomposePrefixes(VerbFormC *vf, UCS2 *ucs2, int *len)
     UCS2 sun[] = { GREEK_SMALL_LETTER_SIGMA, GREEK_SMALL_LETTER_UPSILON, GREEK_SMALL_LETTER_NU };
     UCS2 dia[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA, GREEK_SMALL_LETTER_ALPHA };
     UCS2 dio[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA, GREEK_SMALL_LETTER_OMICRON }; //fix me hack so this doesn't work on future passive
+    UCS2 ape[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_EPSILON };
     UCS2 apo[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_OMICRON };
     UCS2 aph[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PHI };
     UCS2 kath[] = { GREEK_SMALL_LETTER_KAPPA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_THETA };
@@ -4952,6 +4953,17 @@ void decomposePrefixes(VerbFormC *vf, UCS2 *ucs2, int *len)
         ucs2[4] = HYPHEN;
         ucs2[5] = SPACE;
         ucs2[2] = GREEK_SMALL_LETTER_ALPHA;
+    }
+    else if (hasPrefix(ucs2, *len, ape, 3) && vf->tense == PERFECT)
+    {
+        rightShiftFromOffset(ucs2, 2, len);
+        rightShiftFromOffset(ucs2, 2, len);
+        rightShiftFromOffset(ucs2, 2, len);
+        rightShiftFromOffset(ucs2, 2, len);
+        ucs2[2] = GREEK_SMALL_LETTER_OMICRON;
+        ucs2[3] = SPACE;
+        ucs2[4] = HYPHEN;
+        ucs2[5] = SPACE;
     }
     else if (hasPrefix(ucs2, *len, apo, 3))
     {
@@ -5912,6 +5924,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
         UCS2 sun[] = { GREEK_SMALL_LETTER_SIGMA, GREEK_SMALL_LETTER_UPSILON, GREEK_SMALL_LETTER_NU };
         UCS2 dia[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA, GREEK_SMALL_LETTER_ALPHA };
         UCS2 di[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA };
+        UCS2 ape[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_EPSILON };
         UCS2 apo[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_OMICRON };
         UCS2 aph[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PHI };
         UCS2 kath[] = { GREEK_SMALL_LETTER_KAPPA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_THETA };
@@ -6100,6 +6113,17 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
             {
                 ucs2[2] = GREEK_SMALL_LETTER_EPSILON;
             }
+        }
+        else if (hasPrefix(ucs2, *len, ape, 3) && vf->tense == PLUPERFECT && decompose)
+        {
+            rightShiftFromOffset(ucs2, 2, len);
+            rightShiftFromOffset(ucs2, 2, len);
+            rightShiftFromOffset(ucs2, 2, len);
+            rightShiftFromOffset(ucs2, 2, len);
+            ucs2[2] = GREEK_SMALL_LETTER_OMICRON;
+            ucs2[3] = SPACE;
+            ucs2[4] = HYPHEN;
+            ucs2[5] = SPACE;
         }
         else if (hasPrefix(ucs2, *len, apo, 3))
         {
