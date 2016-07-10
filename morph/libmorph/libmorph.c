@@ -5268,7 +5268,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
                     ucs2[3] = SPACE;
                     ucs2[4] = HYPHEN;
                     ucs2[5] = SPACE;
-                    if (vf->mood == INDICATIVE && !(ucs2[6] == GREEK_SMALL_LETTER_ETA && ucs2[7] == GREEK_SMALL_LETTER_KAPPA && vf->number == SINGULAR) && vf->voice != MIDDLE)
+                    if (vf->mood == INDICATIVE && !(ucs2[6] == GREEK_SMALL_LETTER_ETA && ucs2[7] == GREEK_SMALL_LETTER_KAPPA && (vf->number == SINGULAR || vf->voice == MIDDLE)))
                     {
                         rightShiftFromOffset(ucs2, 5, len);
                         rightShiftFromOffset(ucs2, 5, len);
