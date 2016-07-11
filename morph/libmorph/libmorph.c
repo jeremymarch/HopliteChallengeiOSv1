@@ -44,7 +44,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decomposed);
 void decomposePrefixes(VerbFormC *vf, UCS2 *ucs2, int *len);
 void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 presentStemInitial, bool decompose);
 void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool contractedFuture, bool decompose);
-bool accentRecessive(UCS2 *tempUcs2String, int *len, bool optative);
+bool accentRecessive(VerbFormC *vf, UCS2 *tempUcs2String, int *len);
 
 void rightShift(UCS2 *ucs2, int *len);
 void leftShift(UCS2 *ucs2, int *len);
@@ -363,6 +363,8 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     else if (((vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE)) || (vf->tense == AORIST && vf->voice == MIDDLE)) && vf->mood == OPTATIVE && utf8HasSuffix(vf->verb->present, "τίθημι"))
         ending = PRESENT_MIDPASS_OPT_TITHHMI; //Exception: H&Q page 347
     else if (vf->tense == AORIST && vf->voice == MIDDLE && vf->mood == OPTATIVE && utf8HasSuffix(vf->verb->present, "ῑ̔́ημι"))
+        ending = PRESENT_MIDPASS_OPT_TITHHMI; //Exception: H&Q page 347
+    else if (vf->tense == AORIST && vf->voice == MIDDLE && vf->mood == OPTATIVE && utf8HasSuffix(vf->verb->present, "ῑ́ημι"))
         ending = PRESENT_MIDPASS_OPT_TITHHMI; //Exception: H&Q page 347
     
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == OPTATIVE && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "αμαι")))
@@ -1268,13 +1270,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             //add accent, if word does not already have one
             if (!wordIsAccented(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen))
             {
-                bool isOpt = false;
-                if (vf->mood == OPTATIVE)
-                    isOpt = true;
-                else
-                    isOpt = false;
-                
-                accentRecessive(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, isOpt);
+                accentRecessive(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen);
             }
             
             if (decompose && !ACCENT_DECOMPOSED_FORMS)
@@ -1363,7 +1359,7 @@ bool isDeponent(VerbFormC *vf, UCS2 *stem, int stemLen)
     return false;
 }
 
-bool accentRecessive(UCS2 *tempUcs2String, int *len, bool isOptative)
+bool accentRecessive(VerbFormC *vf, UCS2 *tempUcs2String, int *len)
 {
     //find syllable
     int i = 0;
@@ -1371,7 +1367,67 @@ bool accentRecessive(UCS2 *tempUcs2String, int *len, bool isOptative)
     int longUltima = false;
     int longPenult = false;
     int consonants = 0;
-    for ( i = *len - 1; i >= 0 ; i--) //start at end of word and work left
+    bool isOptative = (vf->mood == OPTATIVE) ? true : false;
+    int accentableRegionStart = 0; //might be different if prefixed and aorist indic or perf/plup
+    
+    /*
+     For prefixes, find where the prefix ends and don't look past that character
+     */
+    if ((vf->verb->verbclass & PREFIXED) == PREFIXED && ((vf->tense == AORIST && vf->mood == INDICATIVE) || vf->tense == PERFECT || vf->tense == PLUPERFECT))
+    {
+        UCS2 ek[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_KAPPA };
+        UCS2 ana[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_NU, GREEK_SMALL_LETTER_ALPHA };
+        UCS2 sum[] = { GREEK_SMALL_LETTER_SIGMA, GREEK_SMALL_LETTER_UPSILON, GREEK_SMALL_LETTER_MU };
+        UCS2 sun[] = { GREEK_SMALL_LETTER_SIGMA, GREEK_SMALL_LETTER_UPSILON, GREEK_SMALL_LETTER_NU };
+        UCS2 dia[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA, GREEK_SMALL_LETTER_ALPHA };
+        //UCS2 dio[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA, GREEK_SMALL_LETTER_OMICRON }; //fix me hack so this doesn't work on future passive
+        
+        UCS2 apo[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_OMICRON };
+        UCS2 ap[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI };
+        UCS2 aph[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PHI };
+        UCS2 kath[] = { GREEK_SMALL_LETTER_KAPPA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_THETA };
+        UCS2 kata[] = { GREEK_SMALL_LETTER_KAPPA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA };
+        UCS2 meta[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA };
+        UCS2 metan[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
+        UCS2 metana[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU, GREEK_SMALL_LETTER_ALPHA };
+        UCS2 epan[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
+        UCS2 epi[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_IOTA };
+        
+        if (hasPrefix(tempUcs2String, *len, ek, 2))
+            accentableRegionStart = 2;
+        else if (hasPrefix(tempUcs2String, *len, ana, 3))
+            accentableRegionStart = 3;
+        else if (hasPrefix(tempUcs2String, *len, sum, 3))
+            accentableRegionStart = 3;
+        else if (hasPrefix(tempUcs2String, *len, sun, 3))
+            accentableRegionStart = 3;
+        else if (hasPrefix(tempUcs2String, *len, dia, 3))
+            accentableRegionStart = 3;
+        else if (hasPrefix(tempUcs2String, *len, apo, 3))
+            accentableRegionStart = 3;
+        else if (hasPrefix(tempUcs2String, *len, ap, 2))
+            accentableRegionStart = 2;
+        else if (hasPrefix(tempUcs2String, *len, aph, 2))
+            accentableRegionStart = 2;
+        else if (hasPrefix(tempUcs2String, *len, kath, 3))
+            accentableRegionStart = 3;
+        else if (hasPrefix(tempUcs2String, *len, kata, 4))
+            accentableRegionStart = 4;
+        else if (hasPrefix(tempUcs2String, *len, metana, 6))
+            accentableRegionStart = 6;
+        else if (hasPrefix(tempUcs2String, *len, metan, 5))
+            accentableRegionStart = 5;
+        else if (hasPrefix(tempUcs2String, *len, meta, 4))
+            accentableRegionStart = 4;
+        else if (hasPrefix(tempUcs2String, *len, epan, 4))
+            accentableRegionStart = 4;
+        else if (hasPrefix(tempUcs2String, *len, epi, 3))
+            accentableRegionStart = 3;
+        else
+            accentableRegionStart = 0;
+    }
+    
+    for ( i = *len - 1; i >= accentableRegionStart; i--) //start at end of word and work left
     {
         if (isVowel(tempUcs2String[i]))
         {
@@ -4035,8 +4091,18 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 }
                 else if ( utf8HasSuffix(vf->verb->present, "ῑ̔́ημι") )
                 {
-                    (*len) -= 2;
-                    ending[1] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA;
+                    if (decompose)
+                    {
+                        *len = 2;
+                        //ucs2[0] = HYPHEN;
+                        ucs2[1] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
+                        leftShiftFromOffset(ending, 0, &elen);
+                    }
+                    else
+                    {
+                        (*len) -= 2;
+                        ending[1] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA;
+                    }
                 }
                 else if ( utf8HasSuffix(vf->verb->present, "ῑ́ημι") )
                 {
@@ -4156,7 +4222,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 }
             }
         }
-        else if (vf->voice == MIDDLE) //herehere
+        else if (vf->voice == MIDDLE)
         {
             if ( utf8HasSuffix(vf->verb->present, "ῑ̔́ημι"))
             {
@@ -4164,6 +4230,17 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 {
                     ucs2[1] = GREEK_SMALL_LETTER_EPSILON;
                     ucs2[2] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA;
+                }
+                if (vf->mood == INDICATIVE && decompose)
+                {
+                    rightShiftFromOffset(ucs2, 2, len);
+                    rightShiftFromOffset(ucs2, 2, len);
+                    rightShiftFromOffset(ucs2, 2, len);
+                    
+                    ucs2[2] = SPACE;
+                    ucs2[3] = HYPHEN;
+                    ucs2[4] = SPACE;
+                    ucs2[5] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
                 }
                 if (vf->mood == OPTATIVE)
                 {
