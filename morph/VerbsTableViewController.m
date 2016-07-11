@@ -49,7 +49,7 @@
     self->verbsPerSection[13] = 8;
     self->verbsPerSection[14] = 8;
     self->verbsPerSection[15] = 8;
-    self->verbsPerSection[16] = 6;
+    self->verbsPerSection[16] = 7;
     self->verbsPerSection[17] = 9;
     self->verbsPerSection[18] = 9;
     self->verbsPerSection[19] = 7;

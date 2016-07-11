@@ -26,7 +26,7 @@
 
 typedef unsigned short UCS2;
 
-#define NUM_VERBS 113//34//25 //
+#define NUM_VERBS 114//34//25 //
 
 #define MAX_MULTIPLE_FORMS 5
 
