@@ -1064,6 +1064,10 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         {
             continue;
         }
+        else if (utf8HasSuffix(vf->verb->present, "ἀπόλλῡμι") && vf->voice == MIDDLE && vf->tense == AORIST && stem == 0)
+        {
+            continue;
+        }
         
         //Step 4: strip accent from principal part
         stripAccent(&ucs2Stems[stemStart], &stemLen);
@@ -5203,6 +5207,7 @@ void decomposePrefixes(VerbFormC *vf, UCS2 *ucs2, int *len)
     UCS2 dia[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA, GREEK_SMALL_LETTER_ALPHA };
     UCS2 dio[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA, GREEK_SMALL_LETTER_OMICRON }; //fix me hack so this doesn't work on future passive
     UCS2 ape[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_EPSILON };
+    UCS2 apol[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_LAMDA };
     UCS2 apo[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_OMICRON };
     UCS2 aph[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PHI };
     UCS2 kath[] = { GREEK_SMALL_LETTER_KAPPA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_THETA };
@@ -5292,6 +5297,16 @@ void decomposePrefixes(VerbFormC *vf, UCS2 *ucs2, int *len)
         rightShiftFromOffset(ucs2, 2, len);
         rightShiftFromOffset(ucs2, 2, len);
         ucs2[2] = GREEK_SMALL_LETTER_OMICRON;
+        ucs2[3] = SPACE;
+        ucs2[4] = HYPHEN;
+        ucs2[5] = SPACE;
+    }
+    else if (hasPrefix(ucs2, *len, apol, 4))
+    {
+        rightShiftFromOffset(ucs2, 2, len);
+        rightShiftFromOffset(ucs2, 2, len);
+        rightShiftFromOffset(ucs2, 2, len);
+        rightShiftFromOffset(ucs2, 2, len);
         ucs2[3] = SPACE;
         ucs2[4] = HYPHEN;
         ucs2[5] = SPACE;
@@ -5471,6 +5486,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
         UCS2 dia[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA, GREEK_SMALL_LETTER_ALPHA };
         UCS2 dih[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA, GREEK_SMALL_LETTER_ETA };
         UCS2 di[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA };
+        UCS2 apw[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_OMEGA };
         UCS2 apo[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_EPSILON };
         UCS2 aph[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PHI };
         UCS2 kath[] = { GREEK_SMALL_LETTER_KAPPA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_THETA };
@@ -5738,6 +5754,40 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
             }
             
             ucs2[2] = GREEK_SMALL_LETTER_ALPHA;
+        }
+        else if (hasPrefix(ucs2, *len, apw, 3))
+        {
+            if (decompose)
+            {
+                rightShiftFromOffset(ucs2, 2, len);
+                rightShiftFromOffset(ucs2, 2, len);
+                rightShiftFromOffset(ucs2, 2, len);
+                rightShiftFromOffset(ucs2, 2, len);
+                
+                ucs2[3] = SPACE;
+                ucs2[4] = HYPHEN;
+                ucs2[5] = SPACE;
+                
+                if (vf->tense == AORIST && vf->mood == INDICATIVE)
+                {
+                    rightShiftFromOffset(ucs2, 6, len);
+                    rightShiftFromOffset(ucs2, 6, len);
+                    rightShiftFromOffset(ucs2, 6, len);
+                    rightShiftFromOffset(ucs2, 6, len);
+                    
+                    ucs2[6] = DECOMPOSED_AUGMENT_CHAR;
+                    ucs2[7] = SPACE;
+                    ucs2[8] = HYPHEN;
+                    ucs2[9] = SPACE;
+                    ucs2[10] = GREEK_SMALL_LETTER_OMICRON;
+                }
+                else
+                {
+                    ucs2[6] = GREEK_SMALL_LETTER_OMICRON;
+                }
+            }
+            
+            ucs2[2] = GREEK_SMALL_LETTER_OMICRON;
         }
         else if (hasPrefix(ucs2, *len, apo, 3))
         {
@@ -6262,6 +6312,7 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
         UCS2 dia[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA, GREEK_SMALL_LETTER_ALPHA };
         UCS2 di[] = { GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_IOTA };
         UCS2 ape[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_EPSILON };
+        UCS2 apol[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_LAMDA };
         UCS2 apo[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_OMICRON };
         UCS2 aph[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PHI };
         UCS2 kath[] = { GREEK_SMALL_LETTER_KAPPA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_THETA };
@@ -6461,6 +6512,31 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
             ucs2[3] = SPACE;
             ucs2[4] = HYPHEN;
             ucs2[5] = SPACE;
+        }
+        else if (hasPrefix(ucs2, *len, apol, 4))
+        {
+            if ( decompose)
+            {
+                rightShiftFromOffset(ucs2, 2, len);
+                rightShiftFromOffset(ucs2, 2, len);
+                rightShiftFromOffset(ucs2, 2, len);
+                rightShiftFromOffset(ucs2, 2, len);
+                rightShiftFromOffset(ucs2, 2, len);
+                rightShiftFromOffset(ucs2, 2, len);
+                rightShiftFromOffset(ucs2, 2, len);
+                rightShiftFromOffset(ucs2, 2, len);
+                ucs2[3] = SPACE;
+                ucs2[4] = HYPHEN;
+                ucs2[5] = SPACE;
+                ucs2[6] = DECOMPOSED_AUGMENT_CHAR;
+                ucs2[7] = SPACE;
+                ucs2[8] = HYPHEN;
+                ucs2[9] = SPACE;
+            }
+            else
+            {
+                ucs2[2] = GREEK_SMALL_LETTER_OMEGA;
+            }
         }
         else if (hasPrefix(ucs2, *len, apo, 3))
         {
