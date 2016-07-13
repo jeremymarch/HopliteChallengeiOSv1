@@ -3447,6 +3447,57 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 return;
             }
         }
+        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_NU) == CONSONANT_STEM_PERFECT_NU) //αισχυνομαι
+        {
+            if (vf->person == FIRST && vf->number == SINGULAR)
+            {
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
+                }
+            }
+            else if (vf->person == SECOND && vf->number == SINGULAR)
+            {
+                ucs2[0] = EM_DASH;
+                *len = 1;
+                elen = 0;
+                return;
+            }
+            else if (vf->person == THIRD && vf->number == SINGULAR)
+            {
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
+                }
+                else
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
+                }
+            }
+            else if (vf->person == FIRST && vf->number == PLURAL)
+            {
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
+                }
+            }
+            else if (vf->person == SECOND && vf->number == PLURAL)
+            {
+
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
+
+                if (!decompose)
+                {
+                    leftShiftFromOffset(ending, 0, &elen);
+                }
+            }
+            else if (vf->person == THIRD && vf->number == PLURAL)
+            {
+                ucs2[0] = EM_DASH;
+                (*len) = 1;
+                return;
+            }
+        }
     }
     else if (vf->tense == PLUPERFECT && (vf->voice == MIDDLE || vf->voice == PASSIVE))
     {
@@ -3674,6 +3725,57 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             //H&Q page 273, only different in 2nd and 3rd person plural
             if (vf->person == SECOND && vf->number == PLURAL)
             {
+                if (!decompose)
+                {
+                    leftShiftFromOffset(ending, 0, &elen);
+                }
+            }
+            else if (vf->person == THIRD && vf->number == PLURAL)
+            {
+                ucs2[0] = EM_DASH;
+                (*len) = 1;
+                return;
+            }
+        }
+        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_NU) == CONSONANT_STEM_PERFECT_NU) //αισχυνομαι
+        {
+            if (vf->person == FIRST && vf->number == SINGULAR)
+            {
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
+                }
+            }
+            else if (vf->person == SECOND && vf->number == SINGULAR)
+            {
+                ucs2[0] = EM_DASH;
+                *len = 1;
+                elen = 0;
+                return;
+            }
+            else if (vf->person == THIRD && vf->number == SINGULAR)
+            {
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
+                }
+                else
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
+                }
+            }
+            else if (vf->person == FIRST && vf->number == PLURAL)
+            {
+                if ( decompose)
+                {
+                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
+                }
+            }
+            else if (vf->person == SECOND && vf->number == PLURAL)
+            {
+                
+                ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
+                
                 if (!decompose)
                 {
                     leftShiftFromOffset(ending, 0, &elen);

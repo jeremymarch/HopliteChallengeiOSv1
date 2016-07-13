@@ -10,7 +10,7 @@
 #import "VerbDetailViewController.h"
 #import "GreekForms.h"
 
-#define NUM_LEVELS 18
+#define NUM_LEVELS 20
 
 @interface VerbsTableViewController ()
 
@@ -70,13 +70,11 @@
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return NUM_LEVELS;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
     return self->verbsPerSection[section];
 }
@@ -132,7 +130,6 @@
      */
 }
 
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"VerbTableCell" forIndexPath:indexPath];
     NSInteger index = 0;
@@ -142,7 +139,10 @@
     
     index += indexPath.row;
     
-    cell.textLabel.text = [NSString stringWithUTF8String: verbs[index].present];
+    if (strlen(verbs[index].present) < 1)
+        cell.textLabel.text = [NSString stringWithUTF8String: verbs[index].future];
+    else
+        cell.textLabel.text = [NSString stringWithUTF8String: verbs[index].present];
     cell.textLabel.font = [UIFont fontWithName:@"NewAthenaUnicode" size:26.0];
     return cell;
 }
