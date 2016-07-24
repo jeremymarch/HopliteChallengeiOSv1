@@ -138,6 +138,11 @@
     
     //countPerSection++;
     rowCount += 4;
+    bool isOida = false;
+    if (utf8HasSuffix(vf.verb->present, "οἶδα") || utf8HasSuffix(vf.verb->present, "σύνοιδα") )
+    {
+        isOida = true;
+    }
     
     for (int g1 = 0; g1 < NUM_TENSES; g1++)
     {
@@ -146,7 +151,9 @@
         {
             for (int m = 0; m < NUM_MOODS; m++)
             {
-                if (m != INDICATIVE && (g1 == PERFECT || g1 == PLUPERFECT || g1 == IMPERFECT || g1 == FUTURE))
+                if (!isOida && m != INDICATIVE && (g1 == PERFECT || g1 == PLUPERFECT || g1 == IMPERFECT || g1 == FUTURE))
+                    continue;
+                else if (isOida && m != INDICATIVE && (g1 == PLUPERFECT || g1 == IMPERFECT || g1 == FUTURE))
                     continue;
                 
                 NSString *s;

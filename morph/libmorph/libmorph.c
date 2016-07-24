@@ -948,6 +948,765 @@ int getEimi(VerbFormC *vf, UCS2 *buffer, int *bufferLen)
     return 1;
 }
 
+int getOida(VerbFormC *vf, UCS2 *buffer, int *bufferLen, bool decompose)
+{
+    bool hasPrefix = false;
+    if (vf->voice != ACTIVE)
+        return 0;
+ 
+    *bufferLen = 0;
+    
+    if (utf8HasSuffix(vf->verb->present, "σύνοιδα"))
+    {
+        buffer[0] = GREEK_SMALL_LETTER_SIGMA;
+        buffer[1] = GREEK_SMALL_LETTER_UPSILON;
+        buffer[2] = GREEK_SMALL_LETTER_NU;
+        *bufferLen = 3;
+        hasPrefix = true;
+        
+        if (decompose)
+        {
+            buffer[*bufferLen] = SPACE;
+            buffer[*bufferLen+1] = HYPHEN;
+            buffer[*bufferLen+2] = SPACE;
+            *bufferLen += 3;
+        }
+    }
+    
+    if (vf->tense == PERFECT)
+    {
+        if (vf->mood == INDICATIVE)
+        {
+            if (vf->number == SINGULAR)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_OMICRON;
+                if (!hasPrefix || decompose)
+                    buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI_AND_PERISPOMENI;
+                else
+                    buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI;
+                if (vf->person == SECOND)
+                    buffer[*bufferLen+2] = GREEK_SMALL_LETTER_SIGMA;
+                else
+                    buffer[*bufferLen+2] = GREEK_SMALL_LETTER_DELTA;
+                *bufferLen += 3;
+            }
+            else
+            {
+                if (!hasPrefix || decompose)
+                    buffer[*bufferLen] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+                else
+                    buffer[*bufferLen] = GREEK_SMALL_LETTER_IOTA;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_SIGMA;
+                *bufferLen += 2;
+            }
+            if (decompose)
+            {
+                buffer[*bufferLen] = SPACE;
+                buffer[*bufferLen+1] = HYPHEN;
+                buffer[*bufferLen+2] = SPACE;
+                *bufferLen += 3;
+            }
+            if (vf->person == FIRST && vf->number == SINGULAR)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_ALPHA;
+                *bufferLen += 1;
+            }
+            else if (vf->person == SECOND && vf->number == SINGULAR)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_THETA;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_ALPHA;
+                *bufferLen += 2;
+            }
+            else if (vf->person == THIRD && vf->number == SINGULAR)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+1] = LEFT_PARENTHESIS;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+                buffer[*bufferLen+3] = RIGHT_PARENTHESIS;
+                *bufferLen += 4;
+            }
+            else if (vf->person == FIRST && vf->number == PLURAL)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_MU;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+                *bufferLen += 3;
+            }
+            else if (vf->person == SECOND && vf->number == PLURAL)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_TAU;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_EPSILON;
+                *bufferLen += 2;
+            }
+            else if (vf->person == THIRD && vf->number == PLURAL)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_ALPHA;
+                buffer[*bufferLen+1] = COMBINING_MACRON;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_SIGMA;
+                buffer[*bufferLen+3] = GREEK_SMALL_LETTER_IOTA;
+                buffer[*bufferLen+4] = LEFT_PARENTHESIS;
+                buffer[*bufferLen+5] = GREEK_SMALL_LETTER_NU;
+                buffer[*bufferLen+6] = RIGHT_PARENTHESIS;
+                *bufferLen += 7;
+            }
+        }
+        else if (vf->mood == SUBJUNCTIVE)
+        {
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+            if (!hasPrefix || decompose)
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+            else
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA;
+            buffer[*bufferLen+2] = GREEK_SMALL_LETTER_DELTA;
+            *bufferLen += 3;
+            if (decompose)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+1] = SPACE;
+                buffer[*bufferLen+2] = HYPHEN;
+                buffer[*bufferLen+3] = SPACE;
+                *bufferLen += 4;
+            }
+            if (vf->person == FIRST && vf->number == SINGULAR)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI;
+                *bufferLen += 1;
+            }
+            else if (vf->person == SECOND && vf->number == SINGULAR)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_ETA_WITH_PERISPOMENI_AND_YPOGEGRAMMENI;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_FINAL_SIGMA;
+                *bufferLen += 2;
+            }
+            else if (vf->person == THIRD && vf->number == SINGULAR)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_ETA_WITH_PERISPOMENI_AND_YPOGEGRAMMENI;
+                *bufferLen += 1;
+            }
+            else if (vf->person == FIRST && vf->number == PLURAL)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_MU;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen +3] = GREEK_SMALL_LETTER_NU;
+                *bufferLen += 4;
+            }
+            else if (vf->person == SECOND && vf->number == PLURAL)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_ETA_WITH_PERISPOMENI;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_TAU;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_EPSILON;
+                *bufferLen += 3;
+            }
+            else if (vf->person == THIRD && vf->number == PLURAL)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_SIGMA;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_IOTA;
+                buffer[*bufferLen+3] = LEFT_PARENTHESIS;
+                buffer[*bufferLen+4] = GREEK_SMALL_LETTER_NU;
+                buffer[*bufferLen+5] = RIGHT_PARENTHESIS;
+                *bufferLen += 6;
+            }
+        }
+        else if (vf->mood == OPTATIVE)
+        {
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+            if (!hasPrefix | decompose)
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+            else
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA;
+            buffer[*bufferLen+2] = GREEK_SMALL_LETTER_DELTA;
+            *bufferLen += 3;
+            if (decompose)
+            {
+                buffer[*bufferLen] = SPACE;
+                buffer[*bufferLen+1] = HYPHEN;
+                buffer[*bufferLen+2] = SPACE;
+                *bufferLen += 3;
+            }
+            if (vf->person == FIRST && vf->number == SINGULAR)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_OXIA;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_ETA;
+                buffer[*bufferLen+3] = GREEK_SMALL_LETTER_NU;
+                *bufferLen += 4;
+            }
+            else if (vf->person == SECOND && vf->number == SINGULAR)
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_OXIA;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_ETA;
+                buffer[*bufferLen+3] = GREEK_SMALL_LETTER_FINAL_SIGMA;
+                *bufferLen += 4;
+            }
+            else if (vf->person == THIRD && vf->number == SINGULAR)
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_OXIA;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_ETA;
+                *bufferLen += 3;
+            }
+            else if (vf->person == FIRST && vf->number == PLURAL)
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_MU;
+                buffer[*bufferLen+3] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+4] = GREEK_SMALL_LETTER_NU;
+                buffer[*bufferLen+5] = COMMA;
+                buffer[*bufferLen+6] = SPACE;
+                *bufferLen += 7;
+                if (utf8HasSuffix(vf->verb->present, "σύνοιδα"))
+                {
+                    buffer[*bufferLen+0] = GREEK_SMALL_LETTER_SIGMA;
+                    buffer[*bufferLen+1] = GREEK_SMALL_LETTER_UPSILON;
+                    buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+                    *bufferLen += 3;
+                    
+                    if (decompose)
+                    {
+                        buffer[*bufferLen] = SPACE;
+                        buffer[*bufferLen+1] = HYPHEN;
+                        buffer[*bufferLen+2] = SPACE;
+                        *bufferLen += 3;
+                    }
+                }
+                
+                
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_EPSILON;
+                if (hasPrefix && !decompose)
+                    buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA;
+                else
+                    buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_DELTA;
+                *bufferLen += 3;
+                if (decompose)
+                {
+                    buffer[*bufferLen] = SPACE;
+                    buffer[*bufferLen+1] = HYPHEN;
+                    buffer[*bufferLen+2] = SPACE;
+                    *bufferLen += 3;
+                }
+                
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_OXIA;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_ETA;
+                buffer[*bufferLen+3] = GREEK_SMALL_LETTER_MU;
+                buffer[*bufferLen+4] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+5] = GREEK_SMALL_LETTER_NU;
+                *bufferLen += 6;
+            }
+            else if (vf->person == SECOND && vf->number == PLURAL)
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_TAU;
+                buffer[*bufferLen+3] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+4] = COMMA;
+                buffer[*bufferLen+5] = SPACE;
+                *bufferLen += 6;
+                if (utf8HasSuffix(vf->verb->present, "σύνοιδα"))
+                {
+                    buffer[*bufferLen+0] = GREEK_SMALL_LETTER_SIGMA;
+                    buffer[*bufferLen+1] = GREEK_SMALL_LETTER_UPSILON;
+                    buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+                    *bufferLen += 3;
+                    
+                    if (decompose)
+                    {
+                        buffer[*bufferLen] = SPACE;
+                        buffer[*bufferLen+1] = HYPHEN;
+                        buffer[*bufferLen+2] = SPACE;
+                        *bufferLen += 3;
+                    }
+                }
+                
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_EPSILON;
+                if (hasPrefix && !decompose)
+                    buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA;
+                else
+                    buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_DELTA;
+                *bufferLen += 3;
+                if (decompose)
+                {
+                    buffer[*bufferLen] = SPACE;
+                    buffer[*bufferLen+1] = HYPHEN;
+                    buffer[*bufferLen+2] = SPACE;
+                    *bufferLen += 3;
+                }
+                
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_OXIA;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_ETA;
+                buffer[*bufferLen+3] = GREEK_SMALL_LETTER_TAU;
+                buffer[*bufferLen+4] = GREEK_SMALL_LETTER_EPSILON;
+                *bufferLen += 5;
+            }
+            else if (vf->person == THIRD && vf->number == PLURAL)
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+3] = GREEK_SMALL_LETTER_NU;
+                buffer[*bufferLen+4] = COMMA;
+                buffer[*bufferLen+5] = SPACE;
+                *bufferLen += 6;
+                if (utf8HasSuffix(vf->verb->present, "σύνοιδα"))
+                {
+                    buffer[*bufferLen+0] = GREEK_SMALL_LETTER_SIGMA;
+                    buffer[*bufferLen+1] = GREEK_SMALL_LETTER_UPSILON;
+                    buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+                    *bufferLen += 3;
+                    
+                    if (decompose)
+                    {
+                        buffer[*bufferLen] = SPACE;
+                        buffer[*bufferLen+1] = HYPHEN;
+                        buffer[*bufferLen+2] = SPACE;
+                        *bufferLen += 3;
+                    }
+                }
+                
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_EPSILON;
+                if (hasPrefix && !decompose)
+                    buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA;
+                else
+                    buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_DELTA;
+                *bufferLen += 3;
+                if (decompose)
+                {
+                    buffer[*bufferLen] = SPACE;
+                    buffer[*bufferLen+1] = HYPHEN;
+                    buffer[*bufferLen+2] = SPACE;
+                    *bufferLen += 3;
+                }
+                
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA_WITH_OXIA;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_ETA;
+                buffer[*bufferLen+3] = GREEK_SMALL_LETTER_SIGMA;
+                buffer[*bufferLen+4] = GREEK_SMALL_LETTER_ALPHA;
+                buffer[*bufferLen+5] = GREEK_SMALL_LETTER_NU;
+                *bufferLen += 6;
+            }
+        }
+        else if (vf->mood == IMPERATIVE)
+        {
+            if (!hasPrefix || decompose)
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI_AND_OXIA;
+            else
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_IOTA_WITH_OXIA;
+            buffer[*bufferLen+1] = GREEK_SMALL_LETTER_SIGMA;
+            *bufferLen += 2;
+            if (decompose)
+            {
+                buffer[*bufferLen] = SPACE;
+                buffer[*bufferLen+1] = HYPHEN;
+                buffer[*bufferLen+2] = SPACE;
+                *bufferLen += 3;
+                
+            }
+            if (vf->person == FIRST && vf->number == SINGULAR)
+            {
+                return 0;
+            }
+            else if (vf->person == SECOND && vf->number == SINGULAR)
+            {
+
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_THETA;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA;
+                *bufferLen += 2;
+            }
+            else if (vf->person == THIRD && vf->number == SINGULAR)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_TAU;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_OMEGA;
+                *bufferLen += 2;
+            }
+            else if (vf->person == FIRST && vf->number == PLURAL)
+            {
+                return 0;
+            }
+            else if (vf->person == SECOND && vf->number == PLURAL)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_TAU;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_EPSILON;
+                *bufferLen += 2;
+            }
+            else if (vf->person == THIRD && vf->number == PLURAL)
+            {
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_TAU;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_OMEGA;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+                *bufferLen += 3;
+            }
+        }
+    }
+    else if (vf->tense == PLUPERFECT)
+    {
+        if (!decompose)
+        {
+            if (!hasPrefix)
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_ETA_WITH_PSILI_AND_OXIA_AND_YPOGEGRAMMENI;
+            else
+                buffer[*bufferLen] = GREEK_SMALL_LETTER_ETA_WITH_OXIA_AND_YPOGEGRAMMENI;
+            
+            if (vf->number == SINGULAR)
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_DELTA;
+            else
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_SIGMA;
+            *bufferLen += 2;
+        }
+        else
+        {
+            buffer[*bufferLen] = DECOMPOSED_AUGMENT_CHAR;
+            buffer[*bufferLen+1] = SPACE;
+            buffer[*bufferLen+2] = HYPHEN;
+            buffer[*bufferLen+3] = SPACE;
+            buffer[*bufferLen+4] = GREEK_SMALL_LETTER_EPSILON;
+            buffer[*bufferLen+5] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+            
+            if (vf->number == SINGULAR)
+                buffer[*bufferLen+6] = GREEK_SMALL_LETTER_DELTA;
+            else
+                buffer[*bufferLen+6] = GREEK_SMALL_LETTER_SIGMA;
+            *bufferLen += 7;
+        }
+        
+        if (decompose)
+        {
+            buffer[*bufferLen] = SPACE;
+            buffer[*bufferLen+1] = HYPHEN;
+            buffer[*bufferLen+2] = SPACE;
+            *bufferLen += 3;
+        }
+        if (vf->person == FIRST && vf->number == SINGULAR)
+        {
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_ETA;
+            buffer[*bufferLen+1] = COMMA;
+            buffer[*bufferLen+2] = SPACE;
+            *bufferLen += 3;
+            
+            if (utf8HasSuffix(vf->verb->present, "σύνοιδα"))
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_SIGMA;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_UPSILON;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+                *bufferLen += 3;
+                
+                if (decompose)
+                {
+                    buffer[*bufferLen] = SPACE;
+                    buffer[*bufferLen+1] = HYPHEN;
+                    buffer[*bufferLen+2] = SPACE;
+                    *bufferLen += 3;
+                }
+            }
+            
+            if (hasPrefix && !decompose)
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_ETA_WITH_OXIA_AND_YPOGEGRAMMENI;
+                *bufferLen += 1;
+            }
+            else if (decompose)
+            {
+                buffer[*bufferLen+0] = DECOMPOSED_AUGMENT_CHAR;
+                buffer[*bufferLen+1] = SPACE;
+                buffer[*bufferLen+2] = HYPHEN;
+                buffer[*bufferLen+3] = SPACE;
+                buffer[*bufferLen+4] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+5] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+                *bufferLen += 6;
+            }
+            else
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_ETA_WITH_PSILI_AND_OXIA_AND_YPOGEGRAMMENI;
+                *bufferLen += 1;
+            }
+            buffer[*bufferLen+0] = GREEK_SMALL_LETTER_DELTA;
+            *bufferLen += 1;
+            
+            if (decompose)
+            {
+                buffer[*bufferLen] = SPACE;
+                buffer[*bufferLen+1] = HYPHEN;
+                buffer[*bufferLen+2] = SPACE;
+                *bufferLen += 3;
+            }
+            
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+            buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA;
+            buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+            *bufferLen += 3;
+        }
+        else if (vf->person == SECOND && vf->number == SINGULAR)
+        {
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_ETA;
+            buffer[*bufferLen+1] = GREEK_SMALL_LETTER_SIGMA;
+            buffer[*bufferLen+2] = GREEK_SMALL_LETTER_THETA;
+            buffer[*bufferLen+3] = GREEK_SMALL_LETTER_ALPHA;
+            buffer[*bufferLen+4] = COMMA;
+            buffer[*bufferLen+5] = SPACE;
+            *bufferLen += 6;
+            
+            if (utf8HasSuffix(vf->verb->present, "σύνοιδα"))
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_SIGMA;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_UPSILON;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+                *bufferLen += 3;
+                
+                if (decompose)
+                {
+                    buffer[*bufferLen] = SPACE;
+                    buffer[*bufferLen+1] = HYPHEN;
+                    buffer[*bufferLen+2] = SPACE;
+                    *bufferLen += 3;
+                }
+            }
+            
+            if (hasPrefix && !decompose)
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_ETA_WITH_OXIA_AND_YPOGEGRAMMENI;
+                *bufferLen += 1;
+            }
+            else if (decompose)
+            {
+                buffer[*bufferLen+0] = DECOMPOSED_AUGMENT_CHAR;
+                buffer[*bufferLen+1] = SPACE;
+                buffer[*bufferLen+2] = HYPHEN;
+                buffer[*bufferLen+3] = SPACE;
+                buffer[*bufferLen+4] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+5] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+                *bufferLen += 6;
+            }
+            else
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_ETA_WITH_PSILI_AND_OXIA_AND_YPOGEGRAMMENI;
+                *bufferLen += 1;
+            }
+            buffer[*bufferLen+0] = GREEK_SMALL_LETTER_DELTA;
+            *bufferLen += 1;
+            
+            if (decompose)
+            {
+                buffer[*bufferLen] = SPACE;
+                buffer[*bufferLen+1] = HYPHEN;
+                buffer[*bufferLen+2] = SPACE;
+                *bufferLen += 3;
+            }
+            
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+            buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA;
+            buffer[*bufferLen+2] = GREEK_SMALL_LETTER_FINAL_SIGMA;
+            *bufferLen += 3;
+        }
+        else if (vf->person == THIRD && vf->number == SINGULAR)
+        {
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+            buffer[*bufferLen+1] = GREEK_SMALL_LETTER_IOTA;
+            buffer[*bufferLen+2] = LEFT_PARENTHESIS;
+            buffer[*bufferLen+3] = GREEK_SMALL_LETTER_NU;
+            buffer[*bufferLen+4] = RIGHT_PARENTHESIS;
+            *bufferLen += 5;
+        }
+        else if (vf->person == FIRST && vf->number == PLURAL)
+        {
+
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_MU;
+            buffer[*bufferLen+1] = GREEK_SMALL_LETTER_EPSILON;
+            buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+            buffer[*bufferLen+3] = COMMA;
+            buffer[*bufferLen+4] = SPACE;
+            *bufferLen += 5;
+            if (utf8HasSuffix(vf->verb->present, "σύνοιδα"))
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_SIGMA;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_UPSILON;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+                *bufferLen += 3;
+                
+                if (decompose)
+                {
+                    buffer[*bufferLen] = SPACE;
+                    buffer[*bufferLen+1] = HYPHEN;
+                    buffer[*bufferLen+2] = SPACE;
+                    *bufferLen += 3;
+                }
+            }
+            
+            if (hasPrefix && !decompose)
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_ETA_WITH_OXIA_AND_YPOGEGRAMMENI;
+                *bufferLen += 1;
+            }
+            else if (decompose)
+            {
+                buffer[*bufferLen+0] = DECOMPOSED_AUGMENT_CHAR;
+                buffer[*bufferLen+1] = SPACE;
+                buffer[*bufferLen+2] = HYPHEN;
+                buffer[*bufferLen+3] = SPACE;
+                buffer[*bufferLen+4] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+5] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+                *bufferLen += 6;
+            }
+            else
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_ETA_WITH_PSILI_AND_OXIA_AND_YPOGEGRAMMENI;
+                *bufferLen += 1;
+            }
+            buffer[*bufferLen+0] = GREEK_SMALL_LETTER_DELTA;
+            *bufferLen += 1;
+            
+            if (decompose)
+            {
+                buffer[*bufferLen] = SPACE;
+                buffer[*bufferLen+1] = HYPHEN;
+                buffer[*bufferLen+2] = SPACE;
+                *bufferLen += 3;
+            }
+            
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+            buffer[*bufferLen+1] = GREEK_SMALL_LETTER_MU;
+            buffer[*bufferLen+2] = GREEK_SMALL_LETTER_EPSILON;
+            buffer[*bufferLen+3] = GREEK_SMALL_LETTER_NU;
+            *bufferLen += 4;
+        }
+        else if (vf->person == SECOND && vf->number == PLURAL)
+        {
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_TAU;
+            buffer[*bufferLen+1] = GREEK_SMALL_LETTER_EPSILON;
+            buffer[*bufferLen+2] = COMMA;
+            buffer[*bufferLen+3] = SPACE;
+            
+            *bufferLen += 4;
+            if (utf8HasSuffix(vf->verb->present, "σύνοιδα"))
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_SIGMA;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_UPSILON;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+                *bufferLen += 3;
+                
+                if (decompose)
+                {
+                    buffer[*bufferLen] = SPACE;
+                    buffer[*bufferLen+1] = HYPHEN;
+                    buffer[*bufferLen+2] = SPACE;
+                    *bufferLen += 3;
+                }
+            }
+            
+            if (hasPrefix && !decompose)
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_ETA_WITH_OXIA_AND_YPOGEGRAMMENI;
+                *bufferLen += 1;
+            }
+            else if (decompose)
+            {
+                buffer[*bufferLen+0] = DECOMPOSED_AUGMENT_CHAR;
+                buffer[*bufferLen+1] = SPACE;
+                buffer[*bufferLen+2] = HYPHEN;
+                buffer[*bufferLen+3] = SPACE;
+                buffer[*bufferLen+4] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+5] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+                *bufferLen += 6;
+            }
+            else
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_ETA_WITH_PSILI_AND_OXIA_AND_YPOGEGRAMMENI;
+                *bufferLen += 1;
+            }
+            
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_DELTA;
+            *bufferLen += 1;
+            
+            if (decompose)
+            {
+                buffer[*bufferLen] = SPACE;
+                buffer[*bufferLen+1] = HYPHEN;
+                buffer[*bufferLen+2] = SPACE;
+                *bufferLen += 3;
+            }
+            
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+            buffer[*bufferLen+1] = GREEK_SMALL_LETTER_TAU;
+            buffer[*bufferLen+2] = GREEK_SMALL_LETTER_EPSILON;
+            *bufferLen += 3;
+        }
+        else if (vf->person == THIRD && vf->number == PLURAL)
+        {
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_ALPHA;
+            buffer[*bufferLen+1] = GREEK_SMALL_LETTER_NU;
+            buffer[*bufferLen+2] = COMMA;
+            buffer[*bufferLen+3] = SPACE;
+            
+            *bufferLen += 4;
+            if (utf8HasSuffix(vf->verb->present, "σύνοιδα"))
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_SIGMA;
+                buffer[*bufferLen+1] = GREEK_SMALL_LETTER_UPSILON;
+                buffer[*bufferLen+2] = GREEK_SMALL_LETTER_NU;
+                *bufferLen += 3;
+                
+                if (decompose)
+                {
+                    buffer[*bufferLen] = SPACE;
+                    buffer[*bufferLen+1] = HYPHEN;
+                    buffer[*bufferLen+2] = SPACE;
+                    *bufferLen += 3;
+                }
+            }
+            
+            if (hasPrefix && !decompose)
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_ETA_WITH_OXIA_AND_YPOGEGRAMMENI;
+                *bufferLen += 1;
+            }
+            else if (decompose)
+            {
+                buffer[*bufferLen+0] = DECOMPOSED_AUGMENT_CHAR;
+                buffer[*bufferLen+1] = SPACE;
+                buffer[*bufferLen+2] = HYPHEN;
+                buffer[*bufferLen+3] = SPACE;
+                buffer[*bufferLen+4] = GREEK_SMALL_LETTER_EPSILON;
+                buffer[*bufferLen+5] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+                *bufferLen += 6;
+            }
+            else
+            {
+                buffer[*bufferLen+0] = GREEK_SMALL_LETTER_ETA_WITH_PSILI_AND_OXIA_AND_YPOGEGRAMMENI;
+                *bufferLen += 1;
+            }
+            
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_DELTA;
+            *bufferLen += 1;
+            
+            if (decompose)
+            {
+                buffer[*bufferLen] = SPACE;
+                buffer[*bufferLen+1] = HYPHEN;
+                buffer[*bufferLen+2] = SPACE;
+                *bufferLen += 3;
+            }
+            
+            buffer[*bufferLen] = GREEK_SMALL_LETTER_EPSILON;
+            buffer[*bufferLen + 1] = GREEK_SMALL_LETTER_SIGMA;
+            buffer[*bufferLen + 2] = GREEK_SMALL_LETTER_ALPHA;
+            buffer[*bufferLen + 3] = GREEK_SMALL_LETTER_NU;
+            *bufferLen += 4;
+        }
+    }
+    else
+    {
+        return 0;
+    }
+    return 1;
+}
+
 /**
  * return 1 for success, 0 for failure
  */
@@ -972,6 +1731,26 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         if (ret)
         {
             ucs2_to_utf8_string(ucs2StemPlusEndingBuffer, ucs2StemPlusEndingBufferLen, (unsigned char *)utf8OutputBuffer);
+        }
+        return ret;
+    }
+    else if ((utf8HasSuffix(vf->verb->present, "οἶδα") || utf8HasSuffix(vf->verb->present, "οιδα")) && vf->tense != FUTURE)
+    {
+        int ret = getOida(vf, ucs2StemPlusEndingBuffer, &ucs2StemPlusEndingBufferLen, decompose);
+        if (ret)
+        {
+            if (!wordIsAccented(&ucs2StemPlusEndingBuffer[0], ucs2StemPlusEndingBufferLen))
+            {
+                accentRecessive(vf, &ucs2StemPlusEndingBuffer[0], &ucs2StemPlusEndingBufferLen);
+            }
+            
+            if (decompose && !ACCENT_DECOMPOSED_FORMS)
+            {
+                stripAccent(&ucs2StemPlusEndingBuffer[0], &ucs2StemPlusEndingBufferLen);
+            }
+            
+            ucs2_to_utf8_string(ucs2StemPlusEndingBuffer, ucs2StemPlusEndingBufferLen, (unsigned char *)utf8OutputBuffer);
+
         }
         return ret;
     }
@@ -5260,6 +6039,10 @@ void decomposePrefixes(VerbFormC *vf, UCS2 *ucs2, int *len)
             rightShiftFromOffset(ucs2, 7, len);
             ucs2[8] = COMBINING_ROUGH_BREATHING;
         }
+        else if (ucs2[6] == GREEK_SMALL_LETTER_EPSILON && ucs2[7] == GREEK_SMALL_LETTER_IOTA && ucs2[8] == GREEK_SMALL_LETTER_SIGMA)
+        {
+            ucs2[7] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
+        }
         else if (ucs2[6] == GREEK_SMALL_LETTER_EPSILON && ucs2[7] == GREEK_SMALL_LETTER_IOTA)
         {
             ucs2[7] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA;
@@ -6130,6 +6913,8 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
                 ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_PSILI;
             else if (presentStemInitial == GREEK_SMALL_LETTER_PHI)//for phero
                 ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_PSILI;
+            else
+                ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_PSILI; //for erhsomai, doesn't have present to check
         }
         else if (ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_DASIA )
         {
