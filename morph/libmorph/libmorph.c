@@ -2125,6 +2125,32 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         ucs2StemPlusEndingBufferLen = 1;
     }
     
+    //add eu alternates here here H&Q p. 552
+    if (utf8HasSuffix(vf->verb->present, "εὑρίσκω"))
+    {
+        if ((vf->tense == AORIST || vf->tense == IMPERFECT || vf->tense == PERFECT || vf->tense == PLUPERFECT) && vf->mood == INDICATIVE)// ucs2StemPlusEndingBuffer[0] == GREEK_SMALL_LETTER_ETA)
+        {
+            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = COMMA; //comma
+            ucs2StemPlusEndingBufferLen++;
+            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = SPACE; //space
+            ucs2StemPlusEndingBufferLen++;
+            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = GREEK_SMALL_LETTER_EPSILON;
+            ucs2StemPlusEndingBufferLen++;
+            
+            int j = 1;
+            int i = 1;
+            if (decompose && vf->tense != PERFECT && vf->tense != PLUPERFECT)
+                j = 5;
+            
+            
+            for (; j < (ucs2StemPlusEndingBufferLen - 3); i++, j++)
+            {
+                ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen+i-1] = ucs2StemPlusEndingBuffer[j];
+            }
+            ucs2StemPlusEndingBufferLen += (j-1);
+        }
+    }
+    
     ucs2_to_utf8_string(ucs2StemPlusEndingBuffer, ucs2StemPlusEndingBufferLen, (unsigned char *)utf8OutputBuffer);
     
     if (utf8OutputBuffer[0] == '\0')
@@ -2234,7 +2260,7 @@ bool accentRecessive(VerbFormC *vf, UCS2 *tempUcs2String, int *len)
             accentableRegionStart = 3;
         else if (hasPrefix(tempUcs2String, *len, dia, 3))
             accentableRegionStart = 3;
-        else if (hasPrefix(tempUcs2String, *len, apo, 3))
+        else if (hasPrefix(tempUcs2String, *len, apo, 3) && !utf8HasSuffix(vf->verb->present, "ἀπόλλῡμι"))
             accentableRegionStart = 3;
         else if (hasPrefix(tempUcs2String, *len, ap, 2))
             accentableRegionStart = 2;
@@ -5779,7 +5805,12 @@ void stripAccent(UCS2 *word, int *len)
             case GREEK_SMALL_LETTER_ALPHA_WITH_TONOS:
             case GREEK_SMALL_LETTER_ALPHA_WITH_PERISPOMENI:
                 word[i] = GREEK_SMALL_LETTER_ALPHA;
-                break;
+                break; /*
+            case GREEK_SMALL_LETTER_ALPHA_WITH_PERISPOMENI: //fix me, this needs to be done for the other cases below
+                rightShiftFromOffset(word, i, len);
+                word[i] = GREEK_SMALL_LETTER_ALPHA;
+                word[i+1] = COMBINING_MACRON;
+                break; */
             case GREEK_SMALL_LETTER_EPSILON_WITH_OXIA:
             case GREEK_SMALL_LETTER_EPSILON_WITH_TONOS:
                 word[i] = GREEK_SMALL_LETTER_EPSILON;
@@ -5791,9 +5822,23 @@ void stripAccent(UCS2 *word, int *len)
                 break;
             case GREEK_SMALL_LETTER_IOTA_WITH_OXIA:
             case GREEK_SMALL_LETTER_IOTA_WITH_TONOS:
-            case GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI:
+            //case GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI:
                 word[i] = GREEK_SMALL_LETTER_IOTA;
                 break;
+                
+            case GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI: //to fix decomposed macron on krine
+                if (i > 0 && word[i-1] != GREEK_SMALL_LETTER_EPSILON && word[i-1] != GREEK_SMALL_LETTER_OMICRON && word[i-1] != GREEK_SMALL_LETTER_ALPHA && word[i-1] != SPACE)
+                {
+                rightShiftFromOffset(word, i, len);
+                word[i] = GREEK_SMALL_LETTER_IOTA;
+                word[i+1] = COMBINING_MACRON;
+                }
+                else
+                {
+                    word[i] = GREEK_SMALL_LETTER_IOTA;
+                }
+                break;
+                
             case GREEK_SMALL_LETTER_OMICRON_WITH_OXIA:
             case GREEK_SMALL_LETTER_OMICRON_WITH_TONOS:
                 word[i] = GREEK_SMALL_LETTER_OMICRON;
@@ -5802,7 +5847,12 @@ void stripAccent(UCS2 *word, int *len)
             case GREEK_SMALL_LETTER_UPSILON_WITH_TONOS:
             case GREEK_SMALL_LETTER_UPSILON_WITH_PERISPOMENI:
                 word[i] = GREEK_SMALL_LETTER_UPSILON;
-                break;
+                break; /*
+            case GREEK_SMALL_LETTER_UPSILON_WITH_PERISPOMENI:
+                rightShiftFromOffset(word, i, len);
+                word[i] = GREEK_SMALL_LETTER_UPSILON;
+                word[i+1] = COMBINING_MACRON;
+                break; */
             case GREEK_SMALL_LETTER_OMEGA_WITH_OXIA:
             case GREEK_SMALL_LETTER_OMEGA_WITH_TONOS:
             case GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI:
@@ -6905,6 +6955,10 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
             //NSLog(@"removed augment");
             leftShift(ucs2, len);
         }
+        else if (ucs2[0] == GREEK_SMALL_LETTER_ETA && ucs2[1] == GREEK_SMALL_LETTER_UPSILON_WITH_DASIA) //hu)
+        {
+            ucs2[0] = GREEK_SMALL_LETTER_EPSILON;
+        }
         else if (ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_PSILI )
         {
             if (presentStemInitial == GREEK_SMALL_LETTER_ALPHA_WITH_PSILI)
@@ -6941,6 +6995,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
         {
             ucs2[0] = GREEK_SMALL_LETTER_OMICRON_WITH_PSILI;
         }
+        
     }
     else if (vf->tense == FUTURE && vf->voice == PASSIVE)
     {
@@ -6971,6 +7026,10 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
         {
             //NSLog(@"removed augment");
             leftShift(ucs2, len);
+        }
+        else if (ucs2[0] == GREEK_SMALL_LETTER_ETA && ucs2[1] == GREEK_SMALL_LETTER_UPSILON_WITH_DASIA) //hu)
+        {
+            ucs2[0] = GREEK_SMALL_LETTER_EPSILON;
         }
         else if (ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_PSILI )
         {
@@ -7028,6 +7087,9 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
         }
         else
         {
+            if (ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_DASIA)
+                return;
+            
             rightShiftFromOffset(ucs2, 0, len);
             rightShiftFromOffset(ucs2, 0, len);
             rightShiftFromOffset(ucs2, 0, len);
@@ -7055,6 +7117,11 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
             return;
         }
         
+        if (vf->tense == PLUPERFECT && ucs2[0] == GREEK_SMALL_LETTER_ETA && ucs2[1] == GREEK_SMALL_LETTER_UPSILON_WITH_DASIA)
+            {
+                return;
+            }
+        
         if (utf8HasSuffix(vf->verb->present, "εἶμι"))
         {
             leftShiftFromOffset(ucs2, 0, len);
@@ -7074,6 +7141,9 @@ void augmentStem(VerbFormC *vf, UCS2 *ucs2, int *len, bool decompose)
                 return;
             
             if (ucs2[1] == GREEK_SMALL_LETTER_EPSILON && ucs2[2] == GREEK_SMALL_LETTER_IOTA_WITH_DASIA)
+                return;
+            
+            if (ucs2[0] == GREEK_SMALL_LETTER_ETA_WITH_DASIA)
                 return;
             
             rightShiftFromOffset(ucs2, 0, len);
