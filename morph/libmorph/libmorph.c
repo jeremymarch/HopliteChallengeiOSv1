@@ -337,8 +337,24 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     UCS2 deponent[] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
     int ending = 0;
 
+    
+    if (utf8HasSuffix(vf->verb->present, "κεῖμαι"))
+    {
+        if (vf->tense == PRESENT  && vf->mood == INDICATIVE)
+            ending = PERFECT_MIDPASS_IND;
+        else if (vf->tense == IMPERFECT  && vf->mood == INDICATIVE)
+            ending = PLUPERFECT_MIDPASS_IND;
+        else if (vf->mood == SUBJUNCTIVE)
+            ending = PRESENT_MIDPASS_SUBJ;
+        else if (vf->mood == OPTATIVE)
+            ending = PRESENT_MIDPASS_OPT;
+        else if (vf->mood == IMPERATIVE)
+            ending  = AORIST_MIDDLE_IMPERATIVES_MI;
+        else if (vf->tense == FUTURE)
+            ending = PRESENT_MIDPASS_IND;
+    }
     ////echw h&q page 504
-    if (utf8HasSuffix(vf->verb->present, "ἔχω") && vf->tense == AORIST && vf->voice == ACTIVE && vf->mood == SUBJUNCTIVE)
+    else if (utf8HasSuffix(vf->verb->present, "ἔχω") && vf->tense == AORIST && vf->voice == ACTIVE && vf->mood == SUBJUNCTIVE)
         ending = AORIST_PASSIVE_SUBJ;
     else if (utf8HasSuffix(vf->verb->present, "ἔχω") && vf->tense == AORIST && vf->voice == ACTIVE && vf->mood == OPTATIVE && vf->number == SINGULAR)
         ending = AORIST_PASSIVE_OPT;
@@ -6039,6 +6055,19 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         elen++;
         ending[1] = GREEK_SMALL_LETTER_FINAL_SIGMA;
     }
+    else if (utf8HasSuffix(vf->verb->present, "κεῖμαι"))
+    {
+        if (vf->mood == SUBJUNCTIVE || vf->mood == OPTATIVE)
+            leftShiftFromOffset(ucs2, *len - 1, len);
+        if (vf->mood == IMPERATIVE && vf->person == SECOND && vf->number == SINGULAR)
+        {
+            ending[0] = GREEK_SMALL_LETTER_SIGMA;
+            ending[1] = GREEK_SMALL_LETTER_OMICRON;
+            elen = 2;
+        }
+    }
+    
+    
     if (vf->person == SECOND && vf->number == SINGULAR && vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == IMPERATIVE && !decompose)
     {
         //decide which aorist passive imperative ending
@@ -6282,6 +6311,8 @@ void stripAccent(UCS2 *word, int *len)
 //accents should be stripped before calling this
 void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, unsigned char voice)
 {
+    UCS2 keimai[6] = { GREEK_SMALL_LETTER_KAPPA, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_IOTA, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA};
+    
     UCS2 presMi[2] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_IOTA };
     UCS2 presMiDeponent[4] = { GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
     
@@ -6297,8 +6328,9 @@ void stripEndingFromPrincipalPart(UCS2 *stem, int *len, unsigned char tense, uns
 
     UCS2 futureDeponentContracted[5] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_UPSILON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
     
-    
-    if ((tense == PRESENT || tense == IMPERFECT) && hasSuffix(stem, *len, presNumiDeponent, 5)) //νυμαι
+    if (hasSuffix(stem, *len, keimai, 6))
+        *len -= 3;
+    else if ((tense == PRESENT || tense == IMPERFECT) && hasSuffix(stem, *len, presNumiDeponent, 5)) //νυμαι
         *len -= 3;
     else if ((tense == PRESENT || tense == IMPERFECT) && hasSuffix(stem, *len, presMiDeponent, 4)) //μαι
         *len -= 3;
