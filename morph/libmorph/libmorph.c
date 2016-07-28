@@ -338,7 +338,7 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     int ending = 0;
 
     
-    if (utf8HasSuffix(vf->verb->present, "ἐπίσταμαι") && vf->mood == SUBJUNCTIVE)
+    if (utf8HasSuffix(vf->verb->present, "ἐπίσταμαι") && vf->tense == PRESENT && vf->mood == SUBJUNCTIVE)
     {
         ending = PRESENT_MIDPASS_SUBJ;
     }
@@ -2376,11 +2376,12 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             UCS2 labe[] = { GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_BETA, GREEK_SMALL_LETTER_EPSILON } ;
             UCS2 elthe[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_THETA, GREEK_SMALL_LETTER_EPSILON } ;
             UCS2 eipe[] = { GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_IOTA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_EPSILON } ;
+            UCS2 eure[] = { GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_UPSILON_WITH_DASIA, GREEK_SMALL_LETTER_RHO, GREEK_SMALL_LETTER_EPSILON } ;
             if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, ide, 3)))
             {
                 ucs2StemPlusEndingBuffer[2] = GREEK_SMALL_LETTER_EPSILON_WITH_OXIA;
             }
-            else if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, labe, 4) || hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, elthe, 4) || hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, eipe, 4)))
+            else if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, labe, 4) || hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, elthe, 4) || hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, eipe, 4) || hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, eure, 4)))
             {
                 ucs2StemPlusEndingBuffer[3] = GREEK_SMALL_LETTER_EPSILON_WITH_OXIA;
             }
