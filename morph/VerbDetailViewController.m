@@ -165,7 +165,7 @@
                 {
                     //FIX ME, is this right?? how do we label these.
                     //yes it's correct, middle deponents do not have a passive voice.  H&Q page 316
-                    if ( deponentType(vf.verb) == MIDDLE_DEPONENT || deponentType(vf.verb) == PASSIVE_DEPONENT || deponentType(vf.verb) == DEPONENT_GIGNOMAI)
+                    if ( deponentType(vf.verb) == MIDDLE_DEPONENT || deponentType(vf.verb) == PASSIVE_DEPONENT || deponentType(vf.verb) == DEPONENT_GIGNOMAI || utf8HasSuffix(vf.verb->present, "κεῖμαι"))
                     {
                         s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], @"middle", [NSString stringWithUTF8String: moods[m]]];
                     }

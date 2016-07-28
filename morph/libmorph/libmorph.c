@@ -338,7 +338,11 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     int ending = 0;
 
     
-    if (utf8HasSuffix(vf->verb->present, "κεῖμαι"))
+    if (utf8HasSuffix(vf->verb->present, "ἐπίσταμαι") && vf->mood == SUBJUNCTIVE)
+    {
+        ending = PRESENT_MIDPASS_SUBJ;
+    }
+    else if (utf8HasSuffix(vf->verb->present, "κεῖμαι"))
     {
         if (vf->tense == PRESENT  && vf->mood == INDICATIVE)
             ending = PERFECT_MIDPASS_IND;
@@ -368,7 +372,6 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
         ending = PRESENT_ACTIVE_SUBJ;
     else if (vf->tense == PRESENT && vf->voice == ACTIVE && vf->mood == SUBJUNCTIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA && preContactedEndings)
         ending = AORIST_PASSIVE_SUBJ;
-
     
     else if (vf->tense == PRESENT && (vf->voice == MIDDLE || vf->voice == PASSIVE) && vf->mood == SUBJUNCTIVE && word[wordLen - 2] == GREEK_SMALL_LETTER_MU && word[wordLen - 1] == GREEK_SMALL_LETTER_IOTA && (!preContactedEndings || word[wordLen - 3] == COMBINING_MACRON))
         ending = PRESENT_MIDPASS_SUBJ;
@@ -2097,6 +2100,10 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
         return 0;
     }
     else if (utf8HasSuffix(vf->verb->present, "εἶμι") && vf->voice != ACTIVE)
+    {
+        return 0;
+    }
+    else if (utf8HasSuffix(vf->verb->present, "κεῖμαι") && vf->voice != MIDDLE)
     {
         return 0;
     }
@@ -5007,7 +5014,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 }
                 ucs2[0] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
             }
-            if (( utf8HasSuffix(vf->verb->present, "στημι") || utf8HasSuffix(vf->verb->present, "αμαι") || utf8HasSuffix(vf->verb->present, "φημί")) && decompose)
+            if (( utf8HasSuffix(vf->verb->present, "στημι") || utf8HasSuffix(vf->verb->present, "αμαι") || utf8HasSuffix(vf->verb->present, "φημί")) && decompose) // fix me, do we want: && !utf8HasSuffix(vf->verb->present, "ἐπίσταμαι")
             {
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_EPSILON;
             }
@@ -5030,7 +5037,8 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             else
             {
                 leftShift(ending, &elen);
-                if (vf->person != FIRST && vf->voice != ACTIVE)
+                //h&q p 504
+                if (vf->person != FIRST && vf->voice != ACTIVE && !utf8HasSuffix(vf->verb->present, "ἐπίσταμαι"))
                 {
                     ending[0] = GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI;
                 }
@@ -5338,9 +5346,8 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             leftShift(ending, &elen);
             if (vf->person == SECOND && vf->number == SINGULAR)
             {
-                if (utf8HasSuffix(vf->verb->present, "δύναμαι"))
-                {
-                    //h&q page 503
+                if (utf8HasSuffix(vf->verb->present, "δύναμαι") || utf8HasSuffix(vf->verb->present, "ἐπίσταμαι") )
+                {   //h&q page 503, 504
                     --(*len);
                     ending[0] = GREEK_SMALL_LETTER_OMEGA;
                     elen = 1;

@@ -15,7 +15,7 @@ enum {
     VERBS_ROW = 2
 };
 
-#define NUM_LEVELS 18
+#define NUM_LEVELS 20
 
 enum {
     UNITS = 0,
