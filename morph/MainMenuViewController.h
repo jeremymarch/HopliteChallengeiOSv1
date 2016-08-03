@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PopUp.h"
 
 @interface MainMenuViewController : UIViewController
 
@@ -29,6 +28,5 @@
 @property (weak, nonatomic) IBOutlet UIButton *tempFormsButton;
 
 @property NSInteger buttonPressed;
-@property BOOL popupShown;
-@property (nonatomic, retain) IBOutlet PopUp *popup;
+
 @end

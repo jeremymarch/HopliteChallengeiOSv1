@@ -192,6 +192,8 @@ SystemSoundID BuzzSound;
     else
         newHeight = l.frame.size.height;
     
+    //NSLog(@"height %@ %f", string, newHeight);
+    
     [l setFrame: CGRectMake((screenSize.width - adjustedSize.width) / 2, l.frame.origin.y, adjustedSize.width, newHeight)];
 }
 
@@ -868,6 +870,11 @@ void printUCS22(UCS2 *u, int len)
 {
     NSLog(@"cleanup: %d", reset);
     //this means it was correct
+    if (self.expanded)
+    {
+        [self unexpand];
+    }
+    
     if (self.changedForm.hidden == YES)
     {
         
@@ -901,6 +908,7 @@ void printUCS22(UCS2 *u, int len)
                                               ];
                                          }
                                          completion:^(BOOL finished){
+                                             
                                              //switch
                                              UILabel *temp;
                                              temp = self.origForm;
@@ -1063,12 +1071,12 @@ void dispatchAfter(double delay, void (^block)(void))
     {
         origForm = [NSString stringWithUTF8String: (const char*)buffer];
     }
-    origForm = [self selectRandomFromCSV:origForm];
+    //origForm = [self selectRandomFromCSV:origForm];
     self.origStr = origForm;
     
-    getForm(vf1Loc, buffer, bufferLen, false, true);
+    getForm(vf1Loc, buffer, bufferLen, true, true);
     self.origStrDecomposed = [NSString stringWithUTF8String: (const char*)buffer];
-    self.origStrDecomposed = [self selectRandomFromCSV:self.origStrDecomposed]; //FIXME, What if not same as orig form
+    //self.origStrDecomposed = [self selectRandomFromCSV:self.origStrDecomposed]; //FIXME, What if not same as orig form
     
     getAbbrevDescription(vf1Loc, buffer, bufferLen);
     NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
@@ -1594,7 +1602,7 @@ void dispatchAfter(double delay, void (^block)(void))
     
     [self.textfield removeObserver:self forKeyPath:@"contentSize" context:NULL];
 }
-
+/*
 - (void) animatePopUpShow:(id)sender
 {
     [self.textfield resignFirstResponder];
@@ -1628,7 +1636,7 @@ void dispatchAfter(double delay, void (^block)(void))
         self.popupShown = TRUE;
     }
 }
-
+*/
 -(void) setLevels
 {
     if (self.levels)
@@ -1696,57 +1704,67 @@ void dispatchAfter(double delay, void (^block)(void))
     
     if (pinch.scale > 1 && pinch.velocity > thresholdVelocity)
     {
-        if (!self.expanded)
-        {
-            if (self.changedForm.hidden == YES)
-            {
-                //self.changedForm.frame = self.textfield.frame;
-                //self.changedForm.hidden = NO;
-                //self.textfield.hidden = YES;
-                self.textfield.text = self.changedStrDecomposed;
-                
-                //slide green check over
-                CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
-                CGFloat gvX = (self.view.frame.size.width + size.width) / 2 + 15;
-                //don't let it go off the screen
-                if (gvX > self.view.frame.size.width - 26)
-                    gvX = self.view.frame.size.width - 26;
-                [self.greenCheckView setFrame:CGRectMake(gvX, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
-            }
-            else
-            {
-                self.changedForm.text = self.changedStrDecomposed;
-                [self centerLabel:self.changedForm withString:self.changedStrDecomposed setHeight:YES];
-            }
-            self.expanded = YES;
-            self.origForm.text = self.origStrDecomposed;
-            [self centerLabel:self.origForm withString:self.origStrDecomposed setHeight:NO];
-        }
+        [self expand];
     }
     else if (pinch.velocity < -thresholdVelocity)
     {
-        if (self.expanded)
+        [self unexpand];
+    }
+}
+
+-(void)expand //ie decompose
+{
+    if (!self.expanded)
+    {
+        if (self.changedForm.hidden == YES)
         {
-            if (self.changedForm.hidden == YES)
-            {
-                self.textfield.text = self.changedStr;
-                //slide green check over
-                CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
-                CGFloat gvX = (self.view.frame.size.width + size.width) / 2 + 15;
-                //don't let it go off the screen
-                if (gvX > self.view.frame.size.width - 26)
-                    gvX = self.view.frame.size.width - 26;
-                [self.greenCheckView setFrame:CGRectMake(gvX, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
-            }
-            else
-            {
-                self.changedForm.text = self.changedStr;
-                [self centerLabel:self.changedForm withString:self.changedStr setHeight:YES];
-            }
-            self.expanded = NO;
-            self.origForm.text = self.origStr;
-            [self centerLabel:self.origForm withString:self.origStr setHeight:NO];
+            //self.changedForm.frame = self.textfield.frame;
+            //self.changedForm.hidden = NO;
+            //self.textfield.hidden = YES;
+            self.textfield.text = self.changedStrDecomposed;
+            
+            //slide green check over
+            CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
+            CGFloat gvX = (self.view.frame.size.width + size.width) / 2 + 15;
+            //don't let it go off the screen
+            if (gvX > self.view.frame.size.width - 26)
+                gvX = self.view.frame.size.width - 26;
+            [self.greenCheckView setFrame:CGRectMake(gvX, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
         }
+        else
+        {
+            self.changedForm.text = self.changedStrDecomposed;
+            [self centerLabel:self.changedForm withString:self.changedStrDecomposed setHeight:YES];
+        }
+        self.expanded = YES;
+        self.origForm.text = self.origStrDecomposed;
+        [self centerLabel:self.origForm withString:self.origStrDecomposed setHeight:NO];
+    }
+}
+
+-(void)unexpand //ie un-decompose
+{
+    if (self.expanded)
+    {
+        if (self.changedForm.hidden == YES)
+        {
+            self.textfield.text = self.changedStr;
+            //slide green check over
+            CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
+            CGFloat gvX = (self.view.frame.size.width + size.width) / 2 + 15;
+            //don't let it go off the screen
+            if (gvX > self.view.frame.size.width - 26)
+                gvX = self.view.frame.size.width - 26;
+            [self.greenCheckView setFrame:CGRectMake(gvX, self.greenCheckView.frame.origin.y, self.greenCheckView.frame.size.width,self.greenCheckView.frame.size.height)];
+        }
+        else
+        {
+            self.changedForm.text = self.changedStr;
+            [self centerLabel:self.changedForm withString:self.changedStr setHeight:YES];
+        }
+        self.expanded = NO;
+        self.origForm.text = self.origStr;
+        [self centerLabel:self.origForm withString:self.origStr setHeight:NO];
     }
 }
 
@@ -1845,11 +1863,11 @@ void dispatchAfter(double delay, void (^block)(void))
     self.systemFont = @"HelveticaNeue-Light";
     self.greekFont = @"NewAthenaUnicode";
     self.fontSize = 28.0;
-    
+    /*
     self.popupShown = FALSE;
     self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
     [self.view addSubview:self.popup];
-    
+    */
     self.scoreLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:24.0];
     self.scoreLabel.textColor = blueColor;
     if (self.verbQuestionType == HOPLITE_CHALLENGE)
@@ -2030,15 +2048,17 @@ void dispatchAfter(double delay, void (^block)(void))
     else
     {
         self.menuButton.hidden = YES;
-        
+        /*
         [self.menuButton setFrame:CGRectMake(screenSize.width - 60 - 6, 6, 60, 36.0)];
         [self.menuButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         self.menuButton.layer.borderColor = [UIColor grayColor].CGColor;
         self.menuButton.layer.borderWidth = 2.0f;
         self.menuButton.layer.cornerRadius = 8;
+        
         [self.menuButton addTarget:self
                             action:@selector(animatePopUpShow:)
        forControlEvents:UIControlEventTouchDown];
+         */
     }
     
     [self.verbModeButton setFrame:CGRectMake(self.view.frame.size.width - 60 - 6, 6, 60, 36.0)];
@@ -2135,7 +2155,7 @@ void dispatchAfter(double delay, void (^block)(void))
     CGSize fsize = [@"ξφψΑΒ" sizeWithAttributes:@{NSFontAttributeName: self.origForm.font }];
     CGSize fsizeS = [@"ABCD" sizeWithAttributes:@{NSFontAttributeName: self.stemLabel.font }];
     
-    [self.origForm setFrame:CGRectMake(self.origForm.frame.origin.x, f/6, self.view.frame.size.width, fsize.height + 10)];
+    [self.origForm setFrame:CGRectMake(self.origForm.frame.origin.x, f/6, self.origForm.frame.size.width, self.origForm.frame.size.height)];
     //[self.changeTo setFrame:CGRectMake(0, f/3.4, self.view.frame.size.width, fsizeS.height + 10)];
     
     [self.life1 setFrame:CGRectMake(size.width - 27,6,20,20)];
@@ -2186,7 +2206,8 @@ void dispatchAfter(double delay, void (^block)(void))
     
     int origandtextfieldheight = (self.view.frame.size.height - (topmargin * heightFactor) - keyboardHeight - stemHeight) / 2;
     //[self.changeTo setFrame:CGRectMake(0, f/3.4+34, w, fsizeS.height + 10)];
-    [self.origForm setFrame:CGRectMake(self.origForm.frame.origin.x, topmargin, w, origandtextfieldheight)];
+    
+    [self.origForm setFrame:CGRectMake(self.origForm.frame.origin.x, topmargin, self.origForm.frame.size.width, origandtextfieldheight)];
     [self.stemLabel setFrame:CGRectMake(self.stemLabel.frame.origin.x, topmargin + origandtextfieldheight, w, stemHeight)];
     [self.textfield setFrame:CGRectMake(0, topmargin + origandtextfieldheight + stemHeight, w, origandtextfieldheight)];
     [self.changedForm setFrame:CGRectMake(0, topmargin + (origandtextfieldheight * 2) + stemHeight, w, origandtextfieldheight)];

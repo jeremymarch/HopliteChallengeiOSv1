@@ -37,6 +37,7 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 */
+/*
 - (void) animatePopUpShow:(id)sender
 {
     if (self.popupShown)
@@ -63,7 +64,7 @@
         self.popupShown = TRUE;
     }
 }
-
+*/
 - (void)awakeFromNib
 {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -86,15 +87,16 @@
     
 	// Do any additional setup after loading the view, typically from a nib.
     //self.navigationItem.leftBarButtonItem = self.editButtonItem;
+    /*
     self.popupShown = FALSE;
     self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height - 10, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
     [self.view addSubview:self.popup];
-    
+    */
     //[[[UIApplication sharedApplication] keyWindow] addSubview:self.popup];
-    
+    /*
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithTitle:@"Units" style:UIBarButtonItemStyleBordered target:self action:@selector(animatePopUpShow:)];
     self.navigationItem.rightBarButtonItem = addButton;
-    
+    */
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
 }
 
@@ -178,8 +180,11 @@
     
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
         self.detailViewController.detailItem = object;
+        /*
+         
         NSLog(@"buttons: %ld", [self.popup.buttonStates count]);
         [self.detailViewController setLevelArray: self.popup.buttonStates];
+        */
         [self.detailViewController configureView];
     }
     

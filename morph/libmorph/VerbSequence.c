@@ -370,7 +370,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
             verbSeq++;
         }
     }
-    
+
     *seq = verbSeq;
     
     vf1->verb = v; //THIS IS THE VERB WE'E USING
@@ -390,7 +390,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     //only change 1 degree for unites 1 and 2
     if (highestUnit <= 2)
         degreesToChange = 1;
-    
+
     if (vso->startOnFirstSing && verbSeq == 1)
     {
         vf1->person = FIRST;
@@ -466,21 +466,18 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
         
         changeFormByDegrees(vf2, degreesToChange);
     } while (!getForm(vf2, buffer, bufferLen, true, false) || !isValidFormForUnit(vf2, highestUnit) || !strncmp(buffer, "—", 1) || inRecentVFArray(vf2));
-    
+
     /*
-    if (once)
-    {
      //**************for testing to force form****************************
-     vf2->person = FIRST;
+     vf2->person = THIRD;
      vf2->number = PLURAL;
      vf2->tense = AORIST;
      vf2->voice = PASSIVE;
      vf2->mood = OPTATIVE;
      vf2->verb = vf1->verb;
      //**************for testing to force form****************************
-        once = false;
-    }
     */
+    
     lastVF.person = vf2->person;
     lastVF.number = vf2->number;
     lastVF.tense = vf2->tense;

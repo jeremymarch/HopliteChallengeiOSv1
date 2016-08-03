@@ -56,20 +56,12 @@ alpha:1.0]
         [self.resultsButton setFrame:CGRectMake(10, sh - 160, sw - 20, 70)];
         [self.tempFormsButton setFrame:CGRectMake(10, sh - 80, sw - 20, 70)];
         
-        
-        
-        NSLog(@"Rotate menu: %f", size.width);
-        
         [self.HCLabel setFrame:CGRectMake(0, 120, self.view.bounds.size.width, self.HCLabel.frame.size.height)];
         [self.menuButton setFrame:CGRectMake(sw - 70 - 6, 24, 70, 36)];
-        
-        [self.popup setFrame:CGRectMake (0, size.height + 200, size.width, size.height)];
-        [self.popup.table setFrame:CGRectMake (0, size.height + 200, size.width, size.height)];
-        
 
         
     } completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        [self.popup setNeedsDisplay];
+
         // Code here will execute after the rotation has finished.
         // Equivalent to placing it in the deprecated method -[didRotateFromInterfaceOrientation:]
         //NSLog(@"size w: %f, h: %f", size.width, size.height);
@@ -199,11 +191,6 @@ alpha:1.0]
     [self.logoImgView setFrame:CGRectMake((sw - 2547/9) /2,self.view.frame.size.height/4 -46,2547/9,1658/9)];
 
     
-    self.popupShown = FALSE;
-    self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
-    [self.view addSubview:self.popup];
-    
-    
     [self.HCButton addTarget:self action:@selector(showGame:)
             forControlEvents:UIControlEventTouchUpInside];
     [self.HPButton addTarget:self action:@selector(showGame:)
@@ -219,11 +206,6 @@ alpha:1.0]
     [self.gamesButton addTarget:self action:@selector(showGameResults:)
                  forControlEvents:UIControlEventTouchUpInside];
     
-    /*
-     [self.menuButton addTarget:self
-     action:@selector(animatePopUpShow:)
-     forControlEvents:UIControlEventTouchUpInside]; 
-     */
     [self.menuButton addTarget:self action:@selector(showSettings:)
               forControlEvents:UIControlEventTouchUpInside];
     
@@ -491,34 +473,6 @@ alpha:1.0]
 {
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
-}
-
-- (void) animatePopUpShow:(id)sender
-{
-    if (self.popupShown)
-    {
-        [UIView animateWithDuration:0.3 delay:0.0 options:0
-                         animations:^{
-                             self.popup.frame = CGRectMake(0,[UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-                             self.navigationItem.rightBarButtonItem.title = @"Units";
-                             
-                         }
-                         completion:nil];
-        [self.view bringSubviewToFront:self.popup];
-        [self.popup.HCTimeField resignFirstResponder];
-        self.popupShown = FALSE;
-    }
-    else
-    {
-        [UIView animateWithDuration:0.3 delay:0.0 options:0
-                         animations:^{
-                             self.popup.frame = CGRectMake(0,18, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-                             self.navigationItem.rightBarButtonItem.title = @"Close";
-                         }
-                         completion:nil];
-        [self.view bringSubviewToFront:self.popup];
-        self.popupShown = TRUE;
-    }
 }
 
 
