@@ -376,7 +376,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     vf1->verb = v; //THIS IS THE VERB WE'E USING
     
     //***************OVERRIDE for testing on specific verbs, set here*******************************
-    //vf1->verb = &verbs[13];
+    //vf1->verb = &verbs[54];//13];
     //***************for testing on specific verbs*****************************************
     
     
@@ -469,11 +469,17 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
 
     /*
      //**************for testing to force form****************************
-     vf2->person = THIRD;
-     vf2->number = PLURAL;
-     vf2->tense = AORIST;
+    vf1->person = SECOND;
+    vf1->number = SINGULAR;
+    vf1->tense = FUTURE;
+    vf1->voice = PASSIVE;
+    vf1->mood = INDICATIVE;
+    
+    vf2->person = SECOND;
+     vf2->number = SINGULAR;
+     vf2->tense = FUTURE;
      vf2->voice = PASSIVE;
-     vf2->mood = OPTATIVE;
+     vf2->mood = INDICATIVE;
      vf2->verb = vf1->verb;
      //**************for testing to force form****************************
     */

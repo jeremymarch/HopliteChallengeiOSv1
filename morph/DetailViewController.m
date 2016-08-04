@@ -1072,11 +1072,13 @@ void dispatchAfter(double delay, void (^block)(void))
         origForm = [NSString stringWithUTF8String: (const char*)buffer];
     }
     //origForm = [self selectRandomFromCSV:origForm];
+    origForm = [origForm stringByReplacingOccurrencesOfString:@", " withString:@",\n"];
     self.origStr = origForm;
     
     getForm(vf1Loc, buffer, bufferLen, true, true);
     self.origStrDecomposed = [NSString stringWithUTF8String: (const char*)buffer];
     //self.origStrDecomposed = [self selectRandomFromCSV:self.origStrDecomposed]; //FIXME, What if not same as orig form
+    self.origStrDecomposed = [self.origStrDecomposed stringByReplacingOccurrencesOfString:@", " withString:@",\n"];
     
     getAbbrevDescription(vf1Loc, buffer, bufferLen);
     NSString *origDescription = [NSString stringWithUTF8String: (const char*)buffer];
@@ -1156,6 +1158,7 @@ void dispatchAfter(double delay, void (^block)(void))
     [self positionWidgetsToSize:self.view.frame.size];
     
     self.changedForm.numberOfLines = 0;
+    self.origForm.numberOfLines = 0; //fixes truncation with multiple forms
     self.changedForm.lineBreakMode = NSLineBreakByWordWrapping;
     self.changeTo.textColor = [UIColor grayColor];
     self.stemLabel.textColor = [UIColor grayColor];
