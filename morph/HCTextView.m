@@ -26,7 +26,35 @@
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
     }];
+    if (action == @selector(copy:) || action == @selector(select:) || action == @selector(paste:))
+        return NO;
+    
     return [super canPerformAction:action withSender:sender];
+}
+/*
+ //put this function in delegate to prevent selection of text.
+ -(void)textViewDidChangeSelection:(UITextView *)textView {
+ //NSLog(@"Range: %d, %d", textView.selectedRange.location, textView.selectedRange.length);
+    if (textView.selectedRange.length > 0)
+    {
+        textView.selectedRange = NSMakeRange(textView.selectedRange.location, 0);
+    }
+ }
+*/
+
+//this prevents select all when double clicking, but not when you brush finger over text to select.
+-(BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    // Check for gestures to prevent
+    if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+        // Check for double tap
+        if (((UITapGestureRecognizer *)gestureRecognizer).numberOfTapsRequired == 2) {
+            // Prevent the double tap
+            return NO;
+        }
+    }
+    
+    // Always anything that makes it here
+    return YES;
 }
 
 @end

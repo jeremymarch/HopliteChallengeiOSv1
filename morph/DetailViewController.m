@@ -1778,6 +1778,15 @@ void dispatchAfter(double delay, void (^block)(void))
     return [documentsDirectory stringByAppendingPathComponent:fileName];
 }
 
+//do not allow selection of text.
+-(void)textViewDidChangeSelection:(UITextView *)textView {
+    //NSLog(@"Range: %d, %d", textView.selectedRange.location, textView.selectedRange.length);
+    if (textView.selectedRange.length > 0)
+    {
+        textView.selectedRange = NSMakeRange(textView.selectedRange.location, 0);
+    }
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -1907,6 +1916,8 @@ void dispatchAfter(double delay, void (^block)(void))
     self.textfield.font = [UIFont fontWithName:self.greekFont size:self.greekFontSize];
     self.textfield.frame = CGRectMake(10, self.textfield.frame.origin.y, screenSize.width - 20, 54.0);
     self.textfield.hidden = NO;
+    self.textfield.delegate = self;
+
     //fix me add border to textview
     //[self.textfield setBorderStyle:UITextBorderStyleNone];
     //self.textfield.textAlignment =
@@ -2103,6 +2114,7 @@ void dispatchAfter(double delay, void (^block)(void))
     }
     [self positionWidgetsToSize:self.view.frame.size];
 }
+
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
