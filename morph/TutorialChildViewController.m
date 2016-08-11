@@ -21,7 +21,7 @@
     
     if ([self.title isEqualToString:@"tutorialintro"])
     {
-        NSString *htmlFile = [[NSBundle mainBundle] pathForResource:@"titlepage" ofType:@"html"];
+        NSString *htmlFile = [[NSBundle mainBundle] pathForResource:@"tutorialTitlePage" ofType:@"html"];
         NSString* htmlString = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:nil];
         [self.webView loadHTMLString:htmlString baseURL:nil];
     }
@@ -33,7 +33,7 @@
     }
     else if ([self.title isEqualToString:@"tutorialKeyboard"])
     {
-        NSString *htmlFile = [[NSBundle mainBundle] pathForResource:@"TutorialKeyboard" ofType:@"html"];
+        NSString *htmlFile = [[NSBundle mainBundle] pathForResource:@"tutorialKeyboard" ofType:@"html"];
         NSString* htmlString = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:nil];
         [self.webView loadHTMLString:htmlString baseURL:nil];
     }
@@ -46,6 +46,12 @@
     else if ([self.title isEqualToString:@"tutorialAcknowledgements"])
     {
         NSString *htmlFile = [[NSBundle mainBundle] pathForResource:@"tutorialAcknowledgements" ofType:@"html"];
+        NSString* htmlString = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:nil];
+        [self.webView loadHTMLString:htmlString baseURL:nil];
+    }
+    else if ([self.title isEqualToString:@"tutorialPractice"])
+    {
+        NSString *htmlFile = [[NSBundle mainBundle] pathForResource:@"tutorialPractice" ofType:@"html"];
         NSString* htmlString = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:nil];
         [self.webView loadHTMLString:htmlString baseURL:nil];
     }

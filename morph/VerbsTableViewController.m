@@ -22,15 +22,23 @@
 {
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
+    
+    [self.navigationController.navigationBar setTitleTextAttributes:
+     @{NSForegroundColorAttributeName:[UIColor blackColor],
+       NSFontAttributeName:[UIFont fontWithName:@"Helvetica Neue" size:20]}];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     [self.navigationController setNavigationBarHidden:NO];
-    self.title = @"Verbs";
-    self.navigationItem.titleView = [[UIView alloc] init]; //HIDES title from display
+    self.title = @"Verbs by Hansen & Quinn Unit";
+    //self.navigationItem.titleView = [[UIView alloc] init]; //HIDES title from display
     //self.navigationItem.titleView.hidden = YES; //doesn't work, use above
+    
+    [self.navigationController.navigationBar setTitleTextAttributes:
+     @{NSForegroundColorAttributeName:[UIColor blackColor],
+       NSFontAttributeName:[UIFont fontWithName:@"Helvetica Neue" size:20]}];
     
     //Verbs per unit
     self->verbsPerSection[0] = 2;
@@ -95,9 +103,11 @@
     UIView *customTitleView = [ [UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 30)];
     UILabel *titleLabel = [ [UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 30)];
     
+    UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
+    
     titleLabel.text = [NSString stringWithFormat:@"  Unit %ld", section + 1];
     titleLabel.textColor = [UIColor whiteColor];
-    titleLabel.backgroundColor = [UIColor blackColor];
+    titleLabel.backgroundColor = blueColor;
     [customTitleView addSubview:titleLabel];
     
     return customTitleView;
@@ -144,6 +154,8 @@
     else
         cell.textLabel.text = [NSString stringWithUTF8String: verbs[index].present];
     cell.textLabel.font = [UIFont fontWithName:@"NewAthenaUnicode" size:26.0];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 

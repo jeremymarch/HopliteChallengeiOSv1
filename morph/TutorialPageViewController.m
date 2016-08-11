@@ -28,7 +28,7 @@
     self.dataSource = self;
     //self.delegate = self;
     self.index = 0;
-    self.pageNames = [NSArray arrayWithObjects:@"tutorialIntro", @"tutorialAcknowledgements", @"tutorialGamePlay", @"tutorialKeyboard", @"tutorialPinch", /*@"tutorialchild", @"tutorialchild2",*/ nil];
+    self.pageNames = [NSArray arrayWithObjects:@"tutorialIntro", @"tutorialAcknowledgements", @"tutorialGamePlay", @"tutorialPractice", @"tutorialKeyboard", @"tutorialPinch", /*@"tutorialchild", @"tutorialchild2",*/ nil];
     self.numPages = [self.pageNames count];
     
     TutorialChildViewController *initialViewController = [self viewControllerAtIndex:self.index];
@@ -41,6 +41,8 @@
     [self didMoveToParentViewController:self];
     
     self.view.backgroundColor = [UIColor blackColor];
+    
+    UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
 
     self.closeButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [self.closeButton addTarget:self action:@selector(closeTutorial:) forControlEvents:UIControlEventTouchUpInside];
@@ -49,8 +51,8 @@
     self.closeButton.backgroundColor = [UIColor whiteColor];
 
     self.closeButton.layer.borderWidth = 2.0;
-    [self.closeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-    self.closeButton.layer.borderColor = [UIColor grayColor].CGColor;
+    [self.closeButton setTitleColor:blueColor forState:UIControlStateNormal];
+    self.closeButton.layer.borderColor = blueColor.CGColor;
     self.closeButton.backgroundColor = [UIColor whiteColor];
     self.closeButton.layer.borderWidth = 2.0f;
     self.closeButton.layer.cornerRadius = 8;

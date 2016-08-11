@@ -14,7 +14,7 @@
 @end
 
 @implementation MasterViewController
-@synthesize popup, popupShown;
+@synthesize popupShown;
 /*
 - (void) initPopUpView {
         NSLog(@"here2");
@@ -216,7 +216,7 @@
         NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
         [[segue destinationViewController] setDetailItem:object];
         
-        [[segue destinationViewController] setLevelArray: self.popup.buttonStates];
+        //[[segue destinationViewController] setLevelArray: self.popup.buttonStates];
     }
 }
 

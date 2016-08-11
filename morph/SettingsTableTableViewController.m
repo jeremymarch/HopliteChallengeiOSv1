@@ -39,11 +39,12 @@
     self.viewHeader = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 100)];
     [self.viewHeader setBackgroundColor:[UIColor whiteColor]];
     
+    UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
     
     self.closeButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 70 - 6, 24, 70, 36)];
     [self.closeButton setTitle:@"Close" forState:UIControlStateNormal];
-    [self.closeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-    self.closeButton.layer.borderColor = [UIColor grayColor].CGColor;
+    [self.closeButton setTitleColor:blueColor forState:UIControlStateNormal];
+    self.closeButton.layer.borderColor = blueColor.CGColor;
     self.closeButton.layer.borderWidth = 2.0f;
     self.closeButton.layer.cornerRadius = 8;
     [self.viewHeader addSubview:self.closeButton];
@@ -53,7 +54,7 @@
     self.segment = [[UISegmentedControl alloc] initWithItems:@[@"H&Q Units", @"Options"]];
     self.segment.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.95];
     [self.segment setFrame:CGRectMake(6, 62, self.view.frame.size.width - 12, 38)];
-    self.segment.tintColor = [UIColor grayColor];
+    self.segment.tintColor = blueColor;
     //[self.segment setSegmentedControlStyle:UISegmentedControlStyleBar];
     self.segment.selectedSegmentIndex = 0;
     [self.segment addTarget:self action:@selector(segmentValueChaged:) forControlEvents:UIControlEventValueChanged];

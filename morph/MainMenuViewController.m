@@ -56,7 +56,8 @@ alpha:1.0]
         [self.resultsButton setFrame:CGRectMake(10, sh - 160, sw - 20, 70)];
         [self.tempFormsButton setFrame:CGRectMake(10, sh - 80, sw - 20, 70)];
         
-        [self.HCLabel setFrame:CGRectMake(0, 120, self.view.bounds.size.width, self.HCLabel.frame.size.height)];
+        //[self.HCLabel setFrame:CGRectMake(0, 120, self.view.bounds.size.width, self.HCLabel.frame.size.height)];
+        [self.HCLabel setFrame:CGRectMake(0, (sh/9.5)*2, self.view.bounds.size.width, self.HCLabel.frame.size.height)];
         [self.menuButton setFrame:CGRectMake(sw - 70 - 6, 24, 70, 36)];
 
         
@@ -69,14 +70,11 @@ alpha:1.0]
 }
 
 - (void) showAbout:(id)sender
-{/*
-    NSLog(@"showabout1");
+{
     //TutorialPageViewController *dvc = [self.storyboard instantiateViewControllerWithIdentifier:@"tutorialvc"];
     [self performSegueWithIdentifier:@"showTutorialSegue" sender:self];
 
     //[self.navigationController pushViewController:dvc animated:YES];
-    NSLog(@"showabout2");
-  */
 }
 
 - (void) showSettings:(id)sender
@@ -173,23 +171,27 @@ alpha:1.0]
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [self.navigationController setNavigationBarHidden:YES];
-    //https://en.wikipedia.org/wiki/Wikipedia:Featured_picture_candidates/Gypsy_girl_mosaic_of_Zeugma
-    UIImage *logoImg = [UIImage imageNamed:@"MosaicOfZeugma.jpg"];
-    self.logoImgView = [[UIImageView alloc] initWithImage:logoImg];
-    [self.view addSubview:self.logoImgView];
-    self.logoImgView.hidden = YES;
 
     double sw = self.view.frame.size.width;
     double sh = self.view.frame.size.height;
-    double bh = 100;
-    double bw = sw / 2.3;//150;
-    double v1 = sh/2;
-    double v2 = sh/1.7;
+    double spacer = sh / 70;
+    double buttonHeight = (sh / 9) - spacer;
     
-    [self.logoImgView setFrame:CGRectMake((sw - 2547/9) /2,self.view.frame.size.height/4 -46,2547/9,1658/9)];
-
+    UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
+    UIColor *greenColor = [UIColor colorWithRed:(40/255.0) green:(70/255.0) blue:(183/255.0) alpha:1.0];
+    //UIColor *greenColor = [UIColor colorWithRed:(0/255.0) green:(255/255.0) blue:(183/255.0) alpha:1.0];
+    UIColor *textColor = [UIColor whiteColor];
+    UIFont *textFont = [UIFont fontWithName:@"Helvetica" size:22.0];
+    
+    [self.navigationController setNavigationBarHidden:YES];
+    
+    //https://en.wikipedia.org/wiki/Wikipedia:Featured_picture_candidates/Gypsy_girl_mosaic_of_Zeugma
+    //UIImage *logoImg = [UIImage imageNamed:@"MosaicOfZeugma.jpg"];
+    //self.logoImgView = [[UIImageView alloc] initWithImage:logoImg];
+    //[self.view addSubview:self.logoImgView];
+    //[self.logoImgView setFrame:CGRectMake((sw - 2547/9) /2,self.view.frame.size.height/4 -46,2547/9,1658/9)];
+    self.logoImgView.hidden = YES;
+    
     
     [self.HCButton addTarget:self action:@selector(showGame:)
             forControlEvents:UIControlEventTouchUpInside];
@@ -197,7 +199,6 @@ alpha:1.0]
             forControlEvents:UIControlEventTouchUpInside];
     [self.SPButton addTarget:self action:@selector(showGame:)
             forControlEvents:UIControlEventTouchUpInside];
-    
     [self.MCButton addTarget:self action:@selector(showGame:)
             forControlEvents:UIControlEventTouchUpInside];
     
@@ -209,194 +210,83 @@ alpha:1.0]
     [self.menuButton addTarget:self action:@selector(showSettings:)
               forControlEvents:UIControlEventTouchUpInside];
     
+    [self.menuButton setFrame:CGRectMake(sw - 70 - spacer, 24, 70, 36)];
+    self.menuButton.layer.borderWidth = 2.0;
+    [self.menuButton setTitle:@"Settings" forState:UIControlStateNormal];
+    [self.menuButton setTitleColor:blueColor forState:UIControlStateNormal];
+    self.menuButton.layer.borderColor = blueColor.CGColor;
+    self.menuButton.layer.borderWidth = 2.0f;
+    self.menuButton.layer.cornerRadius = 8;
     
-    [self.aboutButton setFrame:CGRectMake(6, 24, 70, 36)];
+    [self.aboutButton setFrame:CGRectMake(spacer, 24, 70, 36)];
     self.aboutButton.layer.borderWidth = 2.0;
     [self.aboutButton setTitle:@"About" forState:UIControlStateNormal];
-    [self.aboutButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-    self.aboutButton.layer.borderColor = [UIColor grayColor].CGColor;
+    [self.aboutButton setTitleColor:blueColor forState:UIControlStateNormal];
+    self.aboutButton.layer.borderColor = blueColor.CGColor;
     self.aboutButton.layer.borderWidth = 2.0f;
     self.aboutButton.layer.cornerRadius = 8;
     [self.aboutButton addTarget:self action:@selector(showAbout:)
             forControlEvents:UIControlEventTouchUpInside];
-    self.aboutButton.hidden = YES;
+    self.aboutButton.hidden = NO;
+    
+    
     [self.tempFormsButton addTarget:self action:@selector(showVerbs:)
             forControlEvents:UIControlEventTouchUpInside];
     
-    self.tempFormsButton.layer.borderColor = [UIColor blackColor].CGColor;
+    self.tempFormsButton.layer.borderColor = blueColor.CGColor;
     self.tempFormsButton.layer.borderWidth = 2.0;
     
-    if (0)
+    [self.HCLabel setFrame:CGRectMake(0, (sh/9.5)*2, self.view.bounds.size.width, self.HCLabel.frame.size.height)];
+    self.HCLabel.textAlignment = NSTextAlignmentCenter;
+    
+    UIFont *logoFont;
+    if (sh > 569)
     {
-        double corner = 15.0;
-        double borderW = 2.0;
-        
-        //self.HCButton.titleLabel.numberOfLines = 2;
-        
-        self.HCButton.layer.borderWidth = borderW;
-        self.HCButton.layer.cornerRadius = corner;
-        self.HPButton.layer.borderWidth = borderW;
-        self.HPButton.layer.cornerRadius = corner;
-        self.SPButton.layer.borderWidth = borderW;
-        self.SPButton.layer.cornerRadius = corner;
-        self.MCButton.layer.borderWidth = borderW;
-        self.MCButton.layer.cornerRadius = corner;
-        
-        [self.HCButton setFrame:CGRectMake(((sw/2) - bw) / 2, v1, bw, bh)];
-        [self.HPButton setFrame:CGRectMake((((sw/2) - bw) / 2) + sw/2, v1, bw, bh)];
-        
-        [self.SPButton setFrame:CGRectMake(((sw/2) - bw) / 2, v2, bw, bh)];
-        [self.MCButton setFrame:CGRectMake((((sw/2) - bw) / 2) + sw/2, v2, bw, bh)];
+        logoFont= [UIFont fontWithName:@"Helvetica" size:36.0]; //6S
     }
-    else if (0)
+    else if (sh > 480)
     {
-        double sw = self.view.frame.size.width;
-        double sh = self.view.frame.size.height;
+        logoFont= [UIFont fontWithName:@"Helvetica" size:32.0]; //5S
+    }
+    else
+    {
+        logoFont= [UIFont fontWithName:@"Helvetica" size:30.0]; //4S
+    }
+    [self.HCLabel setFont:logoFont];
         
-        double bw = sw * 0.5;//150;
-        double v1 = sh * 0.5;
-        double v2 = sh * 0.75;
-        double bh = sh / 4;
+        [self.HCButton setFrame:CGRectMake(spacer, sh - ((buttonHeight + spacer) * 5), sw - (2 * spacer), buttonHeight)];
+        [self.gamesButton setFrame:CGRectMake(spacer, sh - ((buttonHeight + spacer) * 4), sw - (2 * spacer), buttonHeight)];
+        [self.HPButton setFrame:CGRectMake(spacer, sh - ((buttonHeight + spacer) * 3), sw - (2 * spacer), buttonHeight)];
+        [self.resultsButton setFrame:CGRectMake(spacer, sh - ((buttonHeight + spacer) * 2), sw - (2 * spacer), buttonHeight)];
+        [self.tempFormsButton setFrame:CGRectMake(spacer, sh - ((buttonHeight + spacer) * 1), sw - (2 * spacer), buttonHeight)];
         
-        [self.HCButton setFrame:CGRectMake(0 - 2, v1 + 2, bw + 2, bh)];
-        [self.HPButton setFrame:CGRectMake(sw/2 - 2, v1 + 2, bw + 4, bh)];
-        
-        [self.SPButton setFrame:CGRectMake(0 - 2, v2, bw + 2, bh)];
-        [self.MCButton setFrame:CGRectMake(sw/2 - 2, v2, bw + 4, bh)];
+        self.SPButton.hidden = YES;
+        self.MCButton.hidden = YES;
         
         /*
         [self.HCButton setBackgroundColor: UIColorFromRGB(0xCC4422)];
         [self.HPButton setBackgroundColor: UIColorFromRGB(0x22CC55)];
         [self.SPButton setBackgroundColor: UIColorFromRGB(0x4466CC)];
         [self.MCButton setBackgroundColor: UIColorFromRGB(0xFFAA00)];
-         */
-        self.HCButton.layer.borderWidth = 2.0;
-        self.HPButton.layer.borderWidth = 2.0;
-        self.SPButton.layer.borderWidth = 2.0;
-        self.MCButton.layer.borderWidth = 2.0;
-        
-        UIColor *textColor = [UIColor blackColor];//[UIColor whiteColor];
-        UIFont *textFont = [UIFont fontWithName:@"Helvetica" size:22.0];
-        
-        [self.HCButton setTitleColor:textColor forState:UIControlStateNormal];
-        [self.HPButton setTitleColor:textColor forState:UIControlStateNormal];
-        [self.SPButton setTitleColor:textColor forState:UIControlStateNormal];
-        [self.MCButton setTitleColor:textColor forState:UIControlStateNormal];
-        [self.HCButton.titleLabel setFont:textFont];
-        [self.HPButton.titleLabel setFont:textFont];
-        [self.SPButton.titleLabel setFont:textFont];
-        [self.MCButton.titleLabel setFont:textFont];
-        
-        self.HCButton.titleLabel.numberOfLines = 2;
-        self.HPButton.titleLabel.numberOfLines = 2;
-        self.SPButton.titleLabel.numberOfLines = 2;
-        self.MCButton.titleLabel.numberOfLines = 2;
-        /*
-        self.HCButton.titleLabel.text = @"Hoplite Challenge";
-        self.HCButton.titleLabel.backgroundColor = [UIColor yellowColor];
-        self.HCButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-        self.HCButton.titleLabel.textColor = [UIColor redColor];
-        */
-    }
-    else if (0)
-    {
-        double sw = self.view.frame.size.width;
-        double sh = self.view.frame.size.height;
-        
-        double bw = sw * 0.5;//150;
-        double v1 = sh * 0.5;
-        double v2 = sh * 0.75;
-        double bh = sh / 4;
-        
-        [self.HCButton setFrame:CGRectMake(0 - 2, v2, bw + 2, bh)];
-        [self.HPButton setFrame:CGRectMake(sw/2 - 2, v2, bw + 4, bh)];
-        self.SPButton.hidden = YES;
-        self.MCButton.hidden = YES;
-        //[self.SPButton setFrame:CGRectMake(0 - 2, v2, bw + 2, bh)];
-        //[self.MCButton setFrame:CGRectMake(sw/2 - 2, v2, bw + 4, bh)];
-        
-        /*
-         [self.HCButton setBackgroundColor: UIColorFromRGB(0xCC4422)];
-         [self.HPButton setBackgroundColor: UIColorFromRGB(0x22CC55)];
-         [self.SPButton setBackgroundColor: UIColorFromRGB(0x4466CC)];
-         [self.MCButton setBackgroundColor: UIColorFromRGB(0xFFAA00)];
-         */
-        self.HCButton.layer.borderWidth = 2.0;
-        self.HPButton.layer.borderWidth = 2.0;
-        self.SPButton.layer.borderWidth = 2.0;
-        self.MCButton.layer.borderWidth = 2.0;
-        
-        UIColor *textColor = [UIColor blackColor];//[UIColor whiteColor];
-        UIFont *textFont = [UIFont fontWithName:@"Helvetica" size:22.0];
-        
-        [self.HCButton setTitleColor:textColor forState:UIControlStateNormal];
-        [self.HPButton setTitleColor:textColor forState:UIControlStateNormal];
-        [self.SPButton setTitleColor:textColor forState:UIControlStateNormal];
-        [self.MCButton setTitleColor:textColor forState:UIControlStateNormal];
-        [self.HCButton.titleLabel setFont:textFont];
-        [self.HPButton.titleLabel setFont:textFont];
-        [self.SPButton.titleLabel setFont:textFont];
-        [self.MCButton.titleLabel setFont:textFont];
-        
-        self.HCButton.titleLabel.numberOfLines = 2;
-        self.HPButton.titleLabel.numberOfLines = 2;
-        self.SPButton.titleLabel.numberOfLines = 2;
-        self.MCButton.titleLabel.numberOfLines = 2;
-        /*
-         self.HCButton.titleLabel.text = @"Hoplite Challenge";
-         self.HCButton.titleLabel.backgroundColor = [UIColor yellowColor];
-         self.HCButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-         self.HCButton.titleLabel.textColor = [UIColor redColor];
-         */
-    }
-    else
-    {
-        double sw = self.view.frame.size.width;
-        double sh = self.view.frame.size.height;
-        
-        double bw = sw * 0.5;//150;
-        double v1 = sh * 0.5;
-        double v2 = sh * 0.75;
-        double bh = sh / 4;
-        
-        [self.HCButton setFrame:CGRectMake(10, sh - 400, sw - 20, 70)];
-        [self.gamesButton setFrame:CGRectMake(10, sh - 320, sw - 20, 70)];
-        [self.HPButton setFrame:CGRectMake(10, sh - 240, sw - 20, 70)];
-        [self.resultsButton setFrame:CGRectMake(10, sh - 160, sw - 20, 70)];
-        [self.tempFormsButton setFrame:CGRectMake(10, sh - 80, sw - 20, 70)];
-        
-        self.SPButton.hidden = YES;
-        self.MCButton.hidden = YES;
-        //[self.SPButton setFrame:CGRectMake(0 - 2, v2, bw + 2, bh)];
-        //[self.MCButton setFrame:CGRectMake(sw/2 - 2, v2, bw + 4, bh)];
-        
-        /*
-         [self.HCButton setBackgroundColor: UIColorFromRGB(0xCC4422)];
-         [self.HPButton setBackgroundColor: UIColorFromRGB(0x22CC55)];
-         [self.SPButton setBackgroundColor: UIColorFromRGB(0x4466CC)];
-         [self.MCButton setBackgroundColor: UIColorFromRGB(0xFFAA00)];
          
         self.HCButton.layer.borderWidth = 2.0;
         self.HPButton.layer.borderWidth = 2.0;
         self.SPButton.layer.borderWidth = 2.0;
         self.MCButton.layer.borderWidth = 2.0;
         */
-        UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
-        UIColor *greenColor = [UIColor colorWithRed:(0/255.0) green:(255/255.0) blue:(183/255.0) alpha:1.0];
+    
         self.HCButton.backgroundColor = blueColor;//UIColorFromRGB(0x43609c);
         self.HPButton.backgroundColor = blueColor;//UIColorFromRGB(0x43609c);
         
         self.gamesButton.backgroundColor = greenColor;//UIColorFromRGB(0x43609c);
         self.resultsButton.backgroundColor = greenColor;//UIColorFromRGB(0x43609c);
-        
-        UIColor *textColor = [UIColor whiteColor];
-        UIFont *textFont = [UIFont fontWithName:@"Helvetica" size:22.0];
-        
+    
         [self.HCButton setTitleColor:textColor forState:UIControlStateNormal];
         [self.HPButton setTitleColor:textColor forState:UIControlStateNormal];
         [self.SPButton setTitleColor:textColor forState:UIControlStateNormal];
         [self.MCButton setTitleColor:textColor forState:UIControlStateNormal];
-
+        [self.tempFormsButton setTitleColor:blueColor forState:UIControlStateNormal];
+    
         [self.gamesButton setTitleColor:textColor forState:UIControlStateNormal];
         [self.resultsButton setTitleColor:textColor forState:UIControlStateNormal];
         
@@ -404,6 +294,7 @@ alpha:1.0]
         [self.HPButton.titleLabel setFont:textFont];
         [self.SPButton.titleLabel setFont:textFont];
         [self.MCButton.titleLabel setFont:textFont];
+        [self.tempFormsButton.titleLabel setFont:textFont];
         
         [self.gamesButton.titleLabel setFont:textFont];
         [self.resultsButton.titleLabel setFont:textFont];
@@ -418,29 +309,21 @@ alpha:1.0]
          self.HCButton.titleLabel.textAlignment = NSTextAlignmentCenter;
          self.HCButton.titleLabel.textColor = [UIColor redColor];
          */
-    }
-    [self.LGILabel setFrame:CGRectMake(30, 45, self.LGILabel.frame.size.width, self.LGILabel.frame.size.height)];
+    
+    //[self.LGILabel setFrame:CGRectMake(30, 45, self.LGILabel.frame.size.width, self.LGILabel.frame.size.height)];
     self.LGILabel.hidden = YES;
-    [self.HCLabel setFrame:CGRectMake(0, 120, self.view.bounds.size.width, self.HCLabel.frame.size.height)];
-    self.HCLabel.textAlignment = NSTextAlignmentCenter;
-    [self.EOPLabel setFrame:CGRectMake(180, (sh /2) - 34, self.EOPLabel.frame.size.width, self.EOPLabel.frame.size.height)];
-    [self.EOPLabel setFont:[UIFont fontWithName:@"NewAthenaUnicode" size:26.0]];
-    [self.view bringSubviewToFront:self.EOPLabel];
+    
+    
+    
+    
+    //[self.EOPLabel setFrame:CGRectMake(180, (sh /2) - 34, self.EOPLabel.frame.size.width, self.EOPLabel.frame.size.height)];
+    //[self.EOPLabel setFont:[UIFont fontWithName:@"NewAthenaUnicode" size:26.0]];
+    //[self.view bringSubviewToFront:self.EOPLabel];
     self.EOPLabel.hidden = YES;
+    
 //[self.correctButton setFrame:CGRectMake(((w/2) - self.correctButton.frame.size.width) / 2, self.view.frame.size.height / 1.3, self.correctButton.frame.size.width, self.correctButton.frame.size.height)];
-
     
 //[self.incorrectButton setFrame:CGRectMake((((w/2) - self.correctButton.frame.size.width) / 2) + w/2, self.view.frame.size.height / 1.3, self.correctButton.frame.size.width, self.correctButton.frame.size.height)];
-    
-    [self.menuButton setFrame:CGRectMake(sw - 70 - 6, 24, 70, 36)];
-    self.menuButton.layer.borderWidth = 2.0;
-    [self.menuButton setTitle:@"Settings" forState:UIControlStateNormal];
-    [self.menuButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-    self.menuButton.layer.borderColor = [UIColor grayColor].CGColor;
-    self.menuButton.layer.borderWidth = 2.0f;
-    self.menuButton.layer.cornerRadius = 8;
-    
-    // Do any additional setup after loading the view.
 }
 
 

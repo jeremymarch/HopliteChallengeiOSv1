@@ -1024,7 +1024,7 @@ void printUCS22(UCS2 *u, int len)
             
         }
         [a addAttribute:NSFontAttributeName
-                  value:[UIFont fontWithName:@"HelveticaNeue-Bold" size:26.0]
+                  value:[UIFont fontWithName:@"HelveticaNeue-Bold" size:self.fontSize]
                   range:NSMakeRange(start, len)];
     }
     
@@ -1583,6 +1583,13 @@ void dispatchAfter(double delay, void (^block)(void))
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
     
+    //need to fix this, so keyboard shows if necessary
+    /*NSLog(@"stem: %@", self.stemLabel.text);
+    if (![self.stemLabel.text isEqual: @"stem"])
+    {
+        [self.textfield becomeFirstResponder]; //be sure keyboard is shown if it can be
+    } */
+    
     //http://stackoverflow.com/questions/12591192/center-text-vertically-in-a-uitextview
     //see below
     [self.textfield addObserver:self forKeyPath:@"contentSize" options:(NSKeyValueObservingOptionNew) context:NULL];
@@ -1851,13 +1858,36 @@ void dispatchAfter(double delay, void (^block)(void))
     
     CGRect screenBound = [[UIScreen mainScreen] bounds];
     CGSize screenSize = screenBound.size;
+    
+    self.systemFont = @"HelveticaNeue-Light";
+    self.greekFont = @"NewAthenaUnicode";
+    
 
     NSLog(@"screensize: %f x %f", screenSize.width, screenSize.height);
-    if (screenSize.height > 569)
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+    {
+        self.timeFontSize = 24.0;
+        self.fontSize = 30.0;
+        self.greekFontSize = 40.0; //6S
+    }
+    else if (screenSize.height > 569) //6S
+    {
+        self.timeFontSize = 24.0;
+        self.fontSize = 28.0;
         self.greekFontSize = 36.0;
-    else
+    }
+    else if (screenSize.height > 480) //5S
+    {
+        self.timeFontSize = 22.0;
+        self.fontSize = 24.0;
         self.greekFontSize = 32.0;
-    
+    }
+    else //4S
+    {
+        self.timeFontSize = 20.0;
+        self.fontSize = 24.0;
+        self.greekFontSize = 28.0;
+    }
     //self.changedForm.layer.borderColor = [UIColor blackColor];
     self.changedForm.lineBreakMode = NSLineBreakByWordWrapping;
     
@@ -1872,22 +1902,19 @@ void dispatchAfter(double delay, void (^block)(void))
     
     self.cardType = CARD_VERBS;
 
-    self.systemFont = @"HelveticaNeue-Light";
-    self.greekFont = @"NewAthenaUnicode";
-    self.fontSize = 28.0;
     /*
     self.popupShown = FALSE;
     self.popup = [[PopUp alloc] initWithFrame:CGRectMake (0, [UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height)];
     [self.view addSubview:self.popup];
     */
-    self.scoreLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:24.0];
+    self.scoreLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:self.timeFontSize];
     self.scoreLabel.textColor = blueColor;
     if (self.verbQuestionType == HOPLITE_CHALLENGE)
     {
         self.scoreLabel.text = @"0";
         self.scoreLabel.hidden = NO;
     }
-    self.timeLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:24.0];
+    self.timeLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:self.timeFontSize];
     self.MFLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:24.0];
     self.MFLabel.layer.borderColor = [UIColor colorWithRed:(255/255.0) green:(56/255.0) blue:(0/255.0) alpha:1.0].CGColor;
     self.MFLabel.layer.cornerRadius = 4.0f;

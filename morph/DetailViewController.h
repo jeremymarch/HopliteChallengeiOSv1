@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PopUp.h"
 #import "keyboard.h"
 #import "libmorph.h"
 #import "VerbSequence.h"
@@ -38,6 +37,7 @@ enum {
 
 @property double typeInterval;
 @property double greekFontSize;
+@property double timeFontSize;
 @property BOOL expanded;
 @property BOOL mfPressed;
 @property BOOL soundDisabled;
@@ -55,7 +55,6 @@ enum {
 @property (strong, nonatomic) id detailItem;
 @property NSInteger HCTime;
 @property BOOL popupShown;
-@property (nonatomic, retain) IBOutlet PopUp *popup;
 @property (nonatomic, retain) CADisplayLink *displayLink;
 @property NSMutableArray *seen;
 @property NSMutableArray *buttonStates;

@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PopUp.h"
 
 @class DetailViewController;
 
@@ -16,7 +15,6 @@
 @interface MasterViewController : UITableViewController  <NSFetchedResultsControllerDelegate>
 
 @property BOOL popupShown;
-@property (nonatomic, retain) IBOutlet PopUp *popup;
 
 @property (strong, nonatomic) DetailViewController *detailViewController;
 

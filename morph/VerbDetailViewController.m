@@ -120,9 +120,25 @@
     int yOffset = 0;
     
     vf.verb = &verbs[self.verbIndex];
+    NSString *title = [NSString stringWithUTF8String: (strlen(vf.verb->present) > 0) ? vf.verb->present : vf.verb->future ];
+    [self.navigationController.navigationBar setTitleTextAttributes:
+     @{NSForegroundColorAttributeName:[UIColor blackColor],
+       NSFontAttributeName:[UIFont fontWithName:@"NewAthenaUnicode" size:24]}];
+    self.title = title;
+    
+    UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, self.view.frame.size.width, labelHeight)];
+    yOffset += (labelHeight + verticalPadding);
+    l.text = [NSString stringWithFormat:@"  Principal Parts"];
+    
+    l.font = [UIFont fontWithName:@"HelveticaNeue" size:18.0];
+    l.textColor = [UIColor whiteColor];
+    UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
+    l.backgroundColor = blueColor;
+    [self.view addSubview:l];
+    rowCount++;
     
     //principal part label
-    UILabel *l = [[UILabel alloc] init];
+    l = [[UILabel alloc] init];
 
     l.numberOfLines = 0;
     
@@ -167,11 +183,11 @@
                     //yes it's correct, middle deponents do not have a passive voice.  H&Q page 316
                     if ( deponentType(vf.verb) == MIDDLE_DEPONENT || deponentType(vf.verb) == PASSIVE_DEPONENT || deponentType(vf.verb) == DEPONENT_GIGNOMAI || utf8HasSuffix(vf.verb->present, "κεῖμαι"))
                     {
-                        s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], @"middle", [NSString stringWithUTF8String: moods[m]]];
+                        s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], @"Middle", [NSString stringWithUTF8String: moods[m]]];
                     }
                     else
                     {
-                        s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], @"middle/passive", [NSString stringWithUTF8String: moods[m]]];
+                        s = [NSString stringWithFormat:@"  %@ %@ %@", [NSString stringWithUTF8String: tenses[g1]], @"Middle/Passive", [NSString stringWithUTF8String: moods[m]]];
                     }
                 }
                 else
@@ -184,7 +200,7 @@
                 l.text = s;
                 l.font = [UIFont fontWithName:@"HelveticaNeue" size:18.0];
                 l.textColor = [UIColor whiteColor];
-                l.backgroundColor = [UIColor blackColor];
+                l.backgroundColor = blueColor;
                 
                 [self.view addSubview:l];
                 rowCount++;

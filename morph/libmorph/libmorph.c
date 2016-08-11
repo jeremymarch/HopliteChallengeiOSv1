@@ -58,11 +58,11 @@ char *persons[NUM_PERSONS] = { "first", "second", "third" };
 char *personsabbrev[NUM_PERSONS] = { "1st", "2nd", "3rd" };
 char *numbers[NUM_NUMBERS] = { "singular", "plural" };
 char *numbersabbrev[NUM_NUMBERS] = { "sing.", "pl." };
-char *tenses[NUM_TENSES] = { "present", "imperfect", "future", "aorist", "perfect", "pluperfect" };
+char *tenses[NUM_TENSES] = { "Present", "Imperfect", "Future", "Aorist", "Perfect", "Pluperfect" };
 char *tensesabbrev[NUM_TENSES] = { "pres.", "imp.", "fut.", "aor.", "perf.", "plup." };
-char *voices[NUM_VOICES] = { "active", "middle", "passive" };
+char *voices[NUM_VOICES] = { "Active", "Middle", "Passive" };
 char *voicesabbrev[NUM_VOICES] = { "act.", "mid.", "pass." };
-char *moods[NUM_MOODS] = { "indicative", "subjunctive", "optative", "imperative" };
+char *moods[NUM_MOODS] = { "Indicative", "Subjunctive", "Optative", "Imperative" };
 char *moodsabbrev[NUM_MOODS] = { "ind.", "subj.", "opt.", "imper." };
 /*
 void endingGetDescription(int e, char *buffer, int bufferLen)
