@@ -9,6 +9,7 @@
 #import "VerbsTableViewController.h"
 #import "VerbDetailViewController.h"
 #import "GreekForms.h"
+#import "HCColors.h"
 
 #define NUM_LEVELS 20
 
@@ -26,13 +27,24 @@
     [self.navigationController.navigationBar setTitleTextAttributes:
      @{NSForegroundColorAttributeName:[UIColor blackColor],
        NSFontAttributeName:[UIFont fontWithName:@"Helvetica Neue" size:20]}];
+    
+    //better here than in didAppear
+    NSIndexPath *indexPath = self.tableView.indexPathForSelectedRow;
+    if (indexPath) {
+        [self.tableView deselectRowAtIndexPath:indexPath animated:animated];
+    }
 }
+/*
+- (void)viewDidAppear:(BOOL)animated
+{
 
+}
+*/
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     [self.navigationController setNavigationBarHidden:NO];
-    self.title = @"Verbs by Hansen & Quinn Unit";
+    self.title = @"Verbs";
     //self.navigationItem.titleView = [[UIView alloc] init]; //HIDES title from display
     //self.navigationItem.titleView.hidden = YES; //doesn't work, use above
     
@@ -64,7 +76,8 @@
     
     
     // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
+    //not working.  see viewDidAppear which is working.
+    self.clearsSelectionOnViewWillAppear = YES;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
@@ -95,19 +108,17 @@
 
 //http://stackoverflow.com/questions/7105747/how-to-change-font-color-of-the-title-in-grouped-type-uitableview
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 30;
+    return 34;
 }
 
 - (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    UIView *customTitleView = [ [UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 30)];
-    UILabel *titleLabel = [ [UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 30)];
-    
-    UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
+    UIView *customTitleView = [ [UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 34)];
+    UILabel *titleLabel = [ [UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 34)];
     
     titleLabel.text = [NSString stringWithFormat:@"  Unit %ld", section + 1];
     titleLabel.textColor = [UIColor whiteColor];
-    titleLabel.backgroundColor = blueColor;
+    titleLabel.backgroundColor = [UIColor HCDarkBlue];
     [customTitleView addSubview:titleLabel];
     
     return customTitleView;
@@ -155,7 +166,7 @@
         cell.textLabel.text = [NSString stringWithUTF8String: verbs[index].present];
     cell.textLabel.font = [UIFont fontWithName:@"NewAthenaUnicode" size:26.0];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    //cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 

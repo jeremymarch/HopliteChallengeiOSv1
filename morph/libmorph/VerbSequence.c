@@ -376,7 +376,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     vf1->verb = v; //THIS IS THE VERB WE'E USING
     
     //***************OVERRIDE for testing on specific verbs, set here*******************************
-    //vf1->verb = &verbs[54];//13];
+    //vf1->verb = &verbs[94];//13];
     //***************for testing on specific verbs*****************************************
     
     
@@ -413,7 +413,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
          {
              generateForm(vf1);
          
-         } while (!getForm(vf1, buffer, bufferLen, false, false) || !isValidFormForUnit(vf1, highestUnit) || !strncmp(buffer, "—", 1));
+         } while (!getForm(vf1, buffer, bufferLen, false, false) || !isValidFormForUnit(vf1, highestUnit) || !strncmp(buffer, "—", 1)|| !strncmp(buffer, "-", 1)/*hyphen*/);
         
         addToRecentVFArray(vf1);
     }
@@ -464,8 +464,9 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
         vf2->mood = vf1->mood;
         vf2->verb = vf1->verb;
         
+        
         changeFormByDegrees(vf2, degreesToChange);
-    } while (!getForm(vf2, buffer, bufferLen, true, false) || !isValidFormForUnit(vf2, highestUnit) || !strncmp(buffer, "—", 1) || inRecentVFArray(vf2));
+    } while (!getForm(vf2, buffer, bufferLen, true, false) || !isValidFormForUnit(vf2, highestUnit) || !strncmp(buffer, "—", 1)/*dash*/ || !strncmp(buffer, "-", 1)/*hyphen*/ || inRecentVFArray(vf2));
 
     /*
      //**************for testing to force form****************************

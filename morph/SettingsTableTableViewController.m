@@ -41,7 +41,7 @@
     
     UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
     
-    self.closeButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 70 - 6, 24, 70, 36)];
+    self.closeButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 70 - 10, 24, 70, 36)];
     [self.closeButton setTitle:@"Close" forState:UIControlStateNormal];
     [self.closeButton setTitleColor:blueColor forState:UIControlStateNormal];
     self.closeButton.layer.borderColor = blueColor.CGColor;

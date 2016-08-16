@@ -47,7 +47,7 @@
     self.closeButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [self.closeButton addTarget:self action:@selector(closeTutorial:) forControlEvents:UIControlEventTouchUpInside];
     [self.closeButton setTitle:@"Close" forState:UIControlStateNormal];
-    self.closeButton.frame = CGRectMake(6.0, 24.0, 70.0, 36.0);
+    self.closeButton.frame = CGRectMake(10.0, 24.0, 70.0, 36.0);
     self.closeButton.backgroundColor = [UIColor whiteColor];
 
     self.closeButton.layer.borderWidth = 2.0;

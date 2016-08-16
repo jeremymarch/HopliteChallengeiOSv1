@@ -8,6 +8,7 @@
 
 #import "VerbDetailViewController.h"
 #import "GreekForms.h"
+#import "HCColors.h"
 
 @interface VerbDetailViewController ()
 
@@ -132,8 +133,8 @@
     
     l.font = [UIFont fontWithName:@"HelveticaNeue" size:18.0];
     l.textColor = [UIColor whiteColor];
-    UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
-    l.backgroundColor = blueColor;
+
+    l.backgroundColor = [UIColor HCDarkBlue];
     [self.view addSubview:l];
     rowCount++;
     
@@ -200,7 +201,7 @@
                 l.text = s;
                 l.font = [UIFont fontWithName:@"HelveticaNeue" size:18.0];
                 l.textColor = [UIColor whiteColor];
-                l.backgroundColor = blueColor;
+                l.backgroundColor = [UIColor HCDarkBlue];
                 
                 [self.view addSubview:l];
                 rowCount++;

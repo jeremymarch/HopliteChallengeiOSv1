@@ -19,6 +19,9 @@
     
     NSLog(@"page child view did load");
     
+    NSString *path = [[NSBundle mainBundle] bundlePath];
+    NSURL *baseURL = [NSURL fileURLWithPath:path];
+    
     if ([self.title isEqualToString:@"tutorialintro"])
     {
         NSString *htmlFile = [[NSBundle mainBundle] pathForResource:@"tutorialTitlePage" ofType:@"html"];
@@ -29,7 +32,7 @@
     {
         NSString *htmlFile = [[NSBundle mainBundle] pathForResource:@"tutorialGamePlay" ofType:@"html"];
         NSString* htmlString = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:nil];
-        [self.webView loadHTMLString:htmlString baseURL:nil];
+        [self.webView loadHTMLString:htmlString baseURL:baseURL];
     }
     else if ([self.title isEqualToString:@"tutorialKeyboard"])
     {

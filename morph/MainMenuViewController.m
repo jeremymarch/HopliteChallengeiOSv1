@@ -12,6 +12,7 @@
 #import "ResultsViewController.h"
 #import "TutorialPageViewController.h"
 #import "VerbsTableViewController.h"
+#import "HCColors.h"
 
 #define UIColorFromRGB(rgbValue) \
 [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
@@ -177,9 +178,6 @@ alpha:1.0]
     double spacer = sh / 70;
     double buttonHeight = (sh / 9) - spacer;
     
-    UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
-    UIColor *greenColor = [UIColor colorWithRed:(40/255.0) green:(70/255.0) blue:(183/255.0) alpha:1.0];
-    //UIColor *greenColor = [UIColor colorWithRed:(0/255.0) green:(255/255.0) blue:(183/255.0) alpha:1.0];
     UIColor *textColor = [UIColor whiteColor];
     UIFont *textFont = [UIFont fontWithName:@"Helvetica" size:22.0];
     
@@ -213,16 +211,16 @@ alpha:1.0]
     [self.menuButton setFrame:CGRectMake(sw - 70 - spacer, 24, 70, 36)];
     self.menuButton.layer.borderWidth = 2.0;
     [self.menuButton setTitle:@"Settings" forState:UIControlStateNormal];
-    [self.menuButton setTitleColor:blueColor forState:UIControlStateNormal];
-    self.menuButton.layer.borderColor = blueColor.CGColor;
+    [self.menuButton setTitleColor:[UIColor HCBlue] forState:UIControlStateNormal];
+    self.menuButton.layer.borderColor = [UIColor HCBlue].CGColor;
     self.menuButton.layer.borderWidth = 2.0f;
     self.menuButton.layer.cornerRadius = 8;
     
     [self.aboutButton setFrame:CGRectMake(spacer, 24, 70, 36)];
     self.aboutButton.layer.borderWidth = 2.0;
     [self.aboutButton setTitle:@"About" forState:UIControlStateNormal];
-    [self.aboutButton setTitleColor:blueColor forState:UIControlStateNormal];
-    self.aboutButton.layer.borderColor = blueColor.CGColor;
+    [self.aboutButton setTitleColor:[UIColor HCBlue] forState:UIControlStateNormal];
+    self.aboutButton.layer.borderColor = [UIColor HCBlue].CGColor;
     self.aboutButton.layer.borderWidth = 2.0f;
     self.aboutButton.layer.cornerRadius = 8;
     [self.aboutButton addTarget:self action:@selector(showAbout:)
@@ -233,10 +231,10 @@ alpha:1.0]
     [self.tempFormsButton addTarget:self action:@selector(showVerbs:)
             forControlEvents:UIControlEventTouchUpInside];
     
-    self.tempFormsButton.layer.borderColor = blueColor.CGColor;
-    self.tempFormsButton.layer.borderWidth = 2.0;
+    //self.tempFormsButton.layer.borderColor = greenColor.CGColor;
+    //self.tempFormsButton.layer.borderWidth = 2.0;
     
-    [self.HCLabel setFrame:CGRectMake(0, (sh/9.5)*2, self.view.bounds.size.width, self.HCLabel.frame.size.height)];
+    [self.HCLabel setFrame:CGRectMake(0, (sh/10)*2, self.view.bounds.size.width, self.HCLabel.frame.size.height)];
     self.HCLabel.textAlignment = NSTextAlignmentCenter;
     
     UIFont *logoFont;
@@ -275,17 +273,20 @@ alpha:1.0]
         self.MCButton.layer.borderWidth = 2.0;
         */
     
-        self.HCButton.backgroundColor = blueColor;//UIColorFromRGB(0x43609c);
-        self.HPButton.backgroundColor = blueColor;//UIColorFromRGB(0x43609c);
+        self.HCButton.backgroundColor = [UIColor HCBlue];//UIColorFromRGB(0x43609c);
+        self.HPButton.backgroundColor = [UIColor HCBlue];//UIColorFromRGB(0x43609c);
         
-        self.gamesButton.backgroundColor = greenColor;//UIColorFromRGB(0x43609c);
-        self.resultsButton.backgroundColor = greenColor;//UIColorFromRGB(0x43609c);
+        self.gamesButton.backgroundColor = [UIColor HCDarkBlue];//UIColorFromRGB(0x43609c);
+        self.resultsButton.backgroundColor = [UIColor HCDarkBlue];//UIColorFromRGB(0x43609c);
+    
+    
+    self.tempFormsButton.backgroundColor = [UIColor HCLightBlue];
     
         [self.HCButton setTitleColor:textColor forState:UIControlStateNormal];
         [self.HPButton setTitleColor:textColor forState:UIControlStateNormal];
         [self.SPButton setTitleColor:textColor forState:UIControlStateNormal];
         [self.MCButton setTitleColor:textColor forState:UIControlStateNormal];
-        [self.tempFormsButton setTitleColor:blueColor forState:UIControlStateNormal];
+        [self.tempFormsButton setTitleColor:[UIColor HCDarkBlue] forState:UIControlStateNormal];
     
         [self.gamesButton setTitleColor:textColor forState:UIControlStateNormal];
         [self.resultsButton setTitleColor:textColor forState:UIControlStateNormal];

@@ -7,15 +7,11 @@
 //
 
 #import "GamesTableViewController.h"
-#import "ResultsViewController.h"
+#import "ResultsViewController.h" //because we transition to this
 #import "VerbSequence.h"
 #import "GameResult.h"
 #import "sqlite3.h"
-
-
-@interface GamesTableViewController ()
-
-@end
+#import "HCColors.h"
 
 extern sqlite3 *db;
 
@@ -39,7 +35,7 @@ int getGamesCallback(void *NotUsed, int argc, char **argv, char **azColName) {
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:d];
 
     //[dateFormat setDateFormat:@"dd/MM/yyyy HH:mm"];
-    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm"];
+    [dateFormat setDateFormat:@"MMMM dd - HH:mm"];
     a.dateString = [dateFormat stringFromDate:date];
     a.score = atoi(argv[2]);
     
@@ -50,10 +46,10 @@ int getGamesCallback(void *NotUsed, int argc, char **argv, char **azColName) {
 
 -(void) getGames
 {
-    NSLog(@"query");
     char *err_msg = 0;
     [gameResults removeAllObjects];
     dateFormat = [[NSDateFormatter alloc] init];
+    
     //Gameid 1 is the practice game, so don't show it
     int rc = sqlite3_exec(db, "SELECT gameid,timest,score FROM games WHERE gameid > 1 ORDER BY gameid DESC;", getGamesCallback, 0, &err_msg);
     
@@ -69,6 +65,8 @@ int getGamesCallback(void *NotUsed, int argc, char **argv, char **azColName) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    NSLog(@"Games loaded");
+    gameResults = nil;
     gameResults = [[NSMutableArray alloc] init];
     
     [self getGames];
@@ -88,21 +86,57 @@ int getGamesCallback(void *NotUsed, int argc, char **argv, char **azColName) {
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Incomplete implementation, return the number of sections
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete implementation, return the number of rows
     if (gameResults)
     {
-        NSLog(@"gameResults count: %lu", (unsigned long)[gameResults count]);
+        //NSLog(@"gameResults count: %lu", (unsigned long)[gameResults count]);
         return [gameResults count];
     }
     else
+    {
         return 0;
+    }
 }
 
+- (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *customTitleView = [ [UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 34)];
+    
+    UILabel *titleLabel = [ [UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 34)];
+    titleLabel.text = [NSString stringWithFormat:@"  Game History"];
+    titleLabel.textColor = [UIColor whiteColor];
+    titleLabel.backgroundColor = [UIColor HCDarkBlue];
+    
+    UILabel *scoreLabel = [ [UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width - 34, 34)];
+    scoreLabel.textAlignment = NSTextAlignmentRight;
+    scoreLabel.text = [NSString stringWithFormat:@"Score"];
+    scoreLabel.textColor = [UIColor whiteColor];
+    
+    //NSLayoutConstraint *horizontalConstraint = NSLayoutConstraint(item: newView, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: view, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0)
+    /*
+    NSLayoutConstraint *con = [NSLayoutConstraint constraintWithItem:scoreLabel
+                                                                            attribute:NSLayoutAttributeRight
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.tableView
+                                                                            attribute:NSLayoutAttributeRight
+                                                                           multiplier:0.00
+                                                                             constant:0];
+    
+    [self.tableView addConstraint:con];
+    */
+    [customTitleView addSubview:titleLabel];
+    [customTitleView addSubview:scoreLabel];
+    
+    return customTitleView;
+}
+
+//http://stackoverflow.com/questions/7105747/how-to-change-font-color-of-the-title-in-grouped-type-uitableview
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 34;
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"GameResultsCell" forIndexPath:indexPath];

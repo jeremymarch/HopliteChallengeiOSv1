@@ -11,6 +11,7 @@
 #import "libmorph.h"
 #import "GreekForms.h"
 #import <AudioToolbox/AudioToolbox.h>
+#import "HCColors.h"
 
 //http://stackoverflow.com/questions/1560081/how-can-i-create-a-uicolor-from-a-hex-string
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
@@ -1813,7 +1814,7 @@ void dispatchAfter(double delay, void (^block)(void))
                                             contents:fileContents
                                           attributes:nil];
     */
-    UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
+    //UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
     
     NSString *dataFileName = @"hcdata";
     NSString *dataFileWithPath = [self writeablePathForFile:dataFileName];
@@ -1908,7 +1909,7 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.view addSubview:self.popup];
     */
     self.scoreLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:self.timeFontSize];
-    self.scoreLabel.textColor = blueColor;
+    self.scoreLabel.textColor = [UIColor HCBlue];
     if (self.verbQuestionType == HOPLITE_CHALLENGE)
     {
         self.scoreLabel.text = @"0";
@@ -2065,7 +2066,7 @@ void dispatchAfter(double delay, void (^block)(void))
     self.continueButton.layer.borderWidth = 6.0f;
     self.continueButton.layer.borderColor = [UIColor whiteColor].CGColor;
     
-    self.continueButton.backgroundColor = blueColor;// UIColorFromRGB(0x43609c);
+    self.continueButton.backgroundColor = [UIColor HCBlue];// UIColorFromRGB(0x43609c);
     
     [self.continueButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.continueButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
