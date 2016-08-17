@@ -11,6 +11,6 @@
 @interface GameResult : NSObject
 @property NSInteger gameId;
 @property NSInteger date;
-@property NSString *dateString;
+@property (retain,atomic) NSString *dateString;
 @property NSInteger score;
 @end

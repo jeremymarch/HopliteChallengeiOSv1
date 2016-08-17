@@ -15,15 +15,11 @@
 
 extern sqlite3 *db;
 
-NSMutableArray *gameResults;
-
 @implementation GamesTableViewController
 
 NSDateFormatter *dateFormat;
 
-int getGamesCallback(void *NotUsed, int argc, char **argv, char **azColName) {
-    
-    NotUsed = 0;
+int getGamesCallback(void *selfRef, int argc, char **argv, char **azColName) {
     
     GameResult *a = [[GameResult alloc ]init];
     
@@ -39,7 +35,8 @@ int getGamesCallback(void *NotUsed, int argc, char **argv, char **azColName) {
     a.dateString = [dateFormat stringFromDate:date];
     a.score = atoi(argv[2]);
     
-    [gameResults addObject:a];
+    id selfRef2 = (__bridge id)selfRef;
+    [[selfRef2 gameResults] addObject:a];
     
     return 0;
 }
@@ -47,11 +44,11 @@ int getGamesCallback(void *NotUsed, int argc, char **argv, char **azColName) {
 -(void) getGames
 {
     char *err_msg = 0;
-    [gameResults removeAllObjects];
+    [self.gameResults removeAllObjects];
     dateFormat = [[NSDateFormatter alloc] init];
     
     //Gameid 1 is the practice game, so don't show it
-    int rc = sqlite3_exec(db, "SELECT gameid,timest,score FROM games WHERE gameid > 1 ORDER BY gameid DESC;", getGamesCallback, 0, &err_msg);
+    int rc = sqlite3_exec(db, "SELECT gameid,timest,score FROM games WHERE gameid > 1 ORDER BY gameid DESC;", getGamesCallback, (__bridge void *)(self), &err_msg);
     
     dateFormat = nil;
 }
@@ -65,9 +62,14 @@ int getGamesCallback(void *NotUsed, int argc, char **argv, char **azColName) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    NSLog(@"Games loaded");
-    gameResults = nil;
-    gameResults = [[NSMutableArray alloc] init];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    
+    //[self.tableView registerClass:UITableViewCell.self forCellReuseIdentifier:@"GameResultsCell"];
+    
+    //NSLog(@"Games loaded");
+    self.gameResults = nil;
+    self.gameResults = [[NSMutableArray alloc] init];
     
     [self getGames];
     
@@ -90,10 +92,10 @@ int getGamesCallback(void *NotUsed, int argc, char **argv, char **azColName) {
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (gameResults)
+    if (self.gameResults && section == 0)
     {
-        //NSLog(@"gameResults count: %lu", (unsigned long)[gameResults count]);
-        return [gameResults count];
+        NSLog(@"gameResults count: %lu", (unsigned long)[self.gameResults count]);
+        return [self.gameResults count];
     }
     else
     {
@@ -139,17 +141,21 @@ int getGamesCallback(void *NotUsed, int argc, char **argv, char **azColName) {
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"GameResultsCell" forIndexPath:indexPath];
+    //UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"GameResultsCell"];
     
     // Configure the cell...
     UILabel *gameLabel = (UILabel *)[cell viewWithTag:98];
     UILabel *scoreLabel = (UILabel *)[cell viewWithTag:99];
     
-    GameResult *h = [gameResults objectAtIndex:[indexPath row]];
+    GameResult *h = (GameResult*)[self.gameResults objectAtIndex:indexPath.row];
     
-    [gameLabel setText:h.dateString];
-    [scoreLabel setText:[NSString stringWithFormat:@"%ld", (long)h.score]];
-    cell.tag = h.gameId;
+    //NSLog(@"Date: %@, row: %li", h.dateString, (long)indexPath.row);
+    
+    gameLabel.text = h.dateString;
+    scoreLabel.text = [NSString stringWithFormat:@"%ld", (long)h.score];
+    //cell.tag = h.gameId; //don't set tags here, it corrupts the rows for some reason
     
     cell.accessoryView = nil;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -205,8 +211,8 @@ int getGamesCallback(void *NotUsed, int argc, char **argv, char **azColName) {
      */
     //if([[object valueForKey:@"sort"] integerValue] == 5)
     //{
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    [self performSegueWithIdentifier:@"GamesToResultsSegue"sender:cell];
+    //UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    [self performSegueWithIdentifier:@"GamesToResultsSegue" sender:indexPath];
     //}
     
     
@@ -223,9 +229,11 @@ int getGamesCallback(void *NotUsed, int argc, char **argv, char **azColName) {
 // In a storyboard-based application, you will often want to do a little preparation before navigation
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     
-    UITableViewCell *cell = (UITableViewCell *)sender;
+    NSIndexPath *indexPath = (NSIndexPath *)sender;
     ResultsViewController *dvc = segue.destinationViewController;
-    dvc.gameId = cell.tag; // sender will be your cell
+
+    GameResult *g = [self.gameResults objectAtIndex:indexPath.row];
+    dvc.gameId = g.gameId;
 }
 
 /*

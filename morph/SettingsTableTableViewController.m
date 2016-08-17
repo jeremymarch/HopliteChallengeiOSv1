@@ -35,8 +35,8 @@
     
     self.optionLabels = @[@"Disable Sound"];
     
-    
-    self.viewHeader = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 100)];
+    //self.viewHeader = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 100)];
+    self.viewHeader = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 58)];
     [self.viewHeader setBackgroundColor:[UIColor whiteColor]];
     
     UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
@@ -51,6 +51,9 @@
     [self.closeButton addTarget:self
                          action:@selector(closeSettings:)
                forControlEvents:UIControlEventTouchDown];
+
+    /*
+     Temp disabling segment, change height of viewheader back to 100 when re-enable
     self.segment = [[UISegmentedControl alloc] initWithItems:@[@"H&Q Units", @"Options"]];
     self.segment.backgroundColor = [UIColor colorWithWhite:1.0 alpha:0.95];
     [self.segment setFrame:CGRectMake(6, 62, self.view.frame.size.width - 12, 38)];
@@ -59,6 +62,7 @@
     self.segment.selectedSegmentIndex = 0;
     [self.segment addTarget:self action:@selector(segmentValueChaged:) forControlEvents:UIControlEventValueChanged];
     [self.viewHeader addSubview:self.segment];
+     */
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -93,7 +97,7 @@
 {
     if(section == 0)
     {
-        return 100;
+        return 58;//100;
     }
     return UITableViewAutomaticDimension;
 }
@@ -371,8 +375,9 @@
         // Place code here to perform animations during the rotation.
         // You can pass nil or leave this block empty if not necessary.
         
-        [self.segment setFrame:CGRectMake(6, 62, size.width - 12 , 38)];
-        [self.viewHeader setFrame:CGRectMake(0, 0, size.width, 100)];
+        //[self.segment setFrame:CGRectMake(6, 62, size.width - 12 , 38)];
+        //[self.viewHeader setFrame:CGRectMake(0, 0, size.width, 100)];
+        [self.viewHeader setFrame:CGRectMake(0, 0, size.width, 58)];
         [self.closeButton setFrame:CGRectMake(size.width - 70 - 6, 24, 70, 36)];
         
         

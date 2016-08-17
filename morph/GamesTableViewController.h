@@ -9,5 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface GamesTableViewController : UITableViewController
-@property NSDateFormatter *df;
+@property (retain,atomic) NSDateFormatter *df;
+@property (retain,atomic) NSMutableArray *gameResults;
 @end

@@ -2497,6 +2497,23 @@ bool utf8HasSuffix(char *s, char *suffix)
     return true;
 }
 
+/*
+13 erxomai      - should be partial deponent, no passive
+13 metanistamai - should be partial deponent, no passive
+14 epanistamai  - should be partial deponent, no passive
+14 epideiknumai - ?
+15 epomai       - should be middle deponent, no passive
+16 bainw, anabainw - shouldn't have passive, right?
+*16 gignwskw is ok, there is a passive be known
+ 16 piptw, no passive
+ 17 epistamai   - aorist passive has middle meaning, so no passive
+ 17 exw         - does have a passive meaning
+ 18 apothnhskw  - no passive
+ 18 apokteinw   - can have a passive meaning
+ 18 mellw       - seems to rarely show up in the passive meaning to be delayed
+ 19 apollumi    - shouldn't have a passive
+ */
+
 //page 316 in h&q
 int deponentType(Verb *v)
 {
