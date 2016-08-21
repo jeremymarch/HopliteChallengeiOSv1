@@ -2512,6 +2512,19 @@ bool utf8HasSuffix(char *s, char *suffix)
  18 apokteinw   - can have a passive meaning
  18 mellw       - seems to rarely show up in the passive meaning to be delayed
  19 apollumi    - shouldn't have a passive
+ 
+ ἔρχομαι
+ μετανίσταμαι
+ ἐπανίσταμαι
+ ἐπιδείκνυμαι
+ ἕπομαι
+ ἀναβαίνω
+ βαίνω
+ ἐκπίπτω
+ πίπτω
+ ἐπίσταμαι
+ ἀποθνῄσκω
+ ἀπόλλῡμι
  */
 
 //page 316 in h&q

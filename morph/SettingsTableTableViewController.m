@@ -8,6 +8,7 @@
 
 #import "SettingsTableTableViewController.h"
 #import "VerbsTableViewController.h"
+#import "HCColors.h"
 
 @interface SettingsTableTableViewController ()
 
@@ -36,10 +37,16 @@
     self.optionLabels = @[@"Disable Sound"];
     
     //self.viewHeader = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 100)];
-    self.viewHeader = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 58)];
+    self.viewHeader = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 62)];
     [self.viewHeader setBackgroundColor:[UIColor whiteColor]];
     
     UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
+    
+    self.viewHeaderLabel = [[UILabel alloc]initWithFrame:CGRectMake(12, 14, 100, 62)];
+    self.viewHeaderLabel.textColor = [UIColor HCBlue];
+    self.viewHeaderLabel.text = @"H&Q Units";
+    self.viewHeaderLabel.font = [UIFont fontWithName:@"Helvetica" size:20.0];
+    [self.viewHeader addSubview:self.viewHeaderLabel];
     
     self.closeButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 70 - 10, 24, 70, 36)];
     [self.closeButton setTitle:@"Close" forState:UIControlStateNormal];
@@ -47,6 +54,7 @@
     self.closeButton.layer.borderColor = blueColor.CGColor;
     self.closeButton.layer.borderWidth = 2.0f;
     self.closeButton.layer.cornerRadius = 8;
+    self.closeButton.backgroundColor = [UIColor whiteColor];
     [self.viewHeader addSubview:self.closeButton];
     [self.closeButton addTarget:self
                          action:@selector(closeSettings:)
@@ -97,7 +105,7 @@
 {
     if(section == 0)
     {
-        return 58;//100;
+        return 64;//100;
     }
     return UITableViewAutomaticDimension;
 }

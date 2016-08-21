@@ -10,6 +10,7 @@
 #import "VerbSequence.h"
 #import "HCResult.h"
 #import "sqlite3.h"
+#import "HCColors.h"
 
 @interface ResultsViewController ()
 
@@ -99,6 +100,23 @@ int getVerbSeqCallback2(void *NotUsed, int argc, char **argv, char **azColName) 
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UILabel *label = [[UILabel alloc] init];
+    if (self.gameId == 1)
+        label.text = @"  Practice History";
+    else
+        label.text = @"  Game History";
+    label.backgroundColor = [UIColor HCDarkBlue];
+    label.textColor = [UIColor whiteColor];
+    return label;
+}
+
+//http://stackoverflow.com/questions/7105747/how-to-change-font-color-of-the-title-in-grouped-type-uitableview
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 34;
 }
 
 - (void)didReceiveMemoryWarning {

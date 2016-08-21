@@ -21,6 +21,7 @@
 @dynamic view;
 //http://travisjeffery.com/b/2012/12/overriding-uiviewcontrollers-view-property-done-right/
 - (void)loadView {
+
     self.view = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, [[UIScreen mainScreen] bounds].size.height)];
     self.view.backgroundColor = [UIColor whiteColor];
     self.view.scrollEnabled = YES;
