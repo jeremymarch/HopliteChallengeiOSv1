@@ -376,7 +376,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     vf1->verb = v; //THIS IS THE VERB WE'E USING
     
     //***************OVERRIDE for testing on specific verbs, set here*******************************
-    //vf1->verb = &verbs[94];//13];
+    //vf1->verb = &verbs[3];//13]; //46 kathisthmi is longest
     //***************for testing on specific verbs*****************************************
     
     
@@ -478,8 +478,8 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     
     vf2->person = SECOND;
      vf2->number = SINGULAR;
-     vf2->tense = FUTURE;
-     vf2->voice = PASSIVE;
+    vf2->tense = PRESENT;
+     vf2->voice = MIDDLE;
      vf2->mood = INDICATIVE;
      vf2->verb = vf1->verb;
      //**************for testing to force form****************************

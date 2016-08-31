@@ -13,6 +13,8 @@
 #import "TutorialPageViewController.h"
 #import "VerbsTableViewController.h"
 #import "HCColors.h"
+#import "TutorialChildViewController.h"
+
 
 #define UIColorFromRGB(rgbValue) \
 [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
@@ -172,6 +174,11 @@ alpha:1.0]
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    //to preload About webview for faster load
+    //http://stackoverflow.com/questions/21563801/preload-uiwebview-on-a-not-yet-displayed-uiviewcontroller
+    TutorialChildViewController *initialViewController = [self.storyboard instantiateViewControllerWithIdentifier: @"tutorialIntro" ];
+    [initialViewController.view layoutSubviews];
 
     double sw = self.view.frame.size.width;
     double sh = self.view.frame.size.height;

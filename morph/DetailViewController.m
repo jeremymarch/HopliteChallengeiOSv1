@@ -115,7 +115,7 @@ SystemSoundID BuzzSound;
         
         CFTimeInterval elapsedTime = CACurrentMediaTime() - self.startTime;
         self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
-        self.timeLabel.hidden = false;
+        self.timeLabel.hidden = NO;
     }
     else if (self.cardType == CARD_PRINCIPAL_PARTS || self.cardType == CARD_ENDINGS)//load new card
     {
@@ -126,7 +126,7 @@ SystemSoundID BuzzSound;
         self.cardType = CARD_VERBS;
         [self loadNext];
         self.front = true;
-        self.timeLabel.hidden = true;
+        self.timeLabel.hidden = NO;
     }
 }
 
@@ -703,7 +703,7 @@ void printUCS22(UCS2 *u, int len)
                             self.greenCheckView.hidden = YES;
                             [self loadNext];
                             self.textfield.text = @"";
-                            self.timeLabel.hidden = true;
+                            self.timeLabel.hidden = NO;
                         }
                     });
                 });
@@ -724,7 +724,7 @@ void printUCS22(UCS2 *u, int len)
                         self.greenCheckView.hidden = YES;
                         [self loadNext];
                         self.textfield.text = @"";
-                        self.timeLabel.hidden = true;
+                        self.timeLabel.hidden = NO;
                     }
                 });
             }
@@ -766,7 +766,7 @@ void printUCS22(UCS2 *u, int len)
                                                      dispatch_after(popTime2, dispatch_get_main_queue(), ^(void){
                                                      self.redXView.hidden = YES;
                                                      self.greenCheckView.hidden = YES;
-                                                     self.timeLabel.hidden = YES;
+                                                     self.timeLabel.hidden = NO;
                                                      UILabel *temp;
                                                      temp = self.origForm;
                                                      self.origForm = self.changedForm;
@@ -798,6 +798,7 @@ void printUCS22(UCS2 *u, int len)
     }
     else //if back
     {
+        self.timeLabel.text = @"30.00 sec";
         //[self cleanUp:!(self.useNewAnimation && verbSeq < vsOptions.repsPerVerb)];
         if (self.verbQuestionType == HOPLITE_CHALLENGE && self.lives < 1)
         {
@@ -938,7 +939,7 @@ void printUCS22(UCS2 *u, int len)
             }];
         }];
     }
-    self.timeLabel.hidden = true;
+    self.timeLabel.hidden = NO;
 }
 
 -(void)startTimer
@@ -1279,7 +1280,7 @@ void dispatchAfter(double delay, void (^block)(void))
     
     self.stemLabel.hidden = false;
     self.backLabel.hidden = true;
-    self.timeLabel.hidden = true;
+    self.timeLabel.hidden = NO;
     self.singLabel.hidden = true;
     self.pluralLabel.hidden = true; 
     self.front = true;
@@ -1462,8 +1463,23 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.timeLabel setFrame:CGRectMake(self.view.bounds.size.width - 200, 6,  194, 30)];
     [self.MFLabel setFrame:CGRectMake(self.view.bounds.size.width - 120 - 42, 6,  42, 30)];
     self.timeLabel.textAlignment = NSTextAlignmentRight;
+    self.changeTo.hidden = YES;
+    self.stemLabel.text = @"";
     
+    /*dispatchAfter( 0.3, ^(void)
+                  {
+                      self.origForm.hidden = NO;
+                      [self typeLabel:self.origForm withString:@"Change to\n the form indicated" withInterval:self.typeInterval setHeight:false completion:^{
+                          
+                          dispatchAfter( 2.4, ^(void)
+                                        {*/
     [self loadNext3];
+                                       /* });
+                      
+                      
+                      }
+                      
+                       ];});*/
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -1497,7 +1513,7 @@ void dispatchAfter(double delay, void (^block)(void))
         
         CFTimeInterval elapsedTime = CACurrentMediaTime() - self.startTime;
         self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
-        self.timeLabel.hidden = false;
+        self.timeLabel.hidden = NO;
     }
     else
     {
@@ -1508,7 +1524,7 @@ void dispatchAfter(double delay, void (^block)(void))
 
         [self loadNext];
         self.front = true;
-        self.timeLabel.hidden = true;
+        self.timeLabel.hidden = NO;
     }
 }
 
@@ -1535,7 +1551,7 @@ void dispatchAfter(double delay, void (^block)(void))
         
         CFTimeInterval elapsedTime = CACurrentMediaTime() - self.startTime;
         self.timeLabel.text = [NSString stringWithFormat:@"%.02f sec", elapsedTime];
-        self.timeLabel.hidden = false;
+        self.timeLabel.hidden = NO;
     }
     else
     {
@@ -1546,7 +1562,7 @@ void dispatchAfter(double delay, void (^block)(void))
         
         [self loadNext];
         self.front = true;
-        self.timeLabel.hidden = true;
+        self.timeLabel.hidden = NO;
     }
 }
 
@@ -1613,41 +1629,7 @@ void dispatchAfter(double delay, void (^block)(void))
     
     [self.textfield removeObserver:self forKeyPath:@"contentSize" context:NULL];
 }
-/*
-- (void) animatePopUpShow:(id)sender
-{
-    [self.textfield resignFirstResponder];
-    
-    if (self.popupShown)
-    {
-        [self setLevels];
-        [self setMode];
-        
-        [UIView animateWithDuration:0.3 delay:0.0 options:0
-                         animations:^{
-                             self.popup.frame = CGRectMake(0,[UIScreen mainScreen].bounds.size.height + 200, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-                             self.navigationItem.rightBarButtonItem.title = @"Units";
-                         }
-                         completion:nil];
-        [self.view bringSubviewToFront:self.popup];
-        self.popupShown = FALSE;
-        [self loadNext];
-    }
-    else
-    {
-        [self stopTimer];
-        self.timeLabel.hidden = YES;
-        [UIView animateWithDuration:0.3 delay:0.0 options:0
-                         animations:^{
-                             self.popup.frame = CGRectMake(0,0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-                             self.navigationItem.rightBarButtonItem.title = @"Close";
-                         }
-                         completion:nil];
-        [self.view bringSubviewToFront:self.popup];
-        self.popupShown = TRUE;
-    }
-}
-*/
+
 -(void) setLevels
 {
     if (self.levels)
@@ -1727,12 +1709,13 @@ void dispatchAfter(double delay, void (^block)(void))
 {
     if (!self.expanded)
     {
+        NSString *newChanged = [self.changedStrDecomposed stringByReplacingOccurrencesOfString:@", " withString:@",\n"];
         if (self.changedForm.hidden == YES)
         {
             //self.changedForm.frame = self.textfield.frame;
             //self.changedForm.hidden = NO;
             //self.textfield.hidden = YES;
-            self.textfield.text = self.changedStrDecomposed;
+            self.textfield.text = newChanged;
             
             //slide green check over
             CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
@@ -1744,8 +1727,8 @@ void dispatchAfter(double delay, void (^block)(void))
         }
         else
         {
-            self.changedForm.text = self.changedStrDecomposed;
-            [self centerLabel:self.changedForm withString:self.changedStrDecomposed setHeight:YES];
+            self.changedForm.text = newChanged;
+            [self centerLabel:self.changedForm withString:newChanged setHeight:YES];
         }
         self.expanded = YES;
         self.origForm.text = self.origStrDecomposed;
@@ -1757,9 +1740,10 @@ void dispatchAfter(double delay, void (^block)(void))
 {
     if (self.expanded)
     {
+        NSString *newChanged = [self.changedStr stringByReplacingOccurrencesOfString:@", " withString:@",\n"];
         if (self.changedForm.hidden == YES)
         {
-            self.textfield.text = self.changedStr;
+            self.textfield.text = newChanged;
             //slide green check over
             CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];
             CGFloat gvX = (self.view.frame.size.width + size.width) / 2 + 15;
@@ -1770,8 +1754,8 @@ void dispatchAfter(double delay, void (^block)(void))
         }
         else
         {
-            self.changedForm.text = self.changedStr;
-            [self centerLabel:self.changedForm withString:self.changedStr setHeight:YES];
+            self.changedForm.text = newChanged;
+            [self centerLabel:self.changedForm withString:newChanged setHeight:YES];
         }
         self.expanded = NO;
         self.origForm.text = self.origStr;
@@ -1798,8 +1782,9 @@ void dispatchAfter(double delay, void (^block)(void))
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.textfield.delegate = self;
     
+    self.textfield.delegate = self;
+
     /*
      NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
      NSString *documentsDirectoryPath = [paths objectAtIndex:0];
@@ -1842,10 +1827,11 @@ void dispatchAfter(double delay, void (^block)(void))
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-    if ([defaults boolForKey:@"DisableSound"] == YES)
+    if (1)//[defaults boolForKey:@"DisableSound"] == YES)
         self.soundDisabled = YES;
     else
         self.soundDisabled = NO;
+    
     
     if (1)//[defaults boolForKey:@"DisableAnimation"] == YES)
         self.animate = YES;
@@ -1864,12 +1850,12 @@ void dispatchAfter(double delay, void (^block)(void))
     self.greekFont = @"NewAthenaUnicode";
     
 
-    NSLog(@"screensize: %f x %f", screenSize.width, screenSize.height);
+    //NSLog(@"screensize: %f x %f", screenSize.width, screenSize.height);
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
     {
         self.timeFontSize = 24.0;
         self.fontSize = 30.0;
-        self.greekFontSize = 40.0; //6S
+        self.greekFontSize = 40.0;
     }
     else if (screenSize.height > 569) //6S
     {
@@ -1916,7 +1902,7 @@ void dispatchAfter(double delay, void (^block)(void))
         self.scoreLabel.hidden = NO;
     }
     self.timeLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:self.timeFontSize];
-    self.MFLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:24.0];
+    self.MFLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:self.timeFontSize - 2];
     self.MFLabel.layer.borderColor = [UIColor colorWithRed:(255/255.0) green:(56/255.0) blue:(0/255.0) alpha:1.0].CGColor;
     self.MFLabel.layer.cornerRadius = 4.0f;
     self.MFLabel.layer.borderWidth = 2.0f;
@@ -2123,9 +2109,9 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.view addSubview:self.life1];
     [self.view addSubview:self.life2];
     [self.view addSubview:self.life3];
-    [self.life1 setFrame:CGRectMake(screenSize.width - 26,38,20,20)];
-    [self.life2 setFrame:CGRectMake(screenSize.width - 52,38,20,20)];
-    [self.life3 setFrame:CGRectMake(screenSize.width - 78,38,20,20)];
+    [self.life1 setFrame:CGRectMake(screenSize.width - 26,42,20,20)];
+    [self.life2 setFrame:CGRectMake(screenSize.width - 52,42,20,20)];
+    [self.life3 setFrame:CGRectMake(screenSize.width - 78,42,20,20)];
     [self.view bringSubviewToFront:self.life1];
     [self.view bringSubviewToFront:self.life2];
     [self.view bringSubviewToFront:self.life3];
@@ -2201,26 +2187,26 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.origForm setFrame:CGRectMake(self.origForm.frame.origin.x, f/6, self.origForm.frame.size.width, self.origForm.frame.size.height)];
     //[self.changeTo setFrame:CGRectMake(0, f/3.4, self.view.frame.size.width, fsizeS.height + 10)];
     
-    [self.life1 setFrame:CGRectMake(size.width - 27,6,20,20)];
-    [self.life2 setFrame:CGRectMake(size.width - 53,6,20,20)];
-    [self.life3 setFrame:CGRectMake(size.width - 79,6,20,20)];
-    [self.gameOverLabel setFrame:CGRectMake(0, 0, size.width - 6, fsizeS.height)];
+    [self.life1 setFrame:CGRectMake(size.width - 27,33,20,20)];
+    [self.life2 setFrame:CGRectMake(size.width - 53,33,20,20)];
+    [self.life3 setFrame:CGRectMake(size.width - 79,33,20,20)];
+    [self.gameOverLabel setFrame:CGRectMake(0, 28, size.width - 6, fsizeS.height)];
     
     [self.changeTo setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, fsizeS.height + 10)];
     [self.stemLabel setFrame:CGRectMake(0, f/3.4+34, self.view.frame.size.width, fsizeS.height + 10)];
     [self.textfield setFrame:CGRectMake(10, f/2.1, self.view.frame.size.width - 20, fsize.height + 10)];
     [self.changedForm setFrame:CGRectMake(10, f/1.7, self.view.frame.size.width - 20, fsize.height + 10)];
     
-    [self.scoreLabel setFrame:CGRectMake(60, 6,  194, 30)];
+    [self.scoreLabel setFrame:CGRectMake(56, 2,  194, 30)];
     if (self.verbQuestionType == HOPLITE_CHALLENGE)
     {
-        [self.timeLabel setFrame:CGRectMake(size.width - 200, 28,  194, 30)];
+        [self.timeLabel setFrame:CGRectMake(size.width - 200, 2,  194, 30)];
     }
     else
     {
         [self.timeLabel setFrame:CGRectMake(size.width - 200, 6,  194, 30)];
     }
-    [self.MFLabel setFrame:CGRectMake(size.width - 120 - 42, 6,  42, 30)];
+    [self.MFLabel setFrame:CGRectMake(size.width - 120 - 42, 4,  42, 30)];
     
     [self centerLabel:self.origForm withString:self.origForm.text setHeight:NO];
     [self centerLabel:self.changeTo withString:self.changeTo.text setHeight:NO];

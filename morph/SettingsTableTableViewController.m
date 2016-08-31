@@ -42,13 +42,22 @@
     
     UIColor *blueColor = [UIColor colorWithRed:(0/255.0) green:(122/255.0) blue:(255/255.0) alpha:1.0];
     
-    self.viewHeaderLabel = [[UILabel alloc]initWithFrame:CGRectMake(12, 14, 100, 62)];
+    self.viewHeaderLabel = [[UILabel alloc]initWithFrame:CGRectMake(8, 12, 100, 62)];
     self.viewHeaderLabel.textColor = [UIColor HCBlue];
     self.viewHeaderLabel.text = @"H&Q Units";
     self.viewHeaderLabel.font = [UIFont fontWithName:@"Helvetica" size:20.0];
     [self.viewHeader addSubview:self.viewHeaderLabel];
     
-    self.closeButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 70 - 10, 24, 70, 36)];
+    //bottom border of view header:
+    CALayer *bottomBorder = [CALayer layer];
+    bottomBorder.frame = CGRectMake(0.0f, self.viewHeader.frame.size.height, self.viewHeader.frame.size.width, 1.0f);
+    bottomBorder.backgroundColor = [UIColor colorWithWhite:0.8f alpha:1.0f].CGColor;
+    [self.viewHeader.layer addSublayer:bottomBorder];
+    
+    
+    
+    
+    self.closeButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 70 - 10, 22, 70, 36)];
     [self.closeButton setTitle:@"Close" forState:UIControlStateNormal];
     [self.closeButton setTitleColor:blueColor forState:UIControlStateNormal];
     self.closeButton.layer.borderColor = blueColor.CGColor;
