@@ -45,6 +45,7 @@ enum {
 @property bool animate;
 @property bool autoNav;
 @property bool autoNavForCorrect;
+@property bool readDirectionsOnce;
 
 
 @property bool  useNewAnimation;

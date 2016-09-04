@@ -1174,6 +1174,68 @@ void dispatchAfter(double delay, void (^block)(void))
     
     if (verbSeq == 1 || !self.useNewAnimation)
     {
+        if (!self.readDirectionsOnce)
+        {
+            self.readDirectionsOnce =  YES;
+        dispatchAfter( 0.8, ^(void)
+                      {
+                          //self.stemLabel.hidden = NO;
+                          //self.stemLabel.textAlignment = NSTextAlignmentLeft;
+                          self.origForm.font = [UIFont fontWithName:self.systemFont size:self.fontSize];
+                          [self typeLabel:self.origForm withString:@"Change the given form..." withInterval:self.typeInterval setHeight:NO completion:^{
+                              
+                              dispatchAfter( 1.8, ^(void)
+                                            {
+                                                [self hideTypeLabel:self.origForm withInterval:self.typeInterval completion:^(void)
+                                                 {
+                                                     
+                              self.origForm.font = [UIFont fontWithName:self.greekFont size:self.greekFontSize];
+                          [self typeLabel:self.origForm withString:origForm withInterval:self.typeInterval setHeight:NO completion:nil];
+                          
+                          dispatchAfter( 1.0, ^(void)
+                                        {
+                                            //self.origForm.font = [UIFont fontWithName:self.systemFont size:self.fontSize];
+                                            self.stemLabel.textColor = [UIColor blackColor];
+                                            [self typeLabel:self.stemLabel withString:@"...to the form indicated." withInterval:self.typeInterval setHeight:NO completion:^{
+                                                
+                                                dispatchAfter( 1.8, ^(void)
+                                                              {
+                                                                  [self hideTypeLabel:self.stemLabel withInterval:self.typeInterval completion:^(void)
+                                                                   {
+                                            
+                                            //[self typeLabel:self.stemLabel withString:newDescription withInterval:self.typeInterval];
+                                            self.stemLabel.textColor = [UIColor grayColor];
+                                            self.stemLabel.attributedText = nil;
+                                            [self typeAttLabel:self.stemLabel withString: attDesc withInterval:self.typeInterval];
+                                            
+                                            dispatchAfter( 0.7, ^(void)
+                                                          {
+                                                              self.textfield.text = @"";
+                                                              self.textfield.userInteractionEnabled = YES;
+                                                              self.textfield.hidden = NO;
+                                                              [self.textfield becomeFirstResponder];
+                                                              
+                                                              dispatchAfter( 0.4, ^(void)
+                                                                            {
+                                                                                self.timeLabel.hidden = NO;
+                                                                                [self startTimer];
+                                                                            });
+                                                          });
+                                        
+                                            
+                                                                   }];});
+                                                                   }];
+                                            });
+                      
+                                                 }];});
+                          
+                          }];
+                          }
+                           
+                           );
+        }
+        else
+        {
         dispatchAfter( 0.8, ^(void)
                       {
                           [self typeLabel:self.origForm withString:origForm withInterval:self.typeInterval setHeight:NO completion:nil];
@@ -1199,6 +1261,7 @@ void dispatchAfter(double delay, void (^block)(void))
                                                           });
                                         });
                       });
+        }
     }
     else
     {
@@ -1465,21 +1528,27 @@ void dispatchAfter(double delay, void (^block)(void))
     self.timeLabel.textAlignment = NSTextAlignmentRight;
     self.changeTo.hidden = YES;
     self.stemLabel.text = @"";
-    
-    /*dispatchAfter( 0.3, ^(void)
+    /*
+    dispatchAfter( 0.4, ^(void)
                   {
-                      self.origForm.hidden = NO;
-                      [self typeLabel:self.origForm withString:@"Change to\n the form indicated" withInterval:self.typeInterval setHeight:false completion:^{
+                      self.stemLabel.hidden = NO;
+                      self.stemLabel.textAlignment = NSTextAlignmentLeft;
+                      [self typeLabel:self.stemLabel withString:@"Change the given form...\n...to the form indicated." withInterval:self.typeInterval setHeight:YES completion:^{
                           
-                          dispatchAfter( 2.4, ^(void)
-                                        {*/
-    [self loadNext3];
-                                       /* });
+                          dispatchAfter( 3, ^(void)
+                                        {
+                                            [self hideTypeLabel:self.stemLabel withInterval:self.typeInterval completion:^(void)
+                                            {
+                                                [self loadNext3];
+                                            }];
+                                        });
                       
                       
                       }
                       
-                       ];});*/
+                       ];});
+    */
+    [self loadNext3];
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -1782,7 +1851,7 @@ void dispatchAfter(double delay, void (^block)(void))
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    self.readDirectionsOnce = NO;
     self.textfield.delegate = self;
 
     /*
