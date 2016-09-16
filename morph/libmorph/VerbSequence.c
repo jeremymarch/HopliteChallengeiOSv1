@@ -334,7 +334,11 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
             firstVerbSeq = false;
         }
     }
-    if (vso->isHCGame)
+    if (vso->practiceVerbID > -1)
+    {
+        v = &verbs[vso->practiceVerbID];
+    }
+    else if (vso->isHCGame)
     {
         if (!lastAnswerCorrect || verbSeq >= HC_VERBS_PER_SET)
         {
@@ -376,7 +380,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     vf1->verb = v; //THIS IS THE VERB WE'E USING
     
     //***************OVERRIDE for testing on specific verbs, set here*******************************
-    //vf1->verb = &verbs[3];//13]; //46 kathisthmi is longest
+    //vf1->verb = &verbs[3];//46];//13]; //46 kathisthmi is longest
     //***************for testing on specific verbs*****************************************
     
     
@@ -387,7 +391,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
             highestUnit = vso->units[i];
     }
     
-    //only change 1 degree for unites 1 and 2
+    //only change 1 degree for units 1 and 2
     if (highestUnit <= 2)
         degreesToChange = 1;
 
@@ -470,16 +474,16 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
 
     /*
      //**************for testing to force form****************************
-    vf1->person = SECOND;
+    vf1->person = FIRST;
     vf1->number = SINGULAR;
-    vf1->tense = FUTURE;
-    vf1->voice = PASSIVE;
+    vf1->tense = PRESENT;
+    vf1->voice = ACTIVE;
     vf1->mood = INDICATIVE;
     
-    vf2->person = SECOND;
-     vf2->number = SINGULAR;
-    vf2->tense = PRESENT;
-     vf2->voice = MIDDLE;
+    vf2->person = FIRST;
+     vf2->number = PLURAL;
+    vf2->tense = AORIST;
+     vf2->voice = ACTIVE;
      vf2->mood = INDICATIVE;
      vf2->verb = vf1->verb;
      //**************for testing to force form****************************

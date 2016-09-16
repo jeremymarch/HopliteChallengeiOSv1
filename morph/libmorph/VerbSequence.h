@@ -48,7 +48,9 @@ typedef struct vso {
     bool askEndings;
     bool askPrincipalParts;
     bool isHCGame; //else is practice
+    int practiceVerbID; //to just practice on one verb
     int units[20];
+    
 } VerbSeqOptions;
 
 bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed, char *elapsedTime, int *score);

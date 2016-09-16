@@ -735,7 +735,7 @@ void printUCS22(UCS2 *u, int len)
             {
                 self.changedForm.text = self.textfield.text;
                 self.changedForm.frame = CGRectMake(self.textfield.frame.origin.x, self.textfield.frame.origin.y + 5, self.textfield.frame.size.width, self.textfield.frame.size.height);
-                [self centerLabel:self.changedForm withString:self.changedForm.text setHeight:YES];
+                [self centerLabel:self.changedForm withString:self.changedForm.text setHeight:NO];
                 self.changedForm.hidden = NO;
                 self.textfield.hidden = YES;
                 dispatch_time_t popTime2 = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC));
@@ -1139,6 +1139,7 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.verbModeButton setFrame:CGRectMake(self.view.frame.size.width - 60 - 6, 6, 60, 36.0)];
     
     self.stemLabel.textAlignment = NSTextAlignmentLeft;//NSTextAlignmentCenter;
+    self.changedForm.textAlignment = NSTextAlignmentLeft;
     
     /* init stuff */
     
@@ -1192,13 +1193,13 @@ void dispatchAfter(double delay, void (^block)(void))
                               self.origForm.font = [UIFont fontWithName:self.greekFont size:self.greekFontSize];
                           [self typeLabel:self.origForm withString:origForm withInterval:self.typeInterval setHeight:NO completion:nil];
                           
-                          dispatchAfter( 1.0, ^(void)
+                          dispatchAfter( 0.9, ^(void)
                                         {
                                             //self.origForm.font = [UIFont fontWithName:self.systemFont size:self.fontSize];
                                             self.stemLabel.textColor = [UIColor blackColor];
                                             [self typeLabel:self.stemLabel withString:@"...to the form indicated." withInterval:self.typeInterval setHeight:NO completion:^{
                                                 
-                                                dispatchAfter( 1.8, ^(void)
+                                                dispatchAfter( 1.5, ^(void)
                                                               {
                                                                   [self hideTypeLabel:self.stemLabel withInterval:self.typeInterval completion:^(void)
                                                                    {
@@ -1687,7 +1688,7 @@ void dispatchAfter(double delay, void (^block)(void))
     UITextView *tv = object;
     CGFloat topCorrect = ([tv bounds].size.height - [tv contentSize].height * [tv zoomScale])/2.0;
     topCorrect = ( topCorrect < 0.0 ? 0.0 : topCorrect );
-    NSLog(@"content: %f, %f, %f", topCorrect, [tv bounds].size.height, [tv contentSize].height);
+    //NSLog(@"content: %f, %f, %f", topCorrect, [tv bounds].size.height, [tv contentSize].height);
     [tv setContentInset:UIEdgeInsetsMake(topCorrect,0,0,0)];
 }
 
@@ -1735,6 +1736,7 @@ void dispatchAfter(double delay, void (^block)(void))
     self->vsOptions.repsPerVerb = 4;
     self->vsOptions.askPrincipalParts = false;//(self.verbQuestionType == HOPLITE_PRACTICE) ? true : false;
     self->vsOptions.isHCGame = (self.verbQuestionType == HOPLITE_CHALLENGE) ? true : false;
+    self->vsOptions.practiceVerbID = -1; //invalid
     resetVerbSeq();
 }
 
@@ -1797,7 +1799,7 @@ void dispatchAfter(double delay, void (^block)(void))
         else
         {
             self.changedForm.text = newChanged;
-            [self centerLabel:self.changedForm withString:newChanged setHeight:YES];
+            [self centerLabel:self.changedForm withString:newChanged setHeight:NO];
         }
         self.expanded = YES;
         self.origForm.text = self.origStrDecomposed;
@@ -1824,7 +1826,7 @@ void dispatchAfter(double delay, void (^block)(void))
         else
         {
             self.changedForm.text = newChanged;
-            [self centerLabel:self.changedForm withString:newChanged setHeight:YES];
+            [self centerLabel:self.changedForm withString:newChanged setHeight:NO];
         }
         self.expanded = NO;
         self.origForm.text = self.origStr;
@@ -1853,7 +1855,17 @@ void dispatchAfter(double delay, void (^block)(void))
     [super viewDidLoad];
     self.readDirectionsOnce = NO;
     self.textfield.delegate = self;
-
+    
+    //we only need to call this on ios9 and up
+    NSOperatingSystemVersion ios9_0_0 = (NSOperatingSystemVersion){9, 0, 0}; //this test is only ios 8 and up.
+    if ([[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:ios9_0_0])
+    {
+        //http://stackoverflow.com/questions/32606655/how-to-hide-the-shortcut-bar-in-ios9
+        //prevent redo/undo, clipboard from showing up on keyboard
+        UITextInputAssistantItem* item = [self.textfield inputAssistantItem];
+        item.leadingBarButtonGroups = @[];
+        item.trailingBarButtonGroups = @[];
+    }
     /*
      NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
      NSString *documentsDirectoryPath = [paths objectAtIndex:0];
@@ -2256,6 +2268,9 @@ void dispatchAfter(double delay, void (^block)(void))
     [self.origForm setFrame:CGRectMake(self.origForm.frame.origin.x, f/6, self.origForm.frame.size.width, self.origForm.frame.size.height)];
     //[self.changeTo setFrame:CGRectMake(0, f/3.4, self.view.frame.size.width, fsizeS.height + 10)];
     
+    //NSLog(@"Changed: %f", f/1.7);
+    //self.changedForm.backgroundColor = [UIColor redColor];
+    
     [self.life1 setFrame:CGRectMake(size.width - 27,33,20,20)];
     [self.life2 setFrame:CGRectMake(size.width - 53,33,20,20)];
     [self.life3 setFrame:CGRectMake(size.width - 79,33,20,20)];
@@ -2280,7 +2295,7 @@ void dispatchAfter(double delay, void (^block)(void))
     [self centerLabel:self.origForm withString:self.origForm.text setHeight:NO];
     [self centerLabel:self.changeTo withString:self.changeTo.text setHeight:NO];
     [self centerLabel:self.stemLabel withAttributedString:self.stemLabel.attributedText withSize:size];
-    [self centerLabel:self.changedForm withString:self.changedForm.text setHeight:YES];
+    [self centerLabel:self.changedForm withString:self.changedForm.text setHeight:NO];
     
     [self.continueButton setFrame:CGRectMake(0, size.height - 70, (size.width), 70)];
     

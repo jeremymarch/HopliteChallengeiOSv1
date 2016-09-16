@@ -333,8 +333,8 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     UCS2 deponent[] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
     int ending = 0;
 
-    
-    if (utf8HasSuffix(vf->verb->present, "ἐπίσταμαι") && vf->tense == PRESENT && vf->mood == SUBJUNCTIVE)
+    //H&Q page 607, 676
+    if ((utf8HasSuffix(vf->verb->present, "δύναμαι") || utf8HasSuffix(vf->verb->present, "ἐπίσταμαι")) && vf->tense == PRESENT && vf->mood == SUBJUNCTIVE)
     {
         ending = PRESENT_MIDPASS_SUBJ;
     }
@@ -2076,6 +2076,8 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     {
         return 0;
     }
+    
+    //Test special voice stuff here
     //this verb has no passive (though does have an active form of perfect), is a different kind of deponent
     //maybe better to handle this somewhere else
     //see H&Q page 382
@@ -2095,6 +2097,44 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     {
         return 0;
     }
+    
+    /*
+     13 erxomai      - should be partial deponent, no passive
+     13 metanistamai - should be partial deponent, no passive?
+     14 epanistamai  - should be partial deponent, no passive?
+     14 epideiknumai - ?
+     
+     15 epomai       - should be middle deponent, no passive
+     
+     *16 bainw (has passive see Montanari p 371
+     *16 anabainw - these do have passives
+     *16 gignwskw is ok, there is a passive be known
+     
+     16 piptw, no passive
+     17 epistamai   - aorist passive has middle meaning, so no passive
+     *17 exw         - does have a passive meaning
+     18 apothnhskw  - no passive
+     *18 apokteinw   - can have a passive meaning
+     *18 mellw       - seems to rarely show up in the passive meaning to be delayed
+     19 apollumi    - shouldn't have a passive
+     */
+     /*
+     if (vf->voice == PASSIVE && (
+      utf8HasSuffix(v->present, "ἔρχομαι") ||
+     utf8HasSuffix(v->present, "μετανίσταμαι") ||
+     utf8HasSuffix(v->present, "ἐπανίσταμαι") ||
+     utf8HasSuffix(v->present, "ἐπιδείκνυμαι") ||
+     utf8HasSuffix(v->present, "ἕπομαι") ||
+     utf8HasSuffix(v->present, "ἐκπίπτω") ||
+     utf8HasSuffix(v->present, "πίπτω") ||
+     // utf8HasSuffix(v->present, "ἐπίσταμαι") ||
+     utf8HasSuffix(v->present, "ἀποθνῄσκω") ||
+     utf8HasSuffix(v->present, "ἀπόλλῡμι")))
+     {
+        return 0;
+     }
+     */
+    
     
     /*
     if (vf->mood == IMPERATIVE && vf->person == FIRST)
@@ -2484,36 +2524,6 @@ bool utf8HasSuffix(char *s, char *suffix)
     }
     return true;
 }
-
-/*
-13 erxomai      - should be partial deponent, no passive
-13 metanistamai - should be partial deponent, no passive
-14 epanistamai  - should be partial deponent, no passive
-14 epideiknumai - ?
-15 epomai       - should be middle deponent, no passive
-16 bainw, anabainw - shouldn't have passive, right?
-*16 gignwskw is ok, there is a passive be known
- 16 piptw, no passive
- 17 epistamai   - aorist passive has middle meaning, so no passive
- 17 exw         - does have a passive meaning
- 18 apothnhskw  - no passive
- 18 apokteinw   - can have a passive meaning
- 18 mellw       - seems to rarely show up in the passive meaning to be delayed
- 19 apollumi    - shouldn't have a passive
- 
- ἔρχομαι
- μετανίσταμαι
- ἐπανίσταμαι
- ἐπιδείκνυμαι
- ἕπομαι
- ἀναβαίνω
- βαίνω
- ἐκπίπτω
- πίπτω
- ἐπίσταμαι
- ἀποθνῄσκω
- ἀπόλλῡμι
- */
 
 //page 316 in h&q
 int deponentType(Verb *v)
@@ -5002,7 +5012,11 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 }
                 ucs2[0] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
             }
-            if (( utf8HasSuffix(vf->verb->present, "στημι") || utf8HasSuffix(vf->verb->present, "αμαι") || utf8HasSuffix(vf->verb->present, "φημί")) && decompose) // fix me, do we want: && !utf8HasSuffix(vf->verb->present, "ἐπίσταμαι")
+            if ((utf8HasSuffix(vf->verb->present, "ἐπίσταμαι") || utf8HasSuffix(vf->verb->present, "δύναμαι")) && decompose)
+            {
+                leftShiftFromOffsetSteps(ucs2, *len - 1, 1, len);
+            }
+            else if (( utf8HasSuffix(vf->verb->present, "στημι") || utf8HasSuffix(vf->verb->present, "αμαι") || utf8HasSuffix(vf->verb->present, "φημί")) && decompose)
             {
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_EPSILON;
             }
@@ -5026,7 +5040,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             {
                 leftShiftFromOffsetSteps(ending, 0, 1, &elen);
                 //h&q p 504
-                if (vf->person != FIRST && vf->voice != ACTIVE && !utf8HasSuffix(vf->verb->present, "ἐπίσταμαι"))
+                if (vf->person != FIRST && vf->voice != ACTIVE && !utf8HasSuffix(vf->verb->present, "ἐπίσταμαι") && !utf8HasSuffix(vf->verb->present, "δύναμαι")) //H&Q page 607 and 676
                 {
                     ending[0] = GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI;
                 }
