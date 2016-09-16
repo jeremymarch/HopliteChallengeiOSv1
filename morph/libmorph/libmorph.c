@@ -333,7 +333,7 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     UCS2 deponent[] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
     int ending = 0;
 
-    //H&Q page 607, 676
+    //H&Q page 503, 607, 676
     if ((utf8HasSuffix(vf->verb->present, "δύναμαι") || utf8HasSuffix(vf->verb->present, "ἐπίσταμαι")) && vf->tense == PRESENT && vf->mood == SUBJUNCTIVE)
     {
         ending = PRESENT_MIDPASS_SUBJ;
@@ -2125,11 +2125,13 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
      utf8HasSuffix(v->present, "ἐπανίσταμαι") ||
      utf8HasSuffix(v->present, "ἐπιδείκνυμαι") ||
      utf8HasSuffix(v->present, "ἕπομαι") ||
-     utf8HasSuffix(v->present, "ἐκπίπτω") ||
-     utf8HasSuffix(v->present, "πίπτω") ||
-     // utf8HasSuffix(v->present, "ἐπίσταμαι") ||
-     utf8HasSuffix(v->present, "ἀποθνῄσκω") ||
-     utf8HasSuffix(v->present, "ἀπόλλῡμι")))
+      // utf8HasSuffix(v->present, "ἐπίσταμαι") ||
+      utf8HasSuffix(v->present, "ἐκπίπτω") ||
+      utf8HasSuffix(v->present, "πίπτω") ||
+      utf8HasSuffix(v->present, "ἀποθνῄσκω") ||
+      utf8HasSuffix(v->present, "ἀπόλλῡμι")
+
+     ))
      {
         return 0;
      }
@@ -5040,7 +5042,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             {
                 leftShiftFromOffsetSteps(ending, 0, 1, &elen);
                 //h&q p 504
-                if (vf->person != FIRST && vf->voice != ACTIVE && !utf8HasSuffix(vf->verb->present, "ἐπίσταμαι") && !utf8HasSuffix(vf->verb->present, "δύναμαι")) //H&Q page 607 and 676
+                if (vf->person != FIRST && vf->voice != ACTIVE && !utf8HasSuffix(vf->verb->present, "ἐπίσταμαι") && !utf8HasSuffix(vf->verb->present, "δύναμαι")) //H&Q page 503, 607 and 676
                 {
                     ending[0] = GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI;
                 }
@@ -5350,9 +5352,17 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             {
                 if (utf8HasSuffix(vf->verb->present, "δύναμαι") || utf8HasSuffix(vf->verb->present, "ἐπίσταμαι") )
                 {   //h&q page 503, 504
-                    --(*len);
-                    ending[0] = GREEK_SMALL_LETTER_OMEGA;
-                    elen = 1;
+                    if (!decompose)
+                    {
+                        --(*len);
+                        ending[0] = GREEK_SMALL_LETTER_OMEGA;
+                        elen = 1;
+                    }
+                    else
+                    {
+                        ending[0] = GREEK_SMALL_LETTER_OMICRON;
+                        elen = 1;
+                    }
                 }
                 else
                 {
