@@ -106,6 +106,11 @@ int getGamesCallback(void *selfRef, int argc, char **argv, char **azColName) {
 - (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     UIView *customTitleView = [ [UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 34)];
+    customTitleView.backgroundColor = [UIColor HCDarkBlue];
+    
+    customTitleView.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                          UIViewAutoresizingFlexibleLeftMargin |
+                          UIViewAutoresizingFlexibleRightMargin);
     
     UILabel *titleLabel = [ [UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 34)];
     titleLabel.text = [NSString stringWithFormat:@"  Game History"];
@@ -116,6 +121,10 @@ int getGamesCallback(void *selfRef, int argc, char **argv, char **azColName) {
     scoreLabel.textAlignment = NSTextAlignmentRight;
     scoreLabel.text = [NSString stringWithFormat:@"Score"];
     scoreLabel.textColor = [UIColor whiteColor];
+    
+    scoreLabel.autoresizingMask = (
+                                        UIViewAutoresizingFlexibleLeftMargin
+                                        );
     
     //NSLayoutConstraint *horizontalConstraint = NSLayoutConstraint(item: newView, attribute: NSLayoutAttribute.CenterX, relatedBy: NSLayoutRelation.Equal, toItem: view, attribute: NSLayoutAttribute.CenterX, multiplier: 1, constant: 0)
     /*

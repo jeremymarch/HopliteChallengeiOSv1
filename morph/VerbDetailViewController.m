@@ -131,6 +131,9 @@
     UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, self.view.frame.size.width, labelHeight)];
     yOffset += (labelHeight + verticalPadding);
     l.text = [NSString stringWithFormat:@"  Principal Parts"];
+    l.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                          UIViewAutoresizingFlexibleLeftMargin |
+                          UIViewAutoresizingFlexibleRightMargin);
     
     l.font = [UIFont fontWithName:@"HelveticaNeue" size:18.0];
     l.textColor = [UIColor whiteColor];
@@ -199,6 +202,11 @@
                 
                 UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(0, yOffset, self.view.frame.size.width, labelHeight)];
                 yOffset += (labelHeight + verticalPadding);
+                
+                l.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
+                                                          UIViewAutoresizingFlexibleLeftMargin |
+                                                          UIViewAutoresizingFlexibleRightMargin);
+                
                 l.text = s;
                 l.font = [UIFont fontWithName:@"HelveticaNeue" size:18.0];
                 l.textColor = [UIColor whiteColor];
@@ -220,22 +228,58 @@
                         if (getForm(&vf, buffer, bufferLen, true, self.expanded))
                         {
                             UILabel *l = [[UILabel alloc] init];
-                            
-                            l.text = [NSString stringWithUTF8String: buffer];
                             l.font = [UIFont fontWithName:@"NewAthenaUnicode" size:24.0];
-                            
-                            if (twoCols)
+                            NSString *s2 = [NSString stringWithUTF8String: buffer];
+                            if (0)
                             {
-                                neededSize = [l sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)];
+                                l.text = s2;
+                                neededSize.height = labelHeight;
+                                [l setFrame:CGRectMake(leftPadding, yOffset, self.view.frame.size.width - (leftPadding * 2), neededSize.height + verticalPadding)];
+                                yOffset += neededSize.height + verticalPadding;
+                            }
+                            else if (0)
+                            {
+                                s2 = [s2 stringByReplacingOccurrencesOfString:@", " withString:@",\n\t "];
+                                NSMutableAttributedString *as = [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@"%d%@: %@", (i+1), (h == 0) ? @"s" : @"p", s2]];
+                                
+                                [as addAttribute:NSFontAttributeName
+                                           value:[UIFont fontWithName:@"HelveticaNeue" size:20.0]
+                                           range:NSMakeRange(0, 3)];
+                                
+                                [as addAttribute:NSForegroundColorAttributeName
+                                           value:[UIColor grayColor]
+                                           range:NSMakeRange(0, 3)];
+                                
+                                l.attributedText = as;
+                                
                                 l.numberOfLines = 0;
+                                neededSize = [l sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)];
+                                [l setFrame:CGRectMake(leftPadding, yOffset, self.view.frame.size.width - (leftPadding * 2), neededSize.height + verticalPadding)];
+                                yOffset += neededSize.height + verticalPadding;
                             }
                             else
                             {
-                                neededSize.height = labelHeight;
+                                UILabel *l2 = [[UILabel alloc] init];
+                                l2.font = [UIFont fontWithName:@"HelveticaNeue" size:20.0];
+                                l2.textColor = [UIColor grayColor];
+                                l2.text = [NSString stringWithFormat:@"%d%@:", (i+1), (h == 0) ? @"s" : @"p"];
+                                l2.textAlignment = NSTextAlignmentRight;
+                                
+                                
+                                s2 = [s2 stringByReplacingOccurrencesOfString:@", " withString:@"\n"];
+                                
+                                l.text = s2;
+                                l.numberOfLines = 0;
+                                neededSize = [l sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)];
+                                [l setFrame:CGRectMake(leftPadding + 40, yOffset, self.view.frame.size.width - (leftPadding * 2), neededSize.height + verticalPadding)];
+                                
+                                
+                                CGSize needed2 = [l2 sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)];
+                                [l2 setFrame:CGRectMake(leftPadding, yOffset, 30, needed2.height)];
+                                
+                                yOffset += neededSize.height + verticalPadding;
+                                [self.view addSubview:l2];
                             }
-                        
-                            [l setFrame:CGRectMake(leftPadding, yOffset, self.view.frame.size.width - (leftPadding * 2), neededSize.height + verticalPadding)];
-                            yOffset += neededSize.height + verticalPadding;
                             
                             [self.view addSubview:l];
                             countPerSection++;
