@@ -19,6 +19,18 @@
 #define MAX_RECENT_VF 30
 #define HC_VERBS_PER_SET 4
 
+/*
+ 
+ create table forms (
+ pai1s
+ pai2s
+ pai3s
+ pai1p
+ pai2p
+ pai3p
+ 
+ */
+
 //these are assigned to globalGameID.
 //its practice, insipient, or 1-n = a real saved game
 enum {
