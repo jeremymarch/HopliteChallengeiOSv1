@@ -6453,7 +6453,7 @@ void decomposePrefixes(VerbFormC *vf, UCS2 *ucs2, int *len)
         }
         else if (vf->tense == FUTURE && vf->voice != PASSIVE && utf8HasSuffix(vf->verb->present, "ῑ́ημι"))
         {
-            rightShiftFromOffsetSteps(ucs2, 8, 1, len);
+            //rightShiftFromOffsetSteps(ucs2, 8, 1, len);
             ucs2[6] = GREEK_SMALL_LETTER_ETA_WITH_DASIA;
         }
     }
@@ -6512,7 +6512,7 @@ void decomposePrefixes(VerbFormC *vf, UCS2 *ucs2, int *len)
         
         if (vf->tense == FUTURE && vf->voice != PASSIVE && utf8HasSuffix(vf->verb->present, "ῑ́ημι"))
         {
-            rightShiftFromOffsetSteps(ucs2, 8, 1, len);
+            //rightShiftFromOffsetSteps(ucs2, 8, 1, len);
             ucs2[6] = GREEK_SMALL_LETTER_ETA_WITH_DASIA;
         }
         else if (ucs2[6] == GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI)
