@@ -5563,11 +5563,12 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 }
                 else if ( utf8HasSuffix(vf->verb->present, "ῑ̔́ημι"))
                 {
-                    leftShiftFromOffsetSteps(ucs2, 1, 2, len);
-                    ucs2[0] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
+                    //fix here, add hyphen back
+                    leftShiftFromOffsetSteps(ucs2, 1, 1, len);
+                    ucs2[1] = GREEK_SMALL_LETTER_EPSILON_WITH_DASIA;
                     if (vf->person == SECOND && vf->number == SINGULAR)
                     {
-                        ucs2[1] = GREEK_SMALL_LETTER_FINAL_SIGMA;
+                        //ucs2[*len - 1] = GREEK_SMALL_LETTER_FINAL_SIGMA;
                     }
                 }
             }
