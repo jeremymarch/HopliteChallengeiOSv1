@@ -86,6 +86,12 @@ int getVerbSeqCallback2(void *NotUsed, int argc, char **argv, char **azColName) 
     [self.navigationController setNavigationBarHidden:NO];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     

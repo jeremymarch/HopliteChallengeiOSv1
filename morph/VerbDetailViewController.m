@@ -262,16 +262,26 @@
                                 UILabel *l2 = [[UILabel alloc] init];
                                 l2.font = [UIFont fontWithName:@"HelveticaNeue" size:20.0];
                                 l2.textColor = [UIColor grayColor];
-                                l2.text = [NSString stringWithFormat:@"%d%@:", (i+1), (h == 0) ? @"s" : @"p"];
                                 l2.textAlignment = NSTextAlignmentRight;
                                 
+                                if (1) //label style
+                                {
+                                    l2.text = [NSString stringWithFormat:@"%d%@:", (i+1), (h == 0) ? @"s" : @"p"];
+                                }
+                                else //need to fix for imperatives
+                                {
+                                    if (h == 0)
+                                        l2.text = [NSString stringWithFormat:@"%@%d:", (i == 0) ? @"S" : @"", (i+1)];
+                                    else
+                                        l2.text = [NSString stringWithFormat:@"%@%d:", (i == 0) ? @"P" : @"", (i+1)];
+                                }
                                 
                                 s2 = [s2 stringByReplacingOccurrencesOfString:@", " withString:@"\n"];
                                 
                                 l.text = s2;
                                 l.numberOfLines = 0;
                                 neededSize = [l sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)];
-                                [l setFrame:CGRectMake(leftPadding + 40, yOffset, self.view.frame.size.width - (leftPadding * 2), neededSize.height + verticalPadding)];
+                                [l setFrame:CGRectMake(leftPadding + 36, yOffset, self.view.frame.size.width - (leftPadding * 2), neededSize.height + verticalPadding)];
                                 
                                 
                                 CGSize needed2 = [l2 sizeThatFits:CGSizeMake(maxLabelWidth, CGFLOAT_MAX)];
