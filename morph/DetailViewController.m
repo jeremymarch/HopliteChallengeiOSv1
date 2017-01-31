@@ -811,6 +811,7 @@ void printUCS22(UCS2 *u, int len)
     }
 }
 
+
 -(void) resetToPlayAgain
 {
     self.life1.hidden = NO;

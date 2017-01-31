@@ -90,6 +90,14 @@ alpha:1.0]
 
 - (void) showGame:(id)sender
 {
+    /*
+    NSString *string = @"Hello, World!";
+    AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:string];
+    utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-US"];
+    
+    AVSpeechSynthesizer *speechSynthesizer = [[AVSpeechSynthesizer alloc] init];
+    [speechSynthesizer speakUtterance:utterance];
+    */
     UIButton *b = (UIButton*) sender;
 
     if ([b.titleLabel.text isEqualToString:@"Play"])

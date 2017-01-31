@@ -10,6 +10,7 @@
 #import "keyboard.h"
 #import "GreekUnicode.h"
 #import "libmorph.h"
+#import "accent.h"
 
 //https://developer.apple.com/library/ios/documentation/General/Conceptual/ExtensibilityPG/Keyboard.html
 
@@ -488,7 +489,7 @@ void printUtf8(char *u, int len)
     //NSLog(@"Before: NS: %lu, c: %ld, i: %d", l2, l, i);
     if (ucs2Len > 0)
     {
-        accentSyllable(ucs2, 0, &ucs2Len, accent, true);
+        accentSyllable2(ucs2, 0, &ucs2Len, accent, true);
     
         //NSLog(@"after");
         //printUCS2(ucs2, ucs2Len);

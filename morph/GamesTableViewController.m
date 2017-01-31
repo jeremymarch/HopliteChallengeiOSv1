@@ -8,7 +8,6 @@
 
 #import "GamesTableViewController.h"
 #import "ResultsViewController.h" //because we transition to this
-#import "VerbSequence.h"
 #import "GameResult.h"
 #import "sqlite3.h"
 #import "HCColors.h"
