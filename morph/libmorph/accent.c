@@ -417,7 +417,6 @@ void accentSyllable2(UCS2 *ucs2String, int i, int *len, int accent, bool toggleO
         ucs2String[i] = LEFT_PARENTHESIS;
         ucs2String[i+1] = GREEK_SMALL_LETTER_NU;
         ucs2String[i+2] = RIGHT_PARENTHESIS;
-        //*len = 3;
         return;
     }
     

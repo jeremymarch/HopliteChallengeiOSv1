@@ -476,7 +476,7 @@ void printUtf8(char *u, int len)
         s2 = [s UTF8String];
         utf8_to_ucs2_string((const unsigned char *)s2, ucs2, &ucs2Len);
         
-        if (ucs2[0] != COMBINING_ACUTE && ucs2[0] != COMBINING_MACRON && ucs2[0] != COMBINING_ROUGH_BREATHING && ucs2[0] != COMBINING_SMOOTH_BREATHING)
+        if (ucs2[0] != COMBINING_ACUTE && ucs2[0] != COMBINING_MACRON && ucs2[0] != COMBINING_ROUGH_BREATHING && ucs2[0] != COMBINING_SMOOTH_BREATHING && ucs2[0] != COMBINING_IOTA_SUBSCRIPT)
             break;
     }
     //l2 = [s length];
