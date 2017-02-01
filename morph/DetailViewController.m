@@ -1176,8 +1176,13 @@ void dispatchAfter(double delay, void (^block)(void))
     
     if (verbSeq == 1 || !self.useNewAnimation)
     {
-        if (!self.readDirectionsOnce)
+        //Now only gives these directions twice
+        if (!self.readDirectionsOnce && [[[NSUserDefaults standardUserDefaults] objectForKey:@"numDirectionsShown"] integerValue] < 2) //xyz
         {
+            NSInteger n = [[[NSUserDefaults standardUserDefaults] objectForKey:@"numDirectionsShown"] integerValue];
+            n++;
+            [[NSUserDefaults standardUserDefaults] setInteger:n forKey:@"numDirectionsShown"];
+            
             self.readDirectionsOnce =  YES;
         dispatchAfter( 0.8, ^(void)
                       {
