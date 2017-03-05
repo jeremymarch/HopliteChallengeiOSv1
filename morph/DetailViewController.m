@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "DetailViewController.h"
+#import "utilities.h"
 #import "libmorph.h"
 #import "GreekForms.h"
 #import <AudioToolbox/AudioToolbox.h>

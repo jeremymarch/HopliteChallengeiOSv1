@@ -13,6 +13,7 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "utilities.h"
 #include "VerbSequence.h"
 #include "sqlite3.h"
 
@@ -493,7 +494,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     vf1->mood = INDICATIVE;
     
     vf2->person = FIRST;
-     vf2->number = PLURAL;
+     vf2->number = SINGULAR;
     vf2->tense = AORIST;
      vf2->voice = ACTIVE;
      vf2->mood = INDICATIVE;

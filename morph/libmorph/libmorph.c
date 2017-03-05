@@ -9,6 +9,7 @@
 #include <stdlib.h> // For random(), RAND_MAX
 #include <string.h>  //for strlen()
 #include <stdbool.h> //for bool type
+#include "utilities.h"
 #include "libmorph.h"
 #include "GreekForms.h"
 #include "GreekUnicode.h"
@@ -44,8 +45,8 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
 void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool contractedFuture, bool decompose);
 bool accentRecessive(VerbFormC *vf, UCS2 *tempUcs2String, int *len);
 
-void rightShiftFromOffsetSteps(UCS2 *ucs2, int offset, int steps, int *len);
-void leftShiftFromOffsetSteps(UCS2 *ucs2, int offset, int steps, int *len);
+//void rightShiftFromOffsetSteps(UCS2 *ucs2, int offset, int steps, int *len);
+//void leftShiftFromOffsetSteps(UCS2 *ucs2, int offset, int steps, int *len);
 
 char *persons[NUM_PERSONS] = { "first", "second", "third" };
 char *personsabbrev[NUM_PERSONS] = { "1st", "2nd", "3rd" };
@@ -176,6 +177,21 @@ bool compareForms(UCS2 *w1, int w1len, UCS2 *w2, int w2len)
 
 bool compareWord(UCS2 *w1, int w1len, UCS2 *w2, int w2len)
 {
+    /*
+     //for testing
+    for (int i = 0; i < w1len; i++)
+    {
+        fprintf(stderr, "%04X ", w1[i]);
+    }
+    fprintf(stderr, "\n");
+    
+    for (int i = 0; i < w2len; i++)
+    {
+        fprintf(stderr, "%04X ", w2[i]);
+    }
+    fprintf(stderr, "\n");
+    */
+    
     if (w1len != w2len)
         return false;
     
@@ -2743,234 +2759,8 @@ bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent)
                 --i;
         }
     }
-    accentSyllable2(ucs2String, i, len, accent, false);
+    accentSyllable(ucs2String, i, len, accent, false, PRECOMPOSED_HC_MODE);
     return true;
-}
-
-void combiningToPrecomposed(UCS2 *ucs2String, int i, int *len)
-{
-    //remove macron and change back to pre-composed character
-    bool roughBreathing = false;
-    bool smoothBreathing = false;
-    bool acute = false;
-    bool circumFlex = false;
-    bool iotaSubscript = false;
-    unsigned int spacesToRemove = 1; //1 for the macron
-    
-    if (ucs2String[i + 2] == COMBINING_ROUGH_BREATHING || ucs2String[ i + 2] == COMBINING_SMOOTH_BREATHING)
-    {
-        if (ucs2String[i + 2] == COMBINING_ROUGH_BREATHING)
-            roughBreathing = true;
-        else
-            smoothBreathing = true;
-        spacesToRemove++;
-        
-        if (ucs2String[i + 3] == COMBINING_ACUTE || ucs2String[i + 3] == COMBINING_CIRCUMFLEX)
-        {
-            if (ucs2String[i + 3] == COMBINING_ACUTE)
-                acute = true;
-            else
-                circumFlex = true;
-            spacesToRemove++;
-            
-            if (ucs2String[i + 4] == COMBINING_IOTA_SUBSCRIPT)
-            {
-                iotaSubscript = true;
-                spacesToRemove++;
-            }
-        }
-        else if (ucs2String[i + 3] == COMBINING_IOTA_SUBSCRIPT)
-        {
-            iotaSubscript = true;
-            spacesToRemove++;
-        }
-    }
-    else if (ucs2String[i + 2] == COMBINING_ACUTE || ucs2String[i + 2] == COMBINING_CIRCUMFLEX)
-    {
-        if (ucs2String[i + 2] == COMBINING_ACUTE)
-            acute = true;
-        else
-            circumFlex = true;
-        spacesToRemove++;
-        
-        if (ucs2String[i + 3] == COMBINING_IOTA_SUBSCRIPT)
-        {
-            iotaSubscript = true;
-            spacesToRemove++;
-        }
-    }
-    else if (ucs2String[i + 2] == COMBINING_IOTA_SUBSCRIPT)
-    {
-        iotaSubscript = true;
-        spacesToRemove++;
-    }
-    
-    for (int j = 0; j < spacesToRemove; j++)
-        leftShiftFromOffsetSteps(ucs2String, i + 1, 1, len);
-    
-    //make the pre-composed character
-    if (!roughBreathing && !smoothBreathing && !acute && !circumFlex && !iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_IOTA)
-            ucs2String[i] = GREEK_SMALL_LETTER_IOTA;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_UPSILON)
-            ucs2String[i] = GREEK_SMALL_LETTER_UPSILON;
-    }
-    else if (roughBreathing && !smoothBreathing && !acute && !circumFlex && !iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_IOTA)
-            ucs2String[i] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_UPSILON)
-            ucs2String[i] = GREEK_SMALL_LETTER_UPSILON_WITH_DASIA;
-    }
-    else if (!roughBreathing && smoothBreathing && !acute && !circumFlex && !iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PSILI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PSILI_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_IOTA)
-            ucs2String[i] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_UPSILON)
-            ucs2String[i] = GREEK_SMALL_LETTER_UPSILON_WITH_PSILI;
-    }
-    else if (!roughBreathing && !smoothBreathing && acute && !circumFlex && !iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_OXIA;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_OXIA_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_IOTA)
-            ucs2String[i] = GREEK_SMALL_LETTER_IOTA_WITH_OXIA;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_UPSILON)
-            ucs2String[i] = GREEK_SMALL_LETTER_UPSILON_WITH_OXIA;
-    }
-    else if (!roughBreathing && !smoothBreathing && !acute && circumFlex && !iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PERISPOMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PERISPOMENI_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_IOTA)
-            ucs2String[i] = GREEK_SMALL_LETTER_IOTA_WITH_PERISPOMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_UPSILON)
-            ucs2String[i] = GREEK_SMALL_LETTER_UPSILON_WITH_PERISPOMENI;
-    }
-    else if (!roughBreathing && !smoothBreathing && !acute && !circumFlex && iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI;
-    }
-    else if (roughBreathing && !smoothBreathing && acute && !circumFlex && !iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA_AND_OXIA;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA_AND_OXIA_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_IOTA)
-            ucs2String[i] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA_AND_OXIA;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_UPSILON)
-            ucs2String[i] = GREEK_SMALL_LETTER_UPSILON_WITH_DASIA_AND_OXIA;
-    }
-    else if (!roughBreathing && smoothBreathing && acute && !circumFlex && !iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PSILI_AND_OXIA;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PSILI_AND_OXIA_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_IOTA)
-            ucs2String[i] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI_AND_OXIA;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_UPSILON)
-            ucs2String[i] = GREEK_SMALL_LETTER_UPSILON_WITH_PSILI_AND_OXIA;
-    }
-    else if (roughBreathing && !smoothBreathing && !acute && circumFlex && !iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA_AND_PERISPOMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA_AND_PERISPOMENI_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_IOTA)
-            ucs2String[i] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA_AND_PERISPOMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_UPSILON)
-            ucs2String[i] = GREEK_SMALL_LETTER_UPSILON_WITH_DASIA_AND_PERISPOMENI;
-    }
-    else if (!roughBreathing && smoothBreathing && !acute && circumFlex && !iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PSILI_AND_PERISPOMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PSILI_AND_PERISPOMENI_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_IOTA)
-            ucs2String[i] = GREEK_SMALL_LETTER_IOTA_WITH_PSILI_AND_PERISPOMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_UPSILON)
-            ucs2String[i] = GREEK_SMALL_LETTER_UPSILON_WITH_PSILI_AND_PERISPOMENI;
-    }
-    else if (!roughBreathing && !smoothBreathing && acute && !circumFlex && iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_OXIA_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_OXIA_AND_YPOGEGRAMMENI;
-    }
-    else if (!roughBreathing && !smoothBreathing && !acute && circumFlex && iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PERISPOMENI_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PERISPOMENI_AND_YPOGEGRAMMENI;
-    }
-    else if (roughBreathing && !smoothBreathing && !acute && !circumFlex && iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA_AND_YPOGEGRAMMENI;
-    }
-    else if (!roughBreathing && smoothBreathing && !acute && !circumFlex && iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PSILI_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PSILI_AND_YPOGEGRAMMENI;
-    }
-    else if (roughBreathing && !smoothBreathing && acute && !circumFlex && iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA_AND_OXIA_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA_AND_OXIA_AND_YPOGEGRAMMENI;
-    }
-    else if (!roughBreathing && smoothBreathing && acute && !circumFlex && iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PSILI_AND_OXIA_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PSILI_AND_OXIA_AND_YPOGEGRAMMENI;
-    }
-    else if (roughBreathing && !smoothBreathing && !acute && circumFlex && iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA_AND_PERISPOMENI_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_DASIA_AND_PERISPOMENI_AND_YPOGEGRAMMENI;
-    }
-    else if (!roughBreathing && smoothBreathing && !acute && circumFlex && iotaSubscript)
-    {
-        if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PSILI_AND_PERISPOMENI_AND_YPOGEGRAMMENI;
-        else if (ucs2String[i] == GREEK_SMALL_LETTER_ALPHA_WITH_YPOGEGRAMMENI)
-            ucs2String[i] = GREEK_SMALL_LETTER_ALPHA_WITH_PSILI_AND_PERISPOMENI_AND_YPOGEGRAMMENI;
-    }
 }
 
 void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool contractedFuture, bool decompose)
@@ -6904,153 +6694,6 @@ bool hasPrefix(UCS2 *stem, int len, UCS2 *prefix, int preflen)
     return true;
 }
 
-void rightShiftFromOffsetSteps(UCS2 *ucs2, int offset, int steps, int *len)
-{
-    int j = offset + *len - 1;
-    for ( ; j >= offset; j--)
-    {
-        ucs2[j + steps] = ucs2[j];
-    }
-    *len += steps;
-}
-
-//Moves everything over to the left, eating the first letter
-void leftShiftFromOffsetSteps(UCS2 *ucs2, int offset, int steps, int *len)
-{
-    int j = offset;
-    for ( ; j < *len - 1; j++)
-    {
-        ucs2[j] = ucs2[j + steps];
-    }
-    *len -= steps;
-}
-
-
-/* Input: a Unicode code point, "ucs2".
- 
- Output: UTF-8 characters in buffer "utf8".
- 
- Return value: the number of bytes written into "utf8", or -1 if
- there was an error.
- 
- This adds a zero byte to the end of the string. It assumes that the
- buffer "utf8" has at least four bytes of space to write to. */
-// from http://www.lemoda.net/c/ucs2-to-utf8/
-int ucs2_to_utf8 (UCS2 ucs2, unsigned char * utf8)
-{
-    if (ucs2 < 0x80) {
-        utf8[0] = ucs2;
-        utf8[1] = '\0';
-        return 1;
-    }
-    if (ucs2 >= 0x80  && ucs2 < 0x800) {
-        utf8[0] = (ucs2 >> 6)   | 0xC0;
-        utf8[1] = (ucs2 & 0x3F) | 0x80;
-        utf8[2] = '\0';
-        return 2;
-    }
-    if (ucs2 >= 0x800 && ucs2 < 0xFFFF) {
-        if (ucs2 >= 0xD800 && ucs2 <= 0xDFFF) {
-            /* Ill-formed. */
-            return UNICODE_SURROGATE_PAIR;
-        }
-        utf8[0] = ((ucs2 >> 12)       ) | 0xE0;
-        utf8[1] = ((ucs2 >> 6 ) & 0x3F) | 0x80;
-        utf8[2] = ((ucs2      ) & 0x3F) | 0x80;
-        utf8[3] = '\0';
-        return 3;
-    }
-    if (ucs2 >= 0x10000 && ucs2 < 0x10FFFF) {
-        /* http://tidy.sourceforge.net/cgi-bin/lxr/source/src/utf8.c#L380 */
-        utf8[0] = 0xF0 | (ucs2 >> 18);
-        utf8[1] = 0x80 | ((ucs2 >> 12) & 0x3F);
-        utf8[2] = 0x80 | ((ucs2 >> 6) & 0x3F);
-        utf8[3] = 0x80 | ((ucs2 & 0x3F));
-        utf8[4] = '\0';
-        return 4;
-    }
-    return UNICODE_BAD_INPUT;
-}
-
-/* Convert a UTF-8 encoded character in "input" into a number. This
- function returns the unicode value of the UTF-8 character if
- successful, and -1 if not successful. "end_ptr" is set to the next
- character after the read character on success. "end_ptr" is set to
- the start of input on failure. "end_ptr" may not be null. */
-
-UCS2 utf8_to_ucs2 (const unsigned char * input, const unsigned char ** end_ptr)
-{
-    *end_ptr = input;
-    if (input[0] == 0)
-        return -1;
-    if (input[0] < 0x80) {
-        * end_ptr = input + 1;
-        return input[0];
-    }
-    if ((input[0] & 0xE0) == 0xE0) {
-        if (input[1] == 0 || input[2] == 0)
-            return -1;
-        * end_ptr = input + 3;
-        return
-        (input[0] & 0x0F)<<12 |
-        (input[1] & 0x3F)<<6  |
-        (input[2] & 0x3F);
-    }
-    if ((input[0] & 0xC0) == 0xC0) {
-        if (input[1] == 0)
-            return -1;
-        * end_ptr = input + 2;
-        return
-        (input[0] & 0x1F)<<6  |
-        (input[1] & 0x3F);
-    }
-    return -1;
-}
-
-//FIX ME, this could probably be written more efficiently.
-//only null terminate at the end and verify that it is null terminated properly
-int ucs2_to_utf8_string(UCS2 *ucs2, int len, unsigned char *utf8)
-{
-    unsigned char *utf8Temp = utf8;
-    if (len < 1)
-    {
-        utf8[0] = '\0';
-        return 1;
-    }
-    
-    for (int i = 0; i < len; i++)
-    {
-        int utf8Len;
-        utf8Len = ucs2_to_utf8(ucs2[i], utf8Temp);
-        if (utf8Len > -1)
-            utf8Temp += utf8Len;
-        else
-            return 0;
-        *utf8Temp = '\0';
-    }
-    
-    return 1;
-}
-
-void utf8_to_ucs2_string(const unsigned char *utf8, UCS2 *ucs2, int *len)
-{
-    int temp; //because UCS2 is unsigned.
-    *len = 0;
-    
-    for( int i = 0; *utf8 ; i++)
-    {
-        temp = utf8_to_ucs2 (utf8, &utf8);
-        if (temp == -1)
-        {
-            break;
-        }
-        else
-        {
-            ucs2[i] = temp;
-        }
-        (*len)++;
-    }
-}
 
 
 

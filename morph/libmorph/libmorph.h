@@ -50,18 +50,6 @@ enum {
 };
 
 enum {
-    NO_ACCENT = 0,
-    ACUTE,
-    CIRCUMFLEX,
-    GRAVE,
-    MACRON,
-    ROUGH_BREATHING,
-    SMOOTH_BREATHING,
-    IOTA_SUBSCRIPT,
-    SURROUNDING_PARENTHESES
-};
-
-enum {
     ULTIMA = 0,
     PENULT,
     ANTEPENULT
@@ -123,9 +111,6 @@ enum {
     PARTIAL_DEPONENT,
     DEPONENT_GIGNOMAI //see H&Q page 382
 };
-
-#define UNICODE_SURROGATE_PAIR    -1
-#define UNICODE_BAD_INPUT         -2
 
 typedef struct v {
     unsigned int verbid; //an index in the verbs static array
@@ -258,19 +243,13 @@ char *getPrincipalPartForTense(Verb *verb, unsigned char tense, unsigned char vo
 int deponentType(Verb *v);
 bool isDeponent(VerbFormC *vf, UCS2 *stem, int stemLen);
 bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent);
-void accentSyllable(UCS2 *ucs2String, int i, int *len, int accent, bool toggleOff);
+//void accentSyllable(UCS2 *ucs2String, int i, int *len, int accent, bool toggleOff);
 bool isVowel(UCS2 l);
 bool isLong(UCS2 l);
 bool isSecondVowelOfDiphthong(UCS2 *tempUcs2String, int len, int i);
 bool isConsonant(UCS2 l);
 
 bool formIsValidReal(unsigned char person, unsigned char number, unsigned char tense, unsigned char voice, unsigned char mood);
-
-int ucs2_to_utf8 (UCS2 ucs2, unsigned char * utf8);
-UCS2 utf8_to_ucs2 (const unsigned char * input, const unsigned char ** end_ptr);
-
-void utf8_to_ucs2_string(const unsigned char *utf8, UCS2 *ucs2, int *len);
-int ucs2_to_utf8_string(UCS2 *ucs2, int len, unsigned char *utf8);
 
 bool utf8HasSuffix(char *s, char *suffix);
 bool hasPrefix(UCS2 *stem, int len, UCS2 *prefix, int preflen);
