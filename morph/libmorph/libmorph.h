@@ -14,6 +14,8 @@
 
 /* OPTIONS */
 
+#define DECOMPOSED_AUGMENT_CHAR GREEK_SMALL_LETTER_EPSILON
+
 //whether to show uncontracted form of aorist passive subjunctive when decomposed
 #define ADD_EPSILON_TO_AORIST_PASSIVE_SUBJUNCTIVE_STEM true
 
