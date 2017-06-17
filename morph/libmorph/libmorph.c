@@ -1986,7 +1986,6 @@ int getOida(VerbFormC *vf, UCS2 *buffer, int *bufferLen, bool decompose)
         return 0;
     }
     
-    
     return 1;
 }
 
