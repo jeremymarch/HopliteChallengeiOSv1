@@ -737,6 +737,7 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
         UCS2 mete[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_EPSILON };
         UCS2 metan[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
         UCS2 epan[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_NU };
+        UCS2 ep[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_PI };
         
         if (hasPrefix(ucs2, *len, ex, 2))
         {
@@ -1209,6 +1210,42 @@ void stripAugmentFromPrincipalPart(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 pre
             else
             {
                 ucs2[4] = GREEK_SMALL_LETTER_ALPHA;
+            }
+        }
+        else if (hasPrefix(ucs2, *len, ep, 2))
+        {
+            if (decompose)
+            {
+                rightShiftFromOffsetSteps(ucs2, 1, 3, len);
+                
+                ucs2[2] = GREEK_SMALL_LETTER_IOTA;
+                ucs2[3] = SPACE;
+                ucs2[4] = HYPHEN;
+                ucs2[5] = SPACE;
+                
+                if (vf->tense == AORIST && vf->mood == INDICATIVE)
+                {
+                    rightShiftFromOffsetSteps(ucs2, 6, 4, len);
+                    ucs2[6] = DECOMPOSED_AUGMENT_CHAR;
+                    ucs2[7] = SPACE;
+                    ucs2[8] = HYPHEN;
+                    ucs2[9] = SPACE;
+                    if (ucs2[10] == GREEK_SMALL_LETTER_IOTA)
+                    {
+                        ucs2[10] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA;
+                    }
+                }
+                else
+                {
+                    if (ucs2[6] == GREEK_SMALL_LETTER_IOTA)
+                    {
+                        ucs2[6] = GREEK_SMALL_LETTER_IOTA_WITH_DASIA;
+                    }
+                }
+            }
+            else
+            {
+                ucs2[2] = GREEK_SMALL_LETTER_IOTA;
             }
         }
         else if (hasPrefix(ucs2, *len, meta, 4))

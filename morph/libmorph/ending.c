@@ -646,6 +646,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             else if (ucs2[*len - 1] == COMBINING_MACRON) //deiknumi
                 --(*len);
         }
+        
         //contract third plural indicative of isthmi
         if (vf->person == THIRD && vf->number == PLURAL && vf->mood == INDICATIVE && vf->voice == ACTIVE && (utf8HasSuffix(vf->verb->present, "στημι") || utf8HasSuffix(vf->verb->present, "ῑ̔́ημι") || utf8HasSuffix(vf->verb->present, "ῑ́ημι")))
         {
@@ -687,7 +688,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         
         if (vf->mood == SUBJUNCTIVE)
         {
-            if (!decompose && !utf8HasSuffix(vf->verb->present, "ῡμι"))
+            if (!decompose && !utf8HasSuffix(vf->verb->present, "ῡμι") && !utf8HasSuffix(vf->verb->present, "νυμαι"))
             {
                 --(*len);
             }
