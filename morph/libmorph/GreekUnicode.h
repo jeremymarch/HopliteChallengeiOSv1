@@ -24,6 +24,7 @@
 #define EN_DASH                         0x2013
 #define HYPHEN                          0x2010
 #define COMMA                           0x002C
+#define NEWLINE                         0x000A
 /* BASIC GREEK 0370-03FF */
 
 #define GREEK_CAPITAL_LETTER_HETA  					0x0370 // Ͱ → 2C75 Ⱶ latin capital letter half h
@@ -31,7 +32,7 @@
 #define GREEK_CAPITAL_LETTER_ARCHAIC_SAMPI			0x0372 // Ͳ
 #define GREEK_SMALL_LETTER_ARCHAIC_SAMPI			0x0373 // ͳ
 #define GREEK_NUMERAL_SIGN 			 				0x0374 // ʹ = dexia keraia //• indicates numeric use of letters → 02CA ˊ modifier letter acute accent ≡ 02B9 ʹ modifier letter prime
-#define GREEK_LOWER NUMERAL_SIGN  					0x0375 // ͵ = aristeri keraia //• indicates numeric use of letters→ 02CF ˏ modifier letter low acute accent
+#define GREEK_LOWER_NUMERAL_SIGN  					0x0375 // ͵ = aristeri keraia //• indicates numeric use of letters→ 02CF ˏ modifier letter low acute accent
 #define GREEK_CAPITAL_LETTER_PAMPHYLIAN_DIGAMMA		0x0376 // Ͷ
 #define GREEK_SMALL_LETTER_PAMPHYLIAN_DIGAMMA		0x0377 // ͷ
 
@@ -168,7 +169,7 @@
 
 #define GREEK_RHO_WITH_STROKE_SYMBOL		 				0x03FC // ϼ • used with abbreviations containing 03C1 ρ
 #define GREEK_CAPITAL_REVERSED_LUNATE_SIGMA_SYMBOL	 		0x03FD // Ͻ = antisigma
-#define GREEK_CAPITAL_DOTTED_LUNATE SIGMA_SYMBOL  			0x03FE // Ͼ = sigma periestigmenon
+#define GREEK_CAPITAL_DOTTED_LUNATE_SIGMA_SYMBOL  			0x03FE // Ͼ = sigma periestigmenon
 #define GREEK_CAPITAL_REVERSED_DOTTED_LUNATE_SIGMA_SYMBOL	0x03FF // Ͽ = antisigma periestigmenon
 
 /* EXTENDED GREEK 1F00-1FFF */
@@ -362,7 +363,7 @@
 #define GREEK_CAPITAL_LETTER_ALPHA_WITH_VARIA                           0x1FBA 	// Ὰ ≡ 0391 Α  0300 $̀
 #define GREEK_CAPITAL_LETTER_ALPHA_WITH_OXIA                            0x1FBB 	// Ά ≡ 0386 Ά  GREEK_CAPITAL_LETTER alpha_WITH tonos
 #define GREEK_CAPITAL_LETTER_ALPHA_WITH_PROSGEGRAMMENI                  0x1FBC 	// ᾼ ≡ 0391 Α  0345 $ͅ
-#define GREEK KORONIS                                                   0x1FBD 	// ᾽ ≈ 0020   0313 $̓
+#define GREEK_KORONIS                                                   0x1FBD 	// ᾽ ≈ 0020   0313 $̓
 #define GREEK_PROSGEGRAMMENI                                            0x1FBE  // ι ≡ 03B9 ι  GREEK_SMALL_LETTER_IOTA
 #define GREEK_PSILI                                                     0x1FBF  // ᾿ → 02BC ʼ  modifier letter apostrophe ≈ 0020   0313 $̓
 #define GREEK_PERISPOMENI                                               0x1FC0  // ῀ ≈ 0020   0342 $͂

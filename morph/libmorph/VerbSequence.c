@@ -44,11 +44,11 @@ enum {
 DataFormat *hcdata = NULL;
 size_t sizeInBytes = 0;
 const int sqlitePrepqueryLen = 1024;
-char sqlitePrepquery[1024];
+char sqlitePrepquery[sqlitePrepqueryLen];
 sqlite3_stmt *statement;
 sqlite3_stmt *statement2;
 sqlite3 *db;
-int globalGameId = GAME_INVALID;
+long globalGameId = GAME_INVALID;
 int globalScore = -1;
 bool firstVerbSeq = true;
 
@@ -80,8 +80,15 @@ bool compareVF(VerbFormC *vf1, VerbFormC *vf2)
     return true;
 }
 
+int recentCheckCount = 0;
 bool inRecentVFArray(VerbFormC *vf)
 {
+    recentCheckCount++;
+    if (recentCheckCount > 1000) //safety
+    {
+        numRecentVFArray = 0;
+        recentCheckCount = 0;
+    }
     for (int i = 0; i < numRecentVFArray; i++)
     {
         if (compareVF(vf, &recentVFArray[i]))
@@ -111,8 +118,6 @@ void addToRecentVFArray(VerbFormC *vf)
     recentVFArray[recentVFArrayHead].mood = vf->mood;
     recentVFArray[recentVFArrayHead].verb = vf->verb;
 }
- 
-
 
 VerbFormC lastVF;
 
@@ -127,10 +132,9 @@ int findVerbIndexByPointer(Verb *v)
 }
 
 void randomAlternative(char *s, int *offset);
-void addNewGameToDB();
-void updateGameScore();
-bool setHeadAnswer(bool correct, char *givenAnswer, char *elapsedTime);
-
+void addNewGameToDB(int topUnit, long *gameid);
+void updateGameScore(long gameid, int score, int lives);
+bool setHeadAnswer(bool correct, char *givenAnswer, const char *elapsedTime);
 
 int getVerbSeqCallback(void *NotUsed, int argc, char **argv,
              char **azColName) {
@@ -150,7 +154,7 @@ int getVerbSeqCallback(void *NotUsed, int argc, char **argv,
 void getVerbSeq()
 {
     char *err_msg = 0;
-    int rc = sqlite3_exec(db, "SELECT COUNT(*) FROM verbseq;", getVerbSeqCallback, 0, &err_msg);
+    sqlite3_exec(db, "SELECT COUNT(*) FROM verbseq;", getVerbSeqCallback, 0, &err_msg);
 }
 
 //initialize to false since we're "changing" verbs on start anyway
@@ -278,16 +282,16 @@ void setHead(VerbFormC *vf)
     //VerbFormRecord *a = NULL;
 }
 
-bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed, char *elapsedTime, int *score)
+bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *entered, int enteredLen, bool MFPressed, const char *elapsedTime, int *score, int *lives)
 {
     char buffer[200];
-    bool isCorrect = compareFormsCheckMF(expected, expectedLen, given, givenLen, MFPressed);
+    bool isCorrect = compareFormsCheckMF(expected, expectedLen, entered, enteredLen, MFPressed);
     
-    ucs2_to_utf8_string(given, givenLen, (unsigned char*)buffer);
+    ucs2_to_utf8_string(entered, enteredLen, (unsigned char*)buffer);
     
     if(globalGameId == GAME_INSIPIENT)
     {
-        addNewGameToDB();
+        addNewGameToDB(highestUnit, &globalGameId);
     }
     
     if (globalGameId > 1) //is a real game, not practice
@@ -302,8 +306,15 @@ bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *give
             else
                 globalScore += pointsPerForm;
         }
+        else
+        {
+            if (globalGameId > -1)
+                *lives -= 1;
+            else
+                *lives = -1;
+        }
         
-        updateGameScore();
+        updateGameScore(globalGameId, globalScore, *lives);
     }
     *score = globalScore;
     lastAnswerCorrect = isCorrect; //keep track of last answer here, so we don't need to rely on the db
@@ -322,6 +333,54 @@ void resetVerbSeq()
     firstVerbSeq = true;
 }
 
+int nextVerbSeq2(int *seq, VerbFormD *vf1, VerbFormD *vf2, VerbSeqOptions *vso1)
+{
+    /*
+    VerbSeqOptions vso;
+    vso.degreesToChange = 2;
+    vso.isHCGame = true;
+    vso.numUnits = 1;
+    vso.repsPerVerb = 4;
+    vso.practiceVerbID = -1;
+    vso.units[0] = 1;// = {1,2, 3, 4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 };
+    //vso.units[1] = 7;
+    */
+    VerbFormC vfc1;
+    VerbFormC vfc2;
+    
+    vfc1.person = vf1->person;
+    vfc1.number = vf1->number;
+    vfc1.tense = vf1->tense;
+    vfc1.voice = vf1->voice;
+    vfc1.mood = vf1->mood;
+    vfc1.verb = &verbs[vf1->verbid];
+    
+    vfc2.person = vf2->person;
+    vfc2.number = vf2->number;
+    vfc2.tense = vf2->tense;
+    vfc2.voice = vf2->voice;
+    vfc2.mood = vf2->mood;
+    vfc2.verb = &verbs[vf2->verbid];
+    
+    int ret = nextVerbSeq(seq, &vfc1, &vfc2, vso1);
+    
+    vf1->person = vfc1.person;
+    vf1->number = vfc1.number;
+    vf1->tense = vfc1.tense;
+    vf1->voice = vfc1.voice;
+    vf1->mood = vfc1.mood;
+    vf1->verbid = vfc1.verb->verbid;
+    
+    vf2->person = vfc2.person;
+    vf2->number = vfc2.number;
+    vf2->tense = vfc2.tense;
+    vf2->voice = vfc2.voice;
+    vf2->mood = vfc2.mood;
+    vf2->verbid = vfc2.verb->verbid;
+    
+    return ret;
+}
+
 bool once = true;
 long lastInitialDegreesToChange = 0;
 int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
@@ -331,7 +390,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     
     int bufferLen = 2048;
     char buffer[bufferLen];
-    long degreesToChange = vso->degreesToChange;
+    int degreesToChange = vso->degreesToChange;
     
     if (!vso->isHCGame)
     {
@@ -350,6 +409,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     if (vso->practiceVerbID > -1)
     {
         v = &verbs[vso->practiceVerbID];
+        fprintf(stderr, "verbid: %i, %i\n", vso->practiceVerbID, v->verbid);
     }
     else if (vso->isHCGame)
     {
@@ -374,6 +434,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     {
         if (verbSeq >= vso->repsPerVerb)
         {
+            
             do //so we don't ask the same verb twice in a row
             {
                 v = getRandomVerb(vso->units, vso->numUnits);
@@ -389,13 +450,16 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     }
 
     *seq = verbSeq;
-    
+    /*
+    if (v == NULL)
+    {
+        v = &verbs[1];
+    }
+    */
     vf1->verb = v; //THIS IS THE VERB WE'E USING
-    
     //***************OVERRIDE for testing on specific verbs, set here*******************************
-    //vf1->verb = &verbs[3];//46];//13]; //46 kathisthmi is longest
+    //vf1->verb = &verbs[46];//46];//13]; //46 kathisthmi is longest
     //***************for testing on specific verbs*****************************************
-    
     
     int highestUnit = 0;
     for (int i = 0; i < vso->numUnits; i++)
@@ -441,12 +505,21 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
         vf1->tense = lastVF.tense;
         vf1->voice = lastVF.voice;
         vf1->mood = lastVF.mood;
-        vf1->verb = lastVF.verb;
-        
+/*        if (lastVF.verb != NULL)
+            vf1->verb = lastVF.verb;
+        else
+            vf1->verb = &verbs[1];
+    */
         //we assume this is valid since it was the resulting form from last seq.
         //getForm(vf1, buffer, bufferLen, false, false);
     }
 
+  /*
+    if (vf1->verb == NULL)
+    {
+        vf1->verb = &verbs[1];
+    }
+*/
     do
     {
         if (verbSeq == 1)
@@ -486,20 +559,20 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     } while (!getForm(vf2, buffer, bufferLen, true, false) || !isValidFormForUnit(vf2, highestUnit) || !strncmp(buffer, "—", 1)/*dash*/ || !strncmp(buffer, "-", 1)/*hyphen*/ || inRecentVFArray(vf2));
 
     /*
-     //**************for testing to force form****************************
-    vf1->person = FIRST;
-    vf1->number = SINGULAR;
-    vf1->tense = PRESENT;
+     // **************for testing to force form****************************
+    vf1->person = THIRD;
+    vf1->number = PLURAL;
+    vf1->tense = AORIST;
     vf1->voice = ACTIVE;
-    vf1->mood = INDICATIVE;
+    vf1->mood = OPTATIVE;
     
-    vf2->person = FIRST;
+    vf2->person = SECOND;
      vf2->number = SINGULAR;
-    vf2->tense = AORIST;
-     vf2->voice = ACTIVE;
+    vf2->tense = PRESENT;
+     vf2->voice = MIDDLE;
      vf2->mood = INDICATIVE;
      vf2->verb = vf1->verb;
-     //**************for testing to force form****************************
+     // **************for testing to force form****************************
     */
     
     lastVF.person = vf2->person;
@@ -518,7 +591,7 @@ int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso)
     }
     
     //setHead(vf2); //we set it here, add whether it is correct later
-    
+    //fprintf(stderr, "verbid2: %i, %i\n", vf1->verb->verbid, vf2->verb->verbid);
     if (verbSeq == 1)
         return VERB_SEQ_CHANGE_NEW;
     else
@@ -852,7 +925,6 @@ void randomAlternative(char *s, int *offset)
         s[starts[random + 1] - 2] = '\0';
 }
 
-
 Verb *getRandomVerb(int *units, int numUnits)
 {
     int u, v;
@@ -873,7 +945,6 @@ Verb *getRandomVerb(int *units, int numUnits)
     int verb = (int)randWithMax(numVerbsToChooseFrom);
     return &verbs[ verbsToChooseFrom[verb] ];
 }
-
 
 Verb *getRandomVerbFromUnit(int *units, int numUnits)
 {
@@ -956,9 +1027,11 @@ bool dbInit(const char *path)
         printf("SQLite db open, path: %s, size: %lld\n", dbpath, size);
     }
     
+    //char *check = "SELECT name FROM sqlite_master WHERE type='table' AND name='table_name'";
+    
     //"DROP TABLE IF EXISTS games; DROP TABLE IF EXISTS verbseq;
     
-    char *sql = "CREATE TABLE games (" \
+    char *sql = "CREATE TABLE IF NOT EXISTS games (" \
     "gameid INTEGER PRIMARY KEY NOT NULL, " \
     "timest INT NOT NULL, " \
     "score INT NOT NULL, " \
@@ -966,7 +1039,7 @@ bool dbInit(const char *path)
     "lives INT NOT NULL " \
     "); " \
     
-    "CREATE TABLE verbseq (" \
+    "CREATE TABLE IF NOT EXISTS verbseq (" \
     "id INTEGER PRIMARY KEY NOT NULL, " \
     "timest INT NOT NULL, " \
     "gameid INT NOT NULL, " \
@@ -1013,13 +1086,14 @@ bool dbInit(const char *path)
     }
     */
     
-    printf("sqlite success\n");
+    printf("sqlite success, version: %s\n", SQLITE_VERSION);
     
     return true;
 }
 
-bool setHeadAnswer(bool correct, char *givenAnswer, char *elapsedTime)
+bool setHeadAnswer(bool correct, char *givenAnswer, const char *elapsedTime)
 {
+    /*
     if (0)//hcdata)
     {
         hcdata->vr[hcdata->head].person = lastVF.person;
@@ -1037,17 +1111,17 @@ bool setHeadAnswer(bool correct, char *givenAnswer, char *elapsedTime)
         //hcdata->vr[hcdata->head].answer = "222";
         incrementHead();
 
-        /*
-         for (int i = 0; i < hcdata->head; i++)
-         {
-         printf("Rec: %s %s %s %s %s: %d %s, %s\n", persons[hcdata->vr[i].person], numbers[hcdata->vr[i].number], tenses[hcdata->vr[i].tense], voices[hcdata->vr[i].voice],moods[hcdata->vr[i].mood], hcdata->vr[i].correct, hcdata->vr[i].answer, asctime( localtime(&ltime) ));
-         }
-         */
+        
+         //for (int i = 0; i < hcdata->head; i++)
+         //{
+         //printf("Rec: %s %s %s %s %s: %d %s, %s\n", persons[hcdata->vr[i].person], numbers[hcdata->vr[i].number], tenses[hcdata->vr[i].tense], voices[hcdata->vr[i].voice],moods[hcdata->vr[i].mood], hcdata->vr[i].correct, hcdata->vr[i].answer, asctime( localtime(&ltime) ));
+         //}
+        
     }
-    
+    */
     if (db)
     {
-        snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO verbseq VALUES (NULL,%ld,%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s');", time(NULL), globalGameId, lastVF.person, lastVF.number, lastVF.tense, lastVF.voice, lastVF.mood, findVerbIndexByPointer(lastVF.verb), correct, elapsedTime, givenAnswer);
+        snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO verbseq VALUES (NULL,%ld,%ld,%d,%d,%d,%d,%d,%d,%d,'%s','%s');", time(NULL), globalGameId, lastVF.person, lastVF.number, lastVF.tense, lastVF.voice, lastVF.mood, findVerbIndexByPointer(lastVF.verb), correct, elapsedTime, givenAnswer);
         char *zErrMsg = 0;
         int rc = sqlite3_exec(db, sqlitePrepquery, 0, 0, &zErrMsg);
         if( rc != SQLITE_OK )
@@ -1060,11 +1134,11 @@ bool setHeadAnswer(bool correct, char *givenAnswer, char *elapsedTime)
     return true;
 }
 
-void addNewGameToDB()
+void addNewGameToDB(int topUnit, long *gameid)
 {
     char *zErrMsg = 0;
     
-    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO games (timest,score,topUnit,lives) VALUES (%li,0, %d,0);", time(NULL), highestUnit);
+    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO games (timest,score,topUnit,lives) VALUES (%li,0, %d,3);", time(NULL), topUnit);
     int rc = sqlite3_exec(db, sqlitePrepquery, 0, 0, &zErrMsg);
     if( rc != SQLITE_OK )
     {
@@ -1073,15 +1147,16 @@ void addNewGameToDB()
     }
     else
     {
-        globalGameId = sqlite3_last_insert_rowid(db);
+        *gameid = sqlite3_last_insert_rowid(db);
     }
     globalScore = 0;
 }
 
-void updateGameScore()
+void updateGameScore(long gameid, int score, int lives)
 {
+    fprintf(stderr, "sqlite: gameid: %ld, score: %d, lives: %d\n", gameid, score, lives);
     char *zErrMsg = 0;
-    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "UPDATE games SET score=%d WHERE gameid=%d;", globalScore, globalGameId);
+    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "UPDATE games SET score=%d,lives=%d WHERE gameid=%ld;", score, lives, gameid);
     int rc = sqlite3_exec(db, sqlitePrepquery, 0, 0, &zErrMsg);
     if( rc != SQLITE_OK )
     {

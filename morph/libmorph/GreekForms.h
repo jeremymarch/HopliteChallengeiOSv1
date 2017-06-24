@@ -12,14 +12,14 @@
 #include <stdio.h>
 #include "libmorph.h"
 
-Verb verbs[NUM_VERBS];
-Ending endings[NUM_ENDINGS];
+extern Verb verbs[NUM_VERBS];
+extern Ending endings[NUM_ENDINGS];
 
-char *persons[];
-char *personsabrev[];
-char *numbers[];
-char *tenses[];
-char *voices[];
-char *moods[];
+extern char *persons[];
+extern char *personsabrev[];
+extern char *numbers[];
+extern char *tenses[];
+extern char *voices[];
+extern char *moods[];
 
 #endif /* defined(__morph__GreekForms__) */

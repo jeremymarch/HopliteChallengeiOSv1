@@ -35,14 +35,18 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         ucs2[*len] = GREEK_SMALL_LETTER_EPSILON;
         ++(*len);
     }
-    else if (vf->tense == PERFECT && (vf->voice == MIDDLE || vf->voice == PASSIVE))
+    /* start consonant stem perfect and pluperfect */
+    else if ((vf->tense == PERFECT || vf->tense == PLUPERFECT) && (vf->voice == MIDDLE || vf->voice == PASSIVE))
     {
         //Labials: π, φ, β, μπ
         //γέγραμμαι, λέλειμαι, βέβλαμμαι, κέκλεμμαι, εἴλημμαι,  πέπεμμαι is separate
         //we check the last letter of the stem for (oraw which has two perfect middle stems, only one a consonant stem.
-        if (ucs2[*len - 1] == GREEK_SMALL_LETTER_MU && ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_PHI) == CONSONANT_STEM_PERFECT_PHI || (vf->verb->verbclass & CONSONANT_STEM_PERFECT_PI) == CONSONANT_STEM_PERFECT_PI || (vf->verb->verbclass & CONSONANT_STEM_PERFECT_BETA) == CONSONANT_STEM_PERFECT_BETA))
+        if (ucs2[*len - 1] == GREEK_SMALL_LETTER_MU &&
+            ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_PHI) == CONSONANT_STEM_PERFECT_PHI ||
+             (vf->verb->verbclass & CONSONANT_STEM_PERFECT_PI) == CONSONANT_STEM_PERFECT_PI ||
+             (vf->verb->verbclass & CONSONANT_STEM_PERFECT_BETA) == CONSONANT_STEM_PERFECT_BETA))
         {
-            UCS2 consonant;
+            UCS2 consonant = 0;
             if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_PHI) == CONSONANT_STEM_PERFECT_PHI)
                 consonant = GREEK_SMALL_LETTER_PHI;
             else if ( (vf->verb->verbclass & CONSONANT_STEM_PERFECT_PI) == CONSONANT_STEM_PERFECT_PI)
@@ -169,9 +173,12 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             }
         }
         //Stops: γ, χ, κ
-        else if (ucs2[*len - 1] == GREEK_SMALL_LETTER_GAMMA && ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_KAPPA) == CONSONANT_STEM_PERFECT_KAPPA || (vf->verb->verbclass & CONSONANT_STEM_PERFECT_CHI) == CONSONANT_STEM_PERFECT_CHI || (vf->verb->verbclass & CONSONANT_STEM_PERFECT_GAMMA) == CONSONANT_STEM_PERFECT_GAMMA))
+        else if (ucs2[*len - 1] == GREEK_SMALL_LETTER_GAMMA &&
+                 ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_KAPPA) == CONSONANT_STEM_PERFECT_KAPPA ||
+                  (vf->verb->verbclass & CONSONANT_STEM_PERFECT_CHI) == CONSONANT_STEM_PERFECT_CHI ||
+                  (vf->verb->verbclass & CONSONANT_STEM_PERFECT_GAMMA) == CONSONANT_STEM_PERFECT_GAMMA))
         {
-            UCS2 consonant;
+            UCS2 consonant = 0;
             if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_KAPPA) == CONSONANT_STEM_PERFECT_KAPPA)
                 consonant = GREEK_SMALL_LETTER_KAPPA;
             else if ( (vf->verb->verbclass & CONSONANT_STEM_PERFECT_CHI) == CONSONANT_STEM_PERFECT_CHI)
@@ -235,7 +242,9 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 return;
             }
         }
-        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_SIGMA) == CONSONANT_STEM_PERFECT_SIGMA || ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_SIGMA_2) == CONSONANT_STEM_PERFECT_SIGMA_2 &&  ucs2[(*len)-1] == GREEK_SMALL_LETTER_SIGMA)) //κεκέλευσμαι or σῴζω which is both consonant stem and not.
+        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_SIGMA) == CONSONANT_STEM_PERFECT_SIGMA ||
+                 ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_SIGMA_2) == CONSONANT_STEM_PERFECT_SIGMA_2 &&
+                  ucs2[(*len)-1] == GREEK_SMALL_LETTER_SIGMA)) //κεκέλευσμαι or σῴζω which is both consonant stem and not.
         {
             if (vf->person == SECOND && vf->number == SINGULAR)
             {
@@ -311,297 +320,6 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             }
             else if (vf->person == SECOND && vf->number == PLURAL)
             {
-                
-                ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
-                
-                if (!decompose)
-                {
-                    leftShiftFromOffsetSteps(ending, 0, 1, &elen);
-                }
-            }
-            else if (vf->person == THIRD && vf->number == PLURAL)
-            {
-                ucs2[0] = EM_DASH;
-                (*len) = 1;
-                return;
-            }
-        }
-    }
-    else if (vf->tense == PLUPERFECT && (vf->voice == MIDDLE || vf->voice == PASSIVE))
-    {
-        //Labials: π, φ, β, μπ
-        //γέγραμμαι, λέλειμμαι, βέβλαμμαι, κέκλεμμαι, εἴλημμαι,  πέπεμμαι is separate
-        if (ucs2[*len - 1] == GREEK_SMALL_LETTER_MU && ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_PHI) == CONSONANT_STEM_PERFECT_PHI || (vf->verb->verbclass & CONSONANT_STEM_PERFECT_PI) == CONSONANT_STEM_PERFECT_PI || (vf->verb->verbclass & CONSONANT_STEM_PERFECT_BETA) == CONSONANT_STEM_PERFECT_BETA))
-        {
-            UCS2 consonant;
-            if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_PHI) == CONSONANT_STEM_PERFECT_PHI)
-                consonant = GREEK_SMALL_LETTER_PHI;
-            else if ( (vf->verb->verbclass & CONSONANT_STEM_PERFECT_PI) == CONSONANT_STEM_PERFECT_PI)
-                consonant = GREEK_SMALL_LETTER_PI;
-            else if ( (vf->verb->verbclass & CONSONANT_STEM_PERFECT_BETA) == CONSONANT_STEM_PERFECT_BETA)
-                consonant = GREEK_SMALL_LETTER_BETA;
-            
-            if (vf->person == FIRST && vf->number == SINGULAR)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = consonant;
-                }
-            }
-            else if (vf->person == SECOND && vf->number == SINGULAR)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = consonant;
-                }
-                else
-                {
-                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PSI;
-                    leftShiftFromOffsetSteps(ending, 0, 1, &elen);
-                }
-            }
-            else if (vf->person == THIRD && vf->number == SINGULAR)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = consonant;
-                }
-                else
-                {
-                    ucs2[*len - 1] = GREEK_SMALL_LETTER_PI;
-                }
-            }
-            else if (vf->person == FIRST && vf->number == PLURAL)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = consonant;
-                }
-            }
-            else if (vf->person == SECOND && vf->number == PLURAL)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = consonant;
-                }
-                else
-                {
-                    --(*len);
-                    ending[0] = GREEK_SMALL_LETTER_PHI;
-                }
-            }
-            else if (vf->person == THIRD && vf->number == PLURAL)
-            {
-                ucs2[0] = EM_DASH;
-                (*len) = 1;
-                return;
-            }
-        }
-        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_MU_PI) == CONSONANT_STEM_PERFECT_MU_PI) //πέπεμμαι
-        {
-            if (vf->person == FIRST && vf->number == SINGULAR)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
-                    ++(*len);
-                }
-            }
-            else if (vf->person == SECOND && vf->number == SINGULAR)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
-                    ++(*len);
-                }
-                else
-                {
-                    ending[0] = GREEK_SMALL_LETTER_PSI;
-                }
-            }
-            else if (vf->person == THIRD && vf->number == SINGULAR)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
-                    ++(*len);
-                }
-                else
-                {
-                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
-                    ++(*len);
-                }
-            }
-            else if (vf->person == FIRST && vf->number == PLURAL)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
-                    ++(*len);
-                }
-            }
-            else if (vf->person == SECOND && vf->number == PLURAL)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len] = GREEK_SMALL_LETTER_PI;
-                    ++(*len);
-                }
-                else
-                {
-                    ending[0] = GREEK_SMALL_LETTER_PHI;
-                }
-            }
-            else if (vf->person == THIRD && vf->number == PLURAL)
-            {
-                ucs2[0] = EM_DASH;
-                (*len) = 1;
-                return;
-            }
-        }
-        //Stops: γ, χ, κ
-        else if (ucs2[*len - 1] == GREEK_SMALL_LETTER_GAMMA && ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_KAPPA) == CONSONANT_STEM_PERFECT_KAPPA || (vf->verb->verbclass & CONSONANT_STEM_PERFECT_CHI) == CONSONANT_STEM_PERFECT_CHI || (vf->verb->verbclass & CONSONANT_STEM_PERFECT_GAMMA) == CONSONANT_STEM_PERFECT_GAMMA))
-        {
-            UCS2 consonant;
-            if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_KAPPA) == CONSONANT_STEM_PERFECT_KAPPA)
-                consonant = GREEK_SMALL_LETTER_KAPPA;
-            else if ( (vf->verb->verbclass & CONSONANT_STEM_PERFECT_CHI) == CONSONANT_STEM_PERFECT_CHI)
-                consonant = GREEK_SMALL_LETTER_CHI;
-            else if ( (vf->verb->verbclass & CONSONANT_STEM_PERFECT_GAMMA) == CONSONANT_STEM_PERFECT_GAMMA)
-                consonant = GREEK_SMALL_LETTER_GAMMA;
-            if (vf->person == FIRST && vf->number == SINGULAR)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = consonant;
-                }
-            }
-            else if (vf->person == SECOND && vf->number == SINGULAR)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = consonant;
-                }
-                else
-                {
-                    --(*len);
-                    ending[0] = GREEK_SMALL_LETTER_XI;
-                }
-            }
-            else if (vf->person == THIRD && vf->number == SINGULAR)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = consonant;
-                }
-                else
-                {
-                    ucs2[*len - 1] = GREEK_SMALL_LETTER_KAPPA;
-                }
-            }
-            else if (vf->person == FIRST && vf->number == PLURAL)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = consonant;
-                }
-            }
-            else if (vf->person == SECOND && vf->number == PLURAL)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = consonant;
-                }
-                else
-                {
-                    --(*len);
-                    ending[0] = GREEK_SMALL_LETTER_CHI;
-                }
-            }
-            else if (vf->person == THIRD && vf->number == PLURAL)
-            {
-                ucs2[0] = EM_DASH;
-                (*len) = 1;
-                return;
-            }
-        }
-        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_SIGMA) == CONSONANT_STEM_PERFECT_SIGMA || ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_SIGMA_2) == CONSONANT_STEM_PERFECT_SIGMA_2 &&  ucs2[(*len)-1] == GREEK_SMALL_LETTER_SIGMA)) //κεκέλευσμαι or σῴζω which is both consonant stem and not.
-        {
-            if (vf->person == SECOND && vf->number == SINGULAR)
-            {
-                if (!decompose)
-                {
-                    leftShiftFromOffsetSteps(ending, 0, 1, &elen);
-                }
-            }
-            else if (vf->person == SECOND && vf->number == PLURAL)
-            {
-                if (!decompose)
-                {
-                    leftShiftFromOffsetSteps(ending, 0, 1, &elen);
-                }
-            }
-            else if (vf->person == THIRD && vf->number == PLURAL)
-            {
-                ucs2[0] = EM_DASH;
-                (*len) = 1;
-                return;
-            }
-        }
-        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_LAMBDA) == CONSONANT_STEM_PERFECT_LAMBDA) //ἄγγελμαι
-        {
-            //H&Q page 273, only different in 2nd and 3rd person plural
-            if (vf->person == SECOND && vf->number == PLURAL)
-            {
-                if (!decompose)
-                {
-                    leftShiftFromOffsetSteps(ending, 0, 1, &elen);
-                }
-            }
-            else if (vf->person == THIRD && vf->number == PLURAL)
-            {
-                ucs2[0] = EM_DASH;
-                (*len) = 1;
-                return;
-            }
-        }
-        else if ((vf->verb->verbclass & CONSONANT_STEM_PERFECT_NU) == CONSONANT_STEM_PERFECT_NU) //αισχυνομαι
-        {
-            if (vf->person == FIRST && vf->number == SINGULAR)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
-                }
-            }
-            else if (vf->person == SECOND && vf->number == SINGULAR)
-            {
-                ucs2[0] = EM_DASH;
-                *len = 1;
-                elen = 0;
-                return;
-            }
-            else if (vf->person == THIRD && vf->number == SINGULAR)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
-                }
-                else
-                {
-                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
-                }
-            }
-            else if (vf->person == FIRST && vf->number == PLURAL)
-            {
-                if ( decompose)
-                {
-                    ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
-                }
-            }
-            else if (vf->person == SECOND && vf->number == PLURAL)
-            {
-                
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_NU;
                 
                 if (!decompose)
@@ -633,7 +351,12 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
         ucs2[(*len) + 1] = GREEK_SMALL_LETTER_SIGMA;
         (*len) += 2; //parens required here fyi
     }
-    else if (vf->tense == PRESENT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "φημί") || utf8HasSuffix(vf->verb->present, "αμαι") || utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs, present tense
+    /* start mi verbs present tense */
+    else if (vf->tense == PRESENT &&
+             (utf8HasSuffix(vf->verb->present, "μι") ||
+              utf8HasSuffix(vf->verb->present, "φημί") ||
+              utf8HasSuffix(vf->verb->present, "αμαι") ||
+              utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs, present tense
     {
         if (vf->voice != ACTIVE || vf->number == PLURAL || vf->mood == OPTATIVE || vf->mood == IMPERATIVE || vf->mood == SUBJUNCTIVE)
         {
@@ -646,7 +369,6 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             else if (ucs2[*len - 1] == COMBINING_MACRON) //deiknumi
                 --(*len);
         }
-        
         //contract third plural indicative of isthmi
         if (vf->person == THIRD && vf->number == PLURAL && vf->mood == INDICATIVE && vf->voice == ACTIVE && (utf8HasSuffix(vf->verb->present, "στημι") || utf8HasSuffix(vf->verb->present, "ῑ̔́ημι") || utf8HasSuffix(vf->verb->present, "ῑ́ημι")))
         {
@@ -664,7 +386,10 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 --(*len);
             }
         }
-        else if (vf->person == SECOND && vf->number == SINGULAR && vf->mood == INDICATIVE && vf->voice == ACTIVE &&(utf8HasSuffix(vf->verb->present, "ῑ̔́ημι") || utf8HasSuffix(vf->verb->present, "ῑ́ημι")) && ending[0] == GREEK_SMALL_LETTER_EPSILON)
+        else if (vf->person == SECOND && vf->number == SINGULAR && vf->mood == INDICATIVE && vf->voice == ACTIVE &&
+                 (utf8HasSuffix(vf->verb->present, "ῑ̔́ημι") ||
+                  utf8HasSuffix(vf->verb->present, "ῑ́ημι")) &&
+                 ending[0] == GREEK_SMALL_LETTER_EPSILON)
         {
             //alt ending for ihmi
             if (!decompose)
@@ -854,7 +579,11 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             }
         }
     }
-    else if (vf->tense == IMPERFECT && (utf8HasSuffix(vf->verb->present, "μι") || utf8HasSuffix(vf->verb->present, "αμαι") || utf8HasSuffix(vf->verb->present, "φημί") || utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs
+    else if (vf->tense == IMPERFECT &&
+             (utf8HasSuffix(vf->verb->present, "μι") ||
+              utf8HasSuffix(vf->verb->present, "αμαι") ||
+              utf8HasSuffix(vf->verb->present, "φημί") ||
+              utf8HasSuffix(vf->verb->present, "νυμαι"))) //mi verbs
     {
         if (utf8HasSuffix(vf->verb->present, "εἶμι"))
         {
@@ -974,7 +703,9 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                 elen += 2;
             }
         }
-        else if ( (utf8HasSuffix(vf->verb->present, "τίθημι") || utf8HasSuffix(vf->verb->present, "ῑ̔́ημι") || utf8HasSuffix(vf->verb->present, "ῑ́ημι")) && vf->voice == ACTIVE)
+        else if ( (utf8HasSuffix(vf->verb->present, "τίθημι") ||
+                   utf8HasSuffix(vf->verb->present, "ῑ̔́ημι") ||
+                   utf8HasSuffix(vf->verb->present, "ῑ́ημι")) && vf->voice == ACTIVE)
         {
             if (vf->person != FIRST || vf->number == PLURAL)
                 ucs2[*len - 1] = GREEK_SMALL_LETTER_EPSILON;
@@ -1073,7 +804,11 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             }
         }
     }
-    else if (vf->tense == AORIST && (utf8HasSuffix(vf->verb->present, "μι")  || utf8HasSuffix(vf->verb->present, "σταμαι")) && !utf8HasSuffix(vf->verb->present, "ῡμι")) //mi verbs
+    /* start mi verbs aorist tense */
+    else if (vf->tense == AORIST &&
+             (utf8HasSuffix(vf->verb->present, "μι")  ||
+              utf8HasSuffix(vf->verb->present, "σταμαι")) &&
+             !utf8HasSuffix(vf->verb->present, "ῡμι")) //mi verbs
     {
         if (vf->voice == ACTIVE)
         {
@@ -1644,6 +1379,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             }
         }
     }
+    /* start root aorists */
     else if (vf->tense == AORIST && (utf8HasSuffix(vf->verb->present, "φθάνω") || utf8HasSuffix(vf->verb->present, "βαίνω")) &&  ucs2[*len -1] == GREEK_SMALL_LETTER_ETA )
     {
         //root aorist
@@ -1780,7 +1516,7 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
     
     if (vf->person == SECOND && vf->number == SINGULAR && vf->tense == AORIST && vf->voice == PASSIVE && vf->mood == IMPERATIVE && !decompose)
     {
-        //decide which aorist passive imperative ending
+        //determine which aorist passive imperative ending
         if (ucs2[*len - 1] == GREEK_SMALL_LETTER_CHI || ucs2[*len - 1] == GREEK_SMALL_LETTER_PHI || ucs2[*len - 1] == GREEK_SMALL_LETTER_THETA)
         {
             ending[1] = GREEK_SMALL_LETTER_TAU;
@@ -1790,6 +1526,8 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
             ending[1] = GREEK_SMALL_LETTER_THETA;
         }
     }
+    
+    //add the ending to the stem, decompose if necessary
     if (decompose && *len > 0 && !(*len == 1 && ucs2[0] == '-'))
     {
         ucs2[*len] = SPACE;

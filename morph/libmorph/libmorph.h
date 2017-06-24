@@ -137,6 +137,15 @@ typedef struct vf {
     Verb *verb;
 } VerbFormC;
 
+typedef struct vfd {
+    unsigned char person;
+    unsigned char number;
+    unsigned char tense;
+    unsigned char voice;
+    unsigned char mood;
+    unsigned int verbid;
+} VerbFormD;
+
 typedef struct e {
     unsigned int id;
     unsigned char hq;
@@ -230,19 +239,26 @@ enum {
     NUM_ENDINGS
 };
 
+void contractEnding(VerbFormC *vf, UCS2 *buffer, int *len, UCS2 *ending, int endingLen);
+
 bool compareFormsCheckMF(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed);
 bool compareForms(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
 bool compareWord(UCS2 *w1, int w1len, UCS2 *w2, int w2len);
 int getForm(VerbFormC *vf, char *buffer, int bufferLen, bool includeAlternateForms, bool decompose);
 
+int getForm2(VerbFormD *vf, char *utf8OutputBuffer, int bufferLen, bool includeAlternateForms, bool decompose);
+int getFormUCS2(VerbFormC *vf, UCS2 *ucs2StemPlusEndingBuffer, int *bufferLen, bool includeAlternateForms, bool decompose);
+
 void getFullDescription (VerbFormC *vf, char *buffer, int len);
 void getAbbrevDescription (VerbFormC *vf, char *buffer, int len);
+void getAbbrevDescription2 (VerbFormD *vf, char *buffer, int len);
 
 void getPrincipalParts(Verb *v, char *buffer, int len);
 
 char *getPrincipalPartForTense(Verb *verb, unsigned char tense, unsigned char voice);
 
 int deponentType(Verb *v);
+int deponentType2(int verbid);
 bool isDeponent(VerbFormC *vf, UCS2 *stem, int stemLen);
 bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent);
 //void accentSyllable(UCS2 *ucs2String, int i, int *len, int accent, bool toggleOff);

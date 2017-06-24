@@ -578,13 +578,14 @@ void printUCS22(UCS2 *u, int len)
         UCS2 expectedForm[512];
         int givenLen = 0;
         int expectedLen = 0;
+        int lives = 0;
 
         utf8_to_ucs2_string([self.textfield.text UTF8String], givenForm, &givenLen);
         utf8_to_ucs2_string([self.changedForm.text UTF8String], expectedForm, &expectedLen);
         
         NSString *eTime = [NSString stringWithFormat:@"%.02f", self.elapsedTimeForDB];
         
-        if (compareFormsCheckMFRecordResult(expectedForm, expectedLen, givenForm, givenLen, self.mfPressed, [eTime UTF8String], &score))
+        if (compareFormsCheckMFRecordResult(expectedForm, expectedLen, givenForm, givenLen, self.mfPressed, [eTime UTF8String], &score, &lives))
         {
             NSLog(@"correct");
             CGSize size = [self.textfield.text sizeWithAttributes:@{NSFontAttributeName: self.textfield.font}];

@@ -83,17 +83,17 @@ void getStartEnd(UCS2 *w1, int w1len, int *starts, int *ends, int *numStrings)
     int end = 0;
     int i = 0;
     
-    while((w1[i] == SPACE || w1[i] == COMMA) && i < w1len)
+    while((w1[i] == SPACE || w1[i] == COMMA ||w1[i] == NEWLINE) && i < w1len)
         i++;
     
     starts[0] = i;
     for ( ; i < w1len; i++)
     {
-        if (w1[i] == COMMA || w1[i] == SPACE)
+        if (w1[i] == COMMA || w1[i] == SPACE ||w1[i] == NEWLINE)
         {
             ends[end++] = i;
             i++;
-            while((w1[i] == SPACE || w1[i] == COMMA) && i < w1len)
+            while((w1[i] == SPACE || w1[i] == COMMA ||w1[i] == NEWLINE) && i < w1len)
                 i++;
             if (i < w1len)
             {
@@ -205,6 +205,17 @@ void getPrincipalParts(Verb *v, char *buffer, int len)
 void getFullDescription (VerbFormC *vf, char *buffer, int len)
 {
     snprintf(buffer, len, "%s %s %s %s %s", persons[vf->person], numbers[vf->number], tenses[vf->tense], voices[vf->voice], moods[vf->mood]);
+}
+
+void getAbbrevDescription2 (VerbFormD *vf, char *buffer, int len)
+{
+    VerbFormC vfc;
+    vfc.person = vf->person;
+    vfc.number = vf->number;
+    vfc.tense = vf->tense;
+    vfc.voice = vf->voice;
+    vfc.mood = vf->mood;
+    getAbbrevDescription (&vfc, buffer, len);
 }
 
 void getAbbrevDescription (VerbFormC *vf, char *buffer, int len)
@@ -330,14 +341,13 @@ bool letterIsAccented(UCS2 letter)
     return false;
 }
 
-
 char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, bool preContactedEndings)
 {
     UCS2 secondAorist[2] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_NU };
     UCS2 secondAorist2[4] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
     
-    UCS2 isthmi2[4] = { GREEK_SMALL_LETTER_SIGMA, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
-    UCS2 deponent[] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
+    //UCS2 isthmi2[4] = { GREEK_SMALL_LETTER_SIGMA, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ETA, GREEK_SMALL_LETTER_NU };
+    //UCS2 deponent[] = { GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_IOTA };
     int ending = 0;
 
     //H&Q page 503, 607, 676
@@ -663,7 +673,7 @@ char *getEnding(VerbFormC *vf, UCS2 *word, int wordLen, bool contractedFuture, b
     */
 }
 
-char * getPrincipalPartForTense(Verb *verb, unsigned char tense, unsigned char voice)
+char *getPrincipalPartForTense(Verb *verb, unsigned char tense, unsigned char voice)
 {
     //also need to consider deponent verbs
     if (tense == PRESENT || tense == IMPERFECT)
@@ -1989,20 +1999,45 @@ int getOida(VerbFormC *vf, UCS2 *buffer, int *bufferLen, bool decompose)
     return 1;
 }
 
+int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAlternateForms, bool decompose)
+{
+    utf8OutputBuffer[0] = '\0'; //clear buffer
+    
+    int bufferLen2 = 1024;
+    UCS2 ucs2Buffer[bufferLen2];
+    
+    int ret = getFormUCS2(vf, ucs2Buffer, &bufferLen2, includeAlternateForms, decompose);
+    if (ret != 0)
+    {
+        ucs2_to_utf8_string(ucs2Buffer, bufferLen2, (unsigned char*)utf8OutputBuffer);
+    }
+    return ret;
+}
+
+int getForm2(VerbFormD *vf, char *utf8OutputBuffer, int bufferLen, bool includeAlternateForms, bool decompose)
+{
+    VerbFormC vfc;
+    vfc.person = vf->person;
+    vfc.number = vf->number;
+    vfc.tense = vf->tense;
+    vfc.voice = vf->voice;
+    vfc.mood = vf->mood;
+    vfc.verb = &verbs[vf->verbid];
+    
+    return getForm(&vfc, utf8OutputBuffer, bufferLen, includeAlternateForms, decompose);
+}
+
 /**
  * return 1 for success, 0 for failure
  */
-int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAlternateForms, bool decompose)
+int getFormUCS2(VerbFormC *vf, UCS2 *ucs2Buffer, int *bufferLen, bool includeAlternateForms, bool decompose)
 {
     //clear buffer
     int i;
-    for (i = 0; i < bufferLen; i++)
-        utf8OutputBuffer[i] = '\0';
-    
-    UCS2 ucs2StemPlusEndingBuffer[1024];
+    //UCS2 ucs2Buffer[1024];
     //buffer needs to be cleared
-    for (i = 0; i < 1024; i++)
-        ucs2StemPlusEndingBuffer[i] = 0;
+    for (i = 0; i < *bufferLen; i++)
+        ucs2Buffer[i] = 0;
     
     int ucs2StemPlusEndingBufferLen = 0;
     
@@ -2012,66 +2047,57 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     //eimi/
     if ( vf->tense != FUTURE && utf8HasSuffix(vf->verb->present, "εἰμί"))
     {
-        int ret = getEimi(vf, ucs2StemPlusEndingBuffer, &ucs2StemPlusEndingBufferLen);
-        if (ret)
-        {
-            ucs2_to_utf8_string(ucs2StemPlusEndingBuffer, ucs2StemPlusEndingBufferLen, (unsigned char *)utf8OutputBuffer);
-        }
+        int ret = getEimi(vf, ucs2Buffer, &ucs2StemPlusEndingBufferLen);
+        *bufferLen = ucs2StemPlusEndingBufferLen;
         return ret;
     }
     else if ((utf8HasSuffix(vf->verb->present, "οἶδα") || utf8HasSuffix(vf->verb->present, "οιδα")) && vf->tense != FUTURE)
     {
-        int ret = getOida(vf, ucs2StemPlusEndingBuffer, &ucs2StemPlusEndingBufferLen, decompose);
+        int ret = getOida(vf, ucs2Buffer, &ucs2StemPlusEndingBufferLen, decompose);
         if (ret)
         {
-            if (!wordIsAccented(&ucs2StemPlusEndingBuffer[0], ucs2StemPlusEndingBufferLen))
+            if (!wordIsAccented(&ucs2Buffer[0], ucs2StemPlusEndingBufferLen))
             {
-                accentRecessive(vf, &ucs2StemPlusEndingBuffer[0], &ucs2StemPlusEndingBufferLen);
+                accentRecessive(vf, &ucs2Buffer[0], &ucs2StemPlusEndingBufferLen);
             }
             
             if (decompose && !ACCENT_DECOMPOSED_FORMS)
             {
-                stripAccent(&ucs2StemPlusEndingBuffer[0], &ucs2StemPlusEndingBufferLen);
+                stripAccent(&ucs2Buffer[0], &ucs2StemPlusEndingBufferLen);
             }
-            
-            ucs2_to_utf8_string(ucs2StemPlusEndingBuffer, ucs2StemPlusEndingBufferLen, (unsigned char *)utf8OutputBuffer);
-
         }
+        *bufferLen = ucs2StemPlusEndingBufferLen;
         return ret;
     }
     else if (utf8HasSuffix(vf->verb->present, "δεῖ"))
     {
-        int ret = getDei(vf, ucs2StemPlusEndingBuffer, &ucs2StemPlusEndingBufferLen, decompose);
+        int ret = getDei(vf, ucs2Buffer, &ucs2StemPlusEndingBufferLen, decompose);
         if (ret)
         {
-            if (!wordIsAccented(&ucs2StemPlusEndingBuffer[0], ucs2StemPlusEndingBufferLen))
+            if (!wordIsAccented(&ucs2Buffer[0], ucs2StemPlusEndingBufferLen))
             {
-                accentRecessive(vf, &ucs2StemPlusEndingBuffer[0], &ucs2StemPlusEndingBufferLen);
+                accentRecessive(vf, &ucs2Buffer[0], &ucs2StemPlusEndingBufferLen);
             }
             
             if (decompose && !ACCENT_DECOMPOSED_FORMS)
             {
-                stripAccent(&ucs2StemPlusEndingBuffer[0], &ucs2StemPlusEndingBufferLen);
+                stripAccent(&ucs2Buffer[0], &ucs2StemPlusEndingBufferLen);
             }
-            
-            ucs2_to_utf8_string(ucs2StemPlusEndingBuffer, ucs2StemPlusEndingBufferLen, (unsigned char *)utf8OutputBuffer);
-            
         }
+        *bufferLen = ucs2StemPlusEndingBufferLen;
         return ret;
     }
     else if (utf8HasSuffix(vf->verb->present, "χρή"))
     {
-        int ret = getXrh(vf, ucs2StemPlusEndingBuffer, &ucs2StemPlusEndingBufferLen, decompose);
+        int ret = getXrh(vf, ucs2Buffer, &ucs2StemPlusEndingBufferLen, decompose);
         if (ret)
         {
-            if (!wordIsAccented(&ucs2StemPlusEndingBuffer[0], ucs2StemPlusEndingBufferLen))
+            if (!wordIsAccented(&ucs2Buffer[0], ucs2StemPlusEndingBufferLen))
             {
-                accentRecessive(vf, &ucs2StemPlusEndingBuffer[0], &ucs2StemPlusEndingBufferLen);
+                accentRecessive(vf, &ucs2Buffer[0], &ucs2StemPlusEndingBufferLen);
             }
-            
-            ucs2_to_utf8_string(ucs2StemPlusEndingBuffer, ucs2StemPlusEndingBufferLen, (unsigned char *)utf8OutputBuffer);
-            
         }
+        *bufferLen = ucs2StemPlusEndingBufferLen;
         return ret;
     }
     
@@ -2079,7 +2105,6 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     char *utf8Stems = getPrincipalPartForTense(vf->verb, vf->tense, vf->voice);
     if (!utf8Stems || utf8Stems[0] == '\0')
     {
-        utf8OutputBuffer[0] = '\0'; //clear buffer
         return 0;
     }
     
@@ -2359,15 +2384,15 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             //add stem to temp buffer
             for (i = stemStart; i < (stemStart + stemLen); i++)
             {
-                ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = ucs2Stems[i];
+                ucs2Buffer[ucs2StemPlusEndingBufferLen] = ucs2Stems[i];
                 ucs2StemPlusEndingBufferLen++;
             }
             
-            int stemStartInBuffer = ucs2StemPlusEndingBufferLen - stemLen; //set to the index in ucs2StemPlusEndingBuffer
+            int stemStartInBuffer = ucs2StemPlusEndingBufferLen - stemLen; //set to the index in ucs2Buffer
             int tempStemLen = stemLen;
             
             //Step 7: remove ending from principal part
-            stripEndingFromPrincipalPart(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, vf->tense, vf->voice);
+            stripEndingFromPrincipalPart(&ucs2Buffer[stemStartInBuffer], &tempStemLen, vf->tense, vf->voice);
             
             //only use one of the aorist passive imperative endings for second singular
             if (vf->mood == IMPERATIVE && vf->tense == AORIST && vf->voice == PASSIVE && vf->number == SINGULAR && vf->person == SECOND)
@@ -2381,7 +2406,7 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
                 else
                 {
                     //decide which imperative ending
-                    if (ucs2StemPlusEndingBuffer[tempStemLen - 1] == GREEK_SMALL_LETTER_CHI || ucs2StemPlusEndingBuffer[tempStemLen - 1] == GREEK_SMALL_LETTER_PHI || ucs2StemPlusEndingBuffer[tempStemLen - 1] == GREEK_SMALL_LETTER_THETA)
+                    if (ucs2Buffer[tempStemLen - 1] == GREEK_SMALL_LETTER_CHI || ucs2Buffer[tempStemLen - 1] == GREEK_SMALL_LETTER_PHI || ucs2Buffer[tempStemLen - 1] == GREEK_SMALL_LETTER_THETA)
                     {
                         ucs2Endings[endingStart + 1] = GREEK_SMALL_LETTER_TAU;
                     }
@@ -2394,11 +2419,11 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             //Step 8: add or remove augment
             if (vf->tense == IMPERFECT || vf->tense == PLUPERFECT)
             {
-                augmentStem(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, decompose);
+                augmentStem(vf, &ucs2Buffer[stemStartInBuffer], &tempStemLen, decompose);
             }
             else if (decompose && (vf->verb->verbclass & PREFIXED) == PREFIXED && vf->tense != AORIST)
             {
-                decomposePrefixes(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen);
+                decomposePrefixes(vf, &ucs2Buffer[stemStartInBuffer], &tempStemLen);
             }
             
             //De-augment
@@ -2410,10 +2435,10 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
                 stripAccent(ucs2Present, &ucs2PresentLen);
                 UCS2 presentInitialLetter = ucs2Present[0];
                 
-                stripAugmentFromPrincipalPart(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, presentInitialLetter, decompose);
+                stripAugmentFromPrincipalPart(vf, &ucs2Buffer[stemStartInBuffer], &tempStemLen, presentInitialLetter, decompose);
             }
             //Step 9: add the ending to the principal part
-            addEnding(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen, contractedFuture, decompose);
+            addEnding(vf, &ucs2Buffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen, contractedFuture, decompose);
 
             //Labe/ Accent EXCEPTION H&Q page 326
             //elthe/ accent exception h&q page 383
@@ -2426,64 +2451,67 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             UCS2 elthe[] = { GREEK_SMALL_LETTER_EPSILON_WITH_PSILI, GREEK_SMALL_LETTER_LAMDA, GREEK_SMALL_LETTER_THETA, GREEK_SMALL_LETTER_EPSILON } ;
             UCS2 eipe[] = { GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_IOTA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_EPSILON } ;
             UCS2 eure[] = { GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_UPSILON_WITH_DASIA, GREEK_SMALL_LETTER_RHO, GREEK_SMALL_LETTER_EPSILON } ;
-            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, ide, 3)))
+            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2Buffer[stemStartInBuffer], tempStemLen, ide, 3)))
             {
-                ucs2StemPlusEndingBuffer[2] = GREEK_SMALL_LETTER_EPSILON_WITH_OXIA;
+                ucs2Buffer[2] = GREEK_SMALL_LETTER_EPSILON_WITH_OXIA;
             }
-            else if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, labe, 4) || hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, elthe, 4) || hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, eipe, 4) || hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, eure, 4)))
+            else if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2Buffer[stemStartInBuffer], tempStemLen, labe, 4) || hasPrefix(&ucs2Buffer[stemStartInBuffer], tempStemLen, elthe, 4) || hasPrefix(&ucs2Buffer[stemStartInBuffer], tempStemLen, eipe, 4) || hasPrefix(&ucs2Buffer[stemStartInBuffer], tempStemLen, eure, 4)))
             {
-                ucs2StemPlusEndingBuffer[3] = GREEK_SMALL_LETTER_EPSILON_WITH_OXIA;
+                ucs2Buffer[3] = GREEK_SMALL_LETTER_EPSILON_WITH_OXIA;
             }
             //exception h&q page 376, dos when compounded is paroxytone
             UCS2 apodos[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_FINAL_SIGMA } ;
-            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, apodos, 6) ))
+            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2Buffer[stemStartInBuffer], tempStemLen, apodos, 6) ))
             {
-                ucs2StemPlusEndingBuffer[2] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
+                ucs2Buffer[2] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
             }
             //exception h&q page 376, dos when compounded is paroxytone
             UCS2 metados[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_FINAL_SIGMA } ;
-            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, metados, 7) ))
+            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == ACTIVE && (hasPrefix(&ucs2Buffer[stemStartInBuffer], tempStemLen, metados, 7) ))
             {
-                ucs2StemPlusEndingBuffer[3] = GREEK_SMALL_LETTER_ALPHA_WITH_OXIA;
+                ucs2Buffer[3] = GREEK_SMALL_LETTER_ALPHA_WITH_OXIA;
             }
             //exception h&q page 376, dou when compounded with polysyllablic prefix is paroxytone
             //Already done??
             UCS2 metadou[] = { GREEK_SMALL_LETTER_MU, GREEK_SMALL_LETTER_EPSILON, GREEK_SMALL_LETTER_TAU, GREEK_SMALL_LETTER_ALPHA, GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_UPSILON_WITH_PERISPOMENI } ;
-            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == MIDDLE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, metadou, 7) ))
+            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == MIDDLE && (hasPrefix(&ucs2Buffer[stemStartInBuffer], tempStemLen, metadou, 7) ))
             {
-              ucs2StemPlusEndingBuffer[3] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
-              ucs2StemPlusEndingBuffer[6] = GREEK_SMALL_LETTER_UPSILON;
+              ucs2Buffer[3] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
+              ucs2Buffer[6] = GREEK_SMALL_LETTER_UPSILON;
             }
             //exception h&q page 376, dou when compounded with polysyllablic prefix is paroxytone
             UCS2 apodou[] = { GREEK_SMALL_LETTER_ALPHA_WITH_PSILI, GREEK_SMALL_LETTER_PI, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_DELTA, GREEK_SMALL_LETTER_OMICRON, GREEK_SMALL_LETTER_UPSILON_WITH_PERISPOMENI } ;
-            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == MIDDLE && (hasPrefix(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen, apodou, 6) ))
+            if (vf->tense == AORIST && vf->mood == IMPERATIVE && vf->number == SINGULAR && vf->voice == MIDDLE && (hasPrefix(&ucs2Buffer[stemStartInBuffer], tempStemLen, apodou, 6) ))
             {
-                ucs2StemPlusEndingBuffer[2] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
-                ucs2StemPlusEndingBuffer[5] = GREEK_SMALL_LETTER_UPSILON;
+                ucs2Buffer[2] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
+                ucs2Buffer[5] = GREEK_SMALL_LETTER_UPSILON;
             }
             
             if (vf->tense == PRESENT && vf->mood == INDICATIVE && vf->voice == ACTIVE && utf8HasSuffix(vf->verb->present, "φημί"))
             {
-                accentWord(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen, ULTIMA, ACUTE);
+                accentWord(&ucs2Buffer[stemStartInBuffer], &tempStemLen, ULTIMA, ACUTE);
             }
             
             //Step 10: add accent
             //add accent, if word does not already have one
-            if (!wordIsAccented(&ucs2StemPlusEndingBuffer[stemStartInBuffer], tempStemLen))
+            if (!wordIsAccented(&ucs2Buffer[stemStartInBuffer], tempStemLen))
             {
-                accentRecessive(vf, &ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen);
+                accentRecessive(vf, &ucs2Buffer[stemStartInBuffer], &tempStemLen);
             }
+            
+            //do contraction here
+            //contractEnding(vf, &ucs2Buffer[stemStartInBuffer], &tempStemLen, &ucs2Endings[endingStart], endingLen);
             
             if (decompose && !ACCENT_DECOMPOSED_FORMS)
             {
-                stripAccent(&ucs2StemPlusEndingBuffer[stemStartInBuffer], &tempStemLen);
+                stripAccent(&ucs2Buffer[stemStartInBuffer], &tempStemLen);
             }
             
             ucs2StemPlusEndingBufferLen += (tempStemLen - stemLen);
             
-            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = COMMA; //comma
+            ucs2Buffer[ucs2StemPlusEndingBufferLen] = COMMA; //comma
             ucs2StemPlusEndingBufferLen++;
-            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = SPACE; //space
+            ucs2Buffer[ucs2StemPlusEndingBufferLen] = SPACE; //space
             ucs2StemPlusEndingBufferLen++;
         }
     }
@@ -2491,20 +2519,20 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
     
     if (vf->mood == IMPERATIVE && vf->person == FIRST && ucs2StemPlusEndingBufferLen > 0) //check len so we don't give dashes for deponents in active voice
     {
-        ucs2StemPlusEndingBuffer[0] = EM_DASH;
+        ucs2Buffer[0] = EM_DASH;
         ucs2StemPlusEndingBufferLen = 1;
     }
     
     //add eu alternates here here H&Q p. 552
     if (utf8HasSuffix(vf->verb->present, "εὑρίσκω"))
     {
-        if ((vf->tense == AORIST || vf->tense == IMPERFECT || vf->tense == PERFECT || vf->tense == PLUPERFECT) && vf->mood == INDICATIVE)// ucs2StemPlusEndingBuffer[0] == GREEK_SMALL_LETTER_ETA)
+        if ((vf->tense == AORIST || vf->tense == IMPERFECT || vf->tense == PERFECT || vf->tense == PLUPERFECT) && vf->mood == INDICATIVE)// ucs2Buffer[0] == GREEK_SMALL_LETTER_ETA)
         {
-            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = COMMA; //comma
+            ucs2Buffer[ucs2StemPlusEndingBufferLen] = COMMA; //comma
             ucs2StemPlusEndingBufferLen++;
-            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = SPACE; //space
+            ucs2Buffer[ucs2StemPlusEndingBufferLen] = SPACE; //space
             ucs2StemPlusEndingBufferLen++;
-            ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen] = GREEK_SMALL_LETTER_EPSILON;
+            ucs2Buffer[ucs2StemPlusEndingBufferLen] = GREEK_SMALL_LETTER_EPSILON;
             ucs2StemPlusEndingBufferLen++;
             
             int j = 1;
@@ -2512,23 +2540,41 @@ int getForm(VerbFormC *vf, char *utf8OutputBuffer, int bufferLen, bool includeAl
             if (decompose && vf->tense != PERFECT && vf->tense != PLUPERFECT)
                 j = 5;
             
-            
             for (; j < (ucs2StemPlusEndingBufferLen - 3); i++, j++)
             {
-                ucs2StemPlusEndingBuffer[ucs2StemPlusEndingBufferLen+i-1] = ucs2StemPlusEndingBuffer[j];
+                ucs2Buffer[ucs2StemPlusEndingBufferLen+i-1] = ucs2Buffer[j];
             }
             ucs2StemPlusEndingBufferLen += (j-1);
         }
     }
     
-    ucs2_to_utf8_string(ucs2StemPlusEndingBuffer, ucs2StemPlusEndingBufferLen, (unsigned char *)utf8OutputBuffer);
-    
-    if (utf8OutputBuffer[0] == '\0')
+    *bufferLen = ucs2StemPlusEndingBufferLen;
+    if (ucs2StemPlusEndingBufferLen < 1)
         return 0;
     else
         return 1;
 }
-
+/*
+//contraction for present and imperfect
+void contractEnding(VerbFormC *vf, UCS2 *buffer, int *len, UCS2 *ending, int endingLen)
+{
+    if ((vf->tense == PRESENT || vf->tense == IMPERFECT) && (utf8HasSuffix(vf->verb->present, "άω") || utf8HasSuffix(vf->verb->present, "άομαι") || utf8HasSuffix(vf->verb->present, "έω") || utf8HasSuffix(vf->verb->present, "έομαι") || utf8HasSuffix(vf->verb->present, "όω") || utf8HasSuffix(vf->verb->present, "όομαι")))
+    {
+        //1st sing and plural, 3rd pl
+        if (buffer[*len - endingLen - 1] == GREEK_SMALL_LETTER_ALPHA_WITH_OXIA && ending[0] == GREEK_SMALL_LETTER_OMEGA)
+        {
+            leftShiftFromOffsetSteps(buffer, *len - endingLen - 1, 1, len);
+            buffer[*len - 1] = GREEK_SMALL_LETTER_OMEGA_WITH_PERISPOMENI;
+        }
+        else if (buffer[*len - endingLen - 1] == GREEK_SMALL_LETTER_ALPHA_WITH_OXIA && ending[0] == GREEK_SMALL_LETTER_EPSILON && endingLen > 1 && ending[1] == GREEK_SMALL_LETTER_IOTA)
+        {
+            leftShiftFromOffsetSteps(buffer, *len - endingLen, 2, len);
+            buffer[*len - 2] = GREEK_SMALL_LETTER_ALPHA_WITH_PERISPOMENI_AND_YPOGEGRAMMENI;
+        }
+        
+    }
+}
+*/
 bool utf8HasSuffix(char *s, char *suffix)
 {
     unsigned long len = strlen(s);
@@ -2544,6 +2590,12 @@ bool utf8HasSuffix(char *s, char *suffix)
             return false;
     }
     return true;
+}
+
+int deponentType2(int verbid)
+{
+    Verb *v = &verbs[verbid];
+    return deponentType(v);
 }
 
 //page 316 in h&q
@@ -2756,27 +2808,6 @@ bool accentWord(UCS2 *ucs2String, int *len, int syllableToAccent, int accent)
     return true;
 }
 
-void tonosToOxia(UCS2 *word, int len)
-{
-    for (int i = 0; i < len; i++)
-    {
-        if (word[i] == GREEK_SMALL_LETTER_ALPHA_WITH_TONOS)
-            word[i] = GREEK_SMALL_LETTER_ALPHA_WITH_OXIA;
-        else if (word[i] == GREEK_SMALL_LETTER_EPSILON_WITH_TONOS)
-            word[i] = GREEK_SMALL_LETTER_EPSILON_WITH_OXIA;
-        else if (word[i] == GREEK_SMALL_LETTER_ETA_WITH_TONOS)
-            word[i] = GREEK_SMALL_LETTER_ETA_WITH_OXIA;
-        else if (word[i] == GREEK_SMALL_LETTER_IOTA_WITH_TONOS)
-            word[i] = GREEK_SMALL_LETTER_IOTA_WITH_OXIA;
-        else if (word[i] == GREEK_SMALL_LETTER_OMICRON_WITH_TONOS)
-            word[i] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
-        else if (word[i] == GREEK_SMALL_LETTER_UPSILON_WITH_TONOS)
-            word[i] = GREEK_SMALL_LETTER_UPSILON_WITH_OXIA;
-        else if (word[i] == GREEK_SMALL_LETTER_OMEGA_WITH_TONOS)
-            word[i] = GREEK_SMALL_LETTER_OMEGA_WITH_OXIA;
-    }
-}
-
 void stripAccent(UCS2 *word, int *len)
 {
     int i = 0;
@@ -2960,6 +2991,27 @@ void stripAccent(UCS2 *word, int *len)
             default:
                 break;
         }
+    }
+}
+
+void tonosToOxia(UCS2 *word, int len)
+{
+    for (int i = 0; i < len; i++)
+    {
+        if (word[i] == GREEK_SMALL_LETTER_ALPHA_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_ALPHA_WITH_OXIA;
+        else if (word[i] == GREEK_SMALL_LETTER_EPSILON_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_EPSILON_WITH_OXIA;
+        else if (word[i] == GREEK_SMALL_LETTER_ETA_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_ETA_WITH_OXIA;
+        else if (word[i] == GREEK_SMALL_LETTER_IOTA_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_IOTA_WITH_OXIA;
+        else if (word[i] == GREEK_SMALL_LETTER_OMICRON_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_OMICRON_WITH_OXIA;
+        else if (word[i] == GREEK_SMALL_LETTER_UPSILON_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_UPSILON_WITH_OXIA;
+        else if (word[i] == GREEK_SMALL_LETTER_OMEGA_WITH_TONOS)
+            word[i] = GREEK_SMALL_LETTER_OMEGA_WITH_OXIA;
     }
 }
 

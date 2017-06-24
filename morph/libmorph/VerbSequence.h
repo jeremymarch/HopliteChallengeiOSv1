@@ -31,9 +31,10 @@ struct vfr {
     unsigned char voice;
     unsigned char mood;
     bool correct;
-    char answer[100]; //needs to be more than longest answer: strlen("βλαβεῖμεν, βλαβείημεν, βλαφθεῖμεν, βλαφθείημεν") == 90
+    char answer[130]; //needs to be more than longest answer: Longest Form: 2,1,3,0,2, v: καταστήσαιεν, καταστήσειαν, κατασταῖεν, κατασταίησαν, l: 102
 };
 
+//for mmap on ios see: https://github.com/mekjaer/ios-mmap/blob/master/ios-mmap-example/ios-mmap-example/AppDelegate.m
 typedef struct da {
     unsigned int numRecords;
     unsigned int head;
@@ -53,13 +54,14 @@ typedef struct vso {
     
 } VerbSeqOptions;
 
-bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed, char *elapsedTime, int *score);
+bool compareFormsCheckMFRecordResult(UCS2 *expected, int expectedLen, UCS2 *given, int givenLen, bool MFPressed, const char *elapsedTime, int *score, int *lives);
 void closeDataFile();
 void syncDataFile();
 
 bool dbInit(const char *path);
 void VerbSeqInit(const char *path);
 int nextVerbSeq(int *seq, VerbFormC *vf1, VerbFormC *vf2, VerbSeqOptions *vso);
+int nextVerbSeq2(int *seq, VerbFormD *vf1, VerbFormD *vf2, VerbSeqOptions *vso1);
 void resetVerbSeq();
 void changeFormByDegrees(VerbFormC *verbform, int degrees);
 void generateForm(VerbFormC *verbform);
