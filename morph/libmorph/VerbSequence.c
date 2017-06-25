@@ -20,6 +20,8 @@
 #define MAX_RECENT_VF 30
 #define HC_VERBS_PER_SET 4
 
+#define SQLITEPREPQUERYLEN 1024
+
 /*
  
  create table forms (
@@ -43,8 +45,8 @@ enum {
 //GLOBAL VARIABLES
 DataFormat *hcdata = NULL;
 size_t sizeInBytes = 0;
-const int sqlitePrepqueryLen = 1024;
-char sqlitePrepquery[sqlitePrepqueryLen];
+
+char sqlitePrepquery[SQLITEPREPQUERYLEN];
 sqlite3_stmt *statement;
 sqlite3_stmt *statement2;
 sqlite3 *db;
@@ -1072,13 +1074,13 @@ bool dbInit(const char *path)
      */
     
     /*
-    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO verbseq (timest,gameid,person,number,tense,voice,mood,verbid,correct,incorrectAns) VALUES (?,?,?,?,?,?,?,?,?,?)");
+    snprintf(sqlitePrepquery, SQLITEPREPQUERYLEN, "INSERT INTO verbseq (timest,gameid,person,number,tense,voice,mood,verbid,correct,incorrectAns) VALUES (?,?,?,?,?,?,?,?,?,?)");
     if (sqlite3_prepare_v2(db, sqlitePrepquery, strlen(sqlitePrepquery), &statement, NULL) != SQLITE_OK)
     {
         printf("\nCould not prepare statement1.\n");
         return false;
     }
-    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "UPDATE verbseq SET correct=?, elapsedtime=?, incorrectAns=? WHERE id=?;");
+    snprintf(sqlitePrepquery, SQLITEPREPQUERYLEN, "UPDATE verbseq SET correct=?, elapsedtime=?, incorrectAns=? WHERE id=?;");
     if (sqlite3_prepare_v2(db, sqlitePrepquery, strlen(sqlitePrepquery), &statement2, NULL) != SQLITE_OK)
     {
         printf("\nCould not prepare statement2.\n");
@@ -1121,7 +1123,7 @@ bool setHeadAnswer(bool correct, char *givenAnswer, const char *elapsedTime)
     */
     if (db)
     {
-        snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO verbseq VALUES (NULL,%ld,%ld,%d,%d,%d,%d,%d,%d,%d,'%s','%s');", time(NULL), globalGameId, lastVF.person, lastVF.number, lastVF.tense, lastVF.voice, lastVF.mood, findVerbIndexByPointer(lastVF.verb), correct, elapsedTime, givenAnswer);
+        snprintf(sqlitePrepquery, SQLITEPREPQUERYLEN, "INSERT INTO verbseq VALUES (NULL,%ld,%ld,%d,%d,%d,%d,%d,%d,%d,'%s','%s');", time(NULL), globalGameId, lastVF.person, lastVF.number, lastVF.tense, lastVF.voice, lastVF.mood, findVerbIndexByPointer(lastVF.verb), correct, elapsedTime, givenAnswer);
         char *zErrMsg = 0;
         int rc = sqlite3_exec(db, sqlitePrepquery, 0, 0, &zErrMsg);
         if( rc != SQLITE_OK )
@@ -1138,7 +1140,7 @@ void addNewGameToDB(int topUnit, long *gameid)
 {
     char *zErrMsg = 0;
     
-    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "INSERT INTO games (timest,score,topUnit,lives) VALUES (%li,0, %d,3);", time(NULL), topUnit);
+    snprintf(sqlitePrepquery, SQLITEPREPQUERYLEN, "INSERT INTO games (timest,score,topUnit,lives) VALUES (%li,0, %d,3);", time(NULL), topUnit);
     int rc = sqlite3_exec(db, sqlitePrepquery, 0, 0, &zErrMsg);
     if( rc != SQLITE_OK )
     {
@@ -1156,7 +1158,7 @@ void updateGameScore(long gameid, int score, int lives)
 {
     fprintf(stderr, "sqlite: gameid: %ld, score: %d, lives: %d\n", gameid, score, lives);
     char *zErrMsg = 0;
-    snprintf(sqlitePrepquery, sqlitePrepqueryLen, "UPDATE games SET score=%d,lives=%d WHERE gameid=%ld;", score, lives, gameid);
+    snprintf(sqlitePrepquery, SQLITEPREPQUERYLEN, "UPDATE games SET score=%d,lives=%d WHERE gameid=%ld;", score, lives, gameid);
     int rc = sqlite3_exec(db, sqlitePrepquery, 0, 0, &zErrMsg);
     if( rc != SQLITE_OK )
     {

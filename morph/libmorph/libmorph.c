@@ -2640,6 +2640,11 @@ bool isDeponent(VerbFormC *vf, UCS2 *stem, int stemLen)
 
 bool accentRecessive(VerbFormC *vf, UCS2 *tempUcs2String, int *len)
 {
+    if (*len < 1 || tempUcs2String[0] == EM_DASH)
+    {
+        return true;
+    }
+    
     //find syllable
     int i = 0;
     int vowelsAndDiphthongs = 0;
