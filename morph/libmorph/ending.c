@@ -939,7 +939,6 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                     if (!decompose)
                     {
                         (*len) -= 2;
-                        ending[1] = GREEK_SMALL_LETTER_IOTA;
                     }
                     else
                     {
