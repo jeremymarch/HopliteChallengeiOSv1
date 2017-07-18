@@ -1177,7 +1177,6 @@ void addEnding(VerbFormC *vf, UCS2 *ucs2, int *len, UCS2 *ending, int elen, bool
                             ucs2[*len - 1] = GREEK_SMALL_LETTER_OMICRON;
                         }
                         leftShiftFromOffsetSteps(ending, 0, 1, &elen);
-                        ending[0] = GREEK_SMALL_LETTER_IOTA;
                     }
                     else
                     {
